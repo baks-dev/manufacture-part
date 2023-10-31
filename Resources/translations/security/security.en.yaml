@@ -1,0 +1,39 @@
+# Role
+
+ROLE_MANUFACTURE_PART:
+  name: 'Production'
+  desc: 'Product production'
+
+# Rules
+
+ROLE_MANUFACTURE_PART_INDEX:
+  name: 'View'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_NEW:
+  name: 'Open Party'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_EDIT:
+  name: 'Edit'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_DELETE:
+  name: 'Delete'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_ACTION:
+  name: 'Run Step'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_ADD:
+  name: 'Add to party'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_DEFECT:
+  name: 'Troubleshooting'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_OTHER:
+  name: 'See other parties'
+  desc: ''

@@ -1,0 +1,3 @@
+{{ include(_self|replace({ "content.html.twig": baks_settings.device~"/content.html.twig" })) }}
+
+<script async nonce="{{ csp_nonce() }}" data-src="/assets/manufacture_part/part.min.js?v={{ version }}" class="lazy"></script>

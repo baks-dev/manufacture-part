@@ -1,0 +1,6 @@
+open: 'Открыта'
+package: 'В производcтве'
+completed: 'Укомплектована'
+canceled: 'Отменен'
+closed: 'Закрыта'
+defect: 'Дефектовка'

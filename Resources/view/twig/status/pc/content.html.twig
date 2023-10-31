@@ -1,0 +1,46 @@
+{% trans_default_domain 'manufacture.status' %}
+
+{% if status == 'open' %}
+    <h6 class="lh-normal m-0">
+		<span class="badge bg-secondary shadow">
+			{{ status|trans }}
+		</span>
+    </h6>
+
+{% elseif status == 'package' %}
+    <h6 class="lh-normal m-0">
+		<span class="badge bg-warning text-dark shadow">
+			{{ status|trans }}
+		</span>
+    </h6>
+
+{% elseif status == 'completed' %}
+    <h6 class="lh-normal m-0">
+		<span class="badge bg-success shadow">
+			{{ status|trans }}
+		</span>
+    </h6>
+
+
+{% elseif status == 'canceled' or status == 'defect' %}
+    <h6 class="lh-normal m-0">
+		<span class="badge bg-danger shadow">
+			{{ status|trans }}
+        </span>
+    </h6>
+
+{% elseif status == 'closed' %}
+    <h6 class="lh-normal m-0">
+        <span class="badge bg-light text-dark shadow">
+            {{ status|trans }}
+        </span>
+    </h6>
+
+{% else %}
+    <h6 class="lh-normal m-0">
+        <span class="badge bg-info shadow">
+            {{ status|trans }}
+        </span>
+    </h6>
+
+{% endif %}

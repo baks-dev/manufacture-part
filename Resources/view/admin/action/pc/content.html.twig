@@ -1,0 +1,97 @@
+{% trans_default_domain 'admin.manufacture.part' %}
+
+<div class="modal-dialog modal-dialog-centered" style="max-width: 800px;">
+    {{ form_start(form) }}
+    <div class="modal-content p-3 border-bottom border-5 border-warning">
+        <div class="modal-header">
+
+            <h5 class="modal-title">
+                {# Заголовок модального окна #}
+                {{ 'admin.page.action'|trans }} #{{ part.number }}
+            </h5>
+
+            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                <span class="svg-icon svg-icon-2x"></span>
+            </div>
+        </div>
+
+        <div class="modal-body d-flex gap-3 align-items-center">
+            <div>
+                <img src='{{ qrcode }}' alt='QR Code' class="icon" style="width: 150px; height: 150px;">
+            </div>
+
+            {% set bg = 'text-success' %}
+            {% set color = 'text-dark' %}
+
+            <div>
+
+                <div class="my-3">
+
+                    {% for working in all %}
+
+                        <div class="d-flex align-items-center gap-3 ">
+
+                            {% if  working.working_id == current %}
+
+                                <span class="text-primary">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                  class="bi bi-arrow-right-square-fill" viewBox="0 0 16 16">
+                                 <path d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1z"/>
+                             </svg>
+                         </span>
+
+                            {% else %}
+
+                                <span class="{{ bg }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                     fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                                </svg>
+                            </span>
+
+                            {% endif %}
+
+                            <strong class="{{ color }}">{{ working.working_name }}</strong>
+
+                            {% if  working.working_id == current %}
+                                {% set bg = 'text-muted' %}
+                                {% set color = 'text-muted  fw-normal' %}
+                                <strong class="text-danger">{{ part.quantity }} шт.</strong>
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+                </div>
+
+
+                {{ form_row(form.working.profile, {
+                    label: 'Исполнитель'|trans,
+                    placeholder: 'Выберите исполнителя этапа производства ...'|trans,
+                    attr: { 'data-select' : 'select2' }
+                }) }}
+            </div>
+
+
+        </div>
+
+        <div class="modal-footer">
+            <div class="flex-grow-1">
+                &nbsp;
+            </div>
+            <div class="d-flex gap-3">
+                {# Отмена #}
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    {{ 'btn.cancel'|trans({}, 'core.btn') }}
+                </button>
+
+                {# Удалить #}
+                {{ form_widget(form.manufacture_part_action, { label: '
+				<span>Выполнено '~  part.quantity ~' шт.</span>
+				<span class="spinner-border spinner-border-sm vertical-middle d-none"></span>
+			'}) }}
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>

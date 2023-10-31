@@ -1,0 +1,91 @@
+{# Пользовательское меню #}
+{% set identifier = item.product_id %}
+
+<button class="btn btn-link btn-sm d-flex align-items-center"
+		id="usecase-{{ identifier }}"
+		data-bs-container="body"
+		data-bs-toggle="popover"
+		data-bs-placement="right"
+		data-bs-trigger="click"
+>
+	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+		 fill="currentColor" class="text-muted"
+		 viewBox="0 0 16 16">
+		<path fill-rule="evenodd"
+			  d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+	</svg>
+</button>
+
+
+{# Чекбокс #}
+{#<label>
+	<input class="form-check-input ms-3 p-2" type="checkbox"
+			#}{# onchange=checkedItem(); #}{#
+			value="{{ identifier }}">
+</label>#}
+
+
+
+<div id="usecase-{{ identifier }}-content" class="d-none">
+	<ul class="leader list-group list-group-flush ">
+
+		{% if info.status == 'open' %}
+			{# Редактировать #}
+			{% if is_granted('ROLE_MANUFACTURE_PART_EDIT') or
+				is_granted('ROLE_ADMIN') %}
+				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+					<a href="{{ path('manufacture-part:admin.products.edit', {id: identifier }) }}"
+					   class="text-decoration-none text-dark w-100 modal-link"
+					   data-bs-toggle="modal"
+					   data-bs-target="#modal"
+					   title="{{ 'btn.edit'|trans({}, 'core.btn') }}">
+						{{ 'btn.edit'|trans({}, 'core.btn') }}
+					</a>
+				</li>
+			{% endif %}
+
+
+			{# Удалить продукциюиз произвосдтвенной партии #}
+			{% if is_granted('ROLE_MANUFACTURE_PART_DELETE') or
+				is_granted('ROLE_ADMIN') %}
+				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+					<a href="{{ path('manufacture-part:admin.products.delete', { id: identifier }) }}"
+					   class="text-decoration-none text-dark w-100 modal-link"
+					   data-bs-toggle="modal"
+					   data-bs-target="#modal"
+					   title="{{ 'btn.delete'|trans({}, 'core.btn') }}">
+						{{ 'btn.delete'|trans({}, 'core.btn') }}
+					</a>
+				</li>
+			{% endif %}
+
+		{% else %}
+
+			{# Удалить продукциюиз произвосдтвенной партии #}
+			{# Деффектовка #}
+			{% if
+				is_granted('ROLE_MANUFACTURE_PART_DEFECT') or
+				is_granted('ROLE_ADMIN')
+			%}
+				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+					<a href="{{ path('manufacture-part:admin.products.defect', { id: identifier }) }}"
+					   class="text-decoration-none text-dark w-100 modal-link"
+					   data-bs-toggle="modal"
+					   data-bs-target="#modal"
+					   title="{{ 'Дефект производства'|trans({}, 'core.btn') }}">
+						{{ 'Дефект производства'|trans({}, 'core.btn') }}
+					</a>
+				</li>
+			{% endif %}
+
+		{% endif %}
+
+
+
+
+	
+	</ul>
+</div>
+
+
+

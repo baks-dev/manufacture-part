@@ -1,0 +1,31 @@
+<style>
+    @media print {
+        body {
+            visibility: hidden;
+        }
+
+   .main { display: none; }
+
+        .printer {
+            position: absolute;
+            visibility: visible  !important;
+        }
+
+        .modal-body{
+            position: fixed !important;
+            top: 0;
+            left: 0;
+        }
+
+        .page-break {
+            position: unset !important;
+        }
+    }
+</style>
+
+{{ include(_self|replace({ "content.html.twig": baks_settings.device~"/content.html.twig" })) }}
+
+<script async nonce="{{ csp_nonce() }}" data-src="/assets/manufacture_part/print.min.js?v={{ version }}" class="lazy"></script>
+
+
+

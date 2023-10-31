@@ -1,0 +1,39 @@
+# Роль
+
+ROLE_MANUFACTURE_PART:
+  name: 'Производство'
+  desc: 'Производство продукции'
+
+# Правила
+
+ROLE_MANUFACTURE_PART_INDEX:
+  name: 'Просмотр'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_NEW:
+  name: 'Открыть партию'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_EDIT:
+  name: 'Редактировать'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_DELETE:
+  name: 'Удалить'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_ACTION:
+  name: 'Выполнить этап'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_ADD:
+  name: 'Добавить в партию'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_DEFECT:
+  name: 'Дефектовка'
+  desc: ''
+
+ROLE_MANUFACTURE_PART_OTHER:
+  name: 'Партии всех пользователей'
+  desc: ''
