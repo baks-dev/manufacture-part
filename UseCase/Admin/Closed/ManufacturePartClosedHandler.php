@@ -71,7 +71,7 @@ final class ManufacturePartClosedHandler extends AbstractHandler
 
         try
         {
-           $this->preUpdate($command);
+           $this->preUpdate($command, true);
         }
         catch(DomainException $errorUniqid)
         {
