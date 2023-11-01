@@ -49,10 +49,7 @@
 document.addEventListener("DOMContentLoaded", (event) => {
 
 	const form = document.forms.product_filter_form;
-	form.addEventListener('change', () => { form.submit(); });
-
-	// const profile_form = document.forms.product_profile_filter_form_admin ? document.forms.product_profile_filter_form_admin : document.forms.product_profile_filter_form;
-	// profile_form.addEventListener('change', () => { profile_form.submit(); });
+    form.addEventListener('change', () => { setTimeout(() => { form.submit(); }, 300); });
 
 });
 

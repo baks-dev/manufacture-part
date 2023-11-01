@@ -50,7 +50,7 @@
 
 document.addEventListener("DOMContentLoaded", (event) => {
 	const form = document.forms.manufacture_filter_form;
-	form.addEventListener('change', () => { form.submit(); });
+	form.addEventListener('change', () => { setTimeout(() => { form.submit(); }, 300); });
 });
 
 //filterDate = document.getElementById('manufacture_filter_form_date');
