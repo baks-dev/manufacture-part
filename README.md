@@ -1,6 +1,6 @@
 # BaksDev Manufacture Part
 
-![Version](https://img.shields.io/badge/version-6.3.15-blue) ![php 8.1+](https://img.shields.io/badge/php-min%208.1-red.svg)
+![Version](https://img.shields.io/badge/version-6.3.16-blue) ![php 8.1+](https://img.shields.io/badge/php-min%208.1-red.svg)
 
 Модуль производства партий продукции
 
