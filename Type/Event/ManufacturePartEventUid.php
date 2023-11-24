@@ -52,7 +52,7 @@ final class ManufacturePartEventUid extends Uid
         mixed $characteristic = null,
     )
     {
-        parent::__construct(Kernel::isTestEnvironment() && !$value ? self::TEST : $value);
+        parent::__construct($value);
 
         $this->attr = $attr;
         $this->option = $option;
