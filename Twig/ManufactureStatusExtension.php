@@ -37,7 +37,7 @@ final class ManufactureStatusExtension extends AbstractExtension
         $this->project_dir = $project_dir;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('manufacture_status', [$this, 'status'], ['needs_environment' => true, 'is_safe' => ['html']]),
@@ -52,10 +52,8 @@ final class ManufactureStatusExtension extends AbstractExtension
             {
                 return $twig->render('@Template/ManufacturePart/twig/status/status.html.twig', ['status' => $status]);
             }
-            else
-            {
-                return $twig->render('@manufacture-part/twig/status/status.html.twig', ['status' => $status]);
-            }
+
+            return $twig->render('@manufacture-part/twig/status/status.html.twig', ['status' => $status]);
         }
 
         return '';
