@@ -48,9 +48,9 @@ final class ManufactureStatusExtension extends AbstractExtension
     {
         if($status)
         {
-            if(file_exists($this->project_dir.'/templates/ManufacturePart/twig/status/status.html.twig'))
+            if(file_exists($this->project_dir.'/templates/manufacture-part/twig/status/status.html.twig'))
             {
-                return $twig->render('@Template/ManufacturePart/twig/status/status.html.twig', ['status' => $status]);
+                return $twig->render('@Template/manufacture-part/twig/status/status.html.twig', ['status' => $status]);
             }
 
             return $twig->render('@manufacture-part/twig/status/status.html.twig', ['status' => $status]);
