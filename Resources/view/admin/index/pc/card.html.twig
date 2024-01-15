@@ -76,20 +76,19 @@
                     </a>
                     <div class="text-muted fw-bolder">
 
-                        {% if item.product_offer_value %}
-                            {{ item.product_offer_value|call_twig_func(item.product_offer_reference) }}
-                            {{ item.product_offer_postfix }}
-                        {% endif %}
+                        {# Значение множественного варианта ТП #}
+                        {{ item.product_variation_value|call_twig_func(item.product_variation_reference~'_render') ~
+                        item.product_modification_value|call_twig_func(item.product_modification_reference~'_render') }}
 
-                        {% if item.product_variation_value %}
-                            {{ item.product_variation_value|call_twig_func(item.product_variation_reference) }}
-                            {{ item.product_variation_postfix }}
-                        {% endif %}
+                        {# Значение торгового предложения #}
+                        {{ item.product_offer_value|call_twig_func(item.product_offer_reference~'_render') }}
 
-                        {% if item.product_modification_value %}
-                            {{ item.product_modification_value|call_twig_func(item.product_modification_reference) }}
-                            {{ item.product_modification_postfix }}
-                        {% endif %}
+                        {# Постфикс торгового предложения #}
+                        {{ item.product_offer_postfix }}
+                        {# Постфикс множественного варианта #}
+                        {{ item.product_variation_postfix }}
+                        {# Постфикс модификации #}
+                        {{ item.product_modification_postfix }}
 
                     </div>
                 </div>
