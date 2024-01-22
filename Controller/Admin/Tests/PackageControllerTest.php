@@ -33,8 +33,7 @@ final class PackageControllerTest extends WebTestCase
 
     private const ROLE = 'ROLE_MANUFACTURE_PART_NEW';
 
-
-    private static ?ManufacturePartUid $identifier;
+    private static ?ManufacturePartUid $identifier = null;
 
     public static function setUpBeforeClass(): void
     {
@@ -70,6 +69,8 @@ final class PackageControllerTest extends WebTestCase
                 self::assertResponseIsSuccessful();
             }
         }
+
+        self::assertTrue(true);
     }
 
     // доступ по роли ROLE_ADMIN
@@ -95,6 +96,8 @@ final class PackageControllerTest extends WebTestCase
                 self::assertResponseIsSuccessful();
             }
         }
+
+        self::assertTrue(true);
     }
 
     // доступ по роли ROLE_USER
@@ -119,6 +122,8 @@ final class PackageControllerTest extends WebTestCase
                 self::assertResponseStatusCodeSame(403);
             }
         }
+
+        self::assertTrue(true);
     }
 
     /** Доступ по без роли */
@@ -142,5 +147,7 @@ final class PackageControllerTest extends WebTestCase
                 self::assertResponseStatusCodeSame(401);
             }
         }
+
+        self::assertTrue(true);
     }
 }

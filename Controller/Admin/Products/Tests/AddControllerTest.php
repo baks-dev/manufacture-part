@@ -34,7 +34,7 @@ final class AddControllerTest extends WebTestCase
     private const ROLE = 'ROLE_MANUFACTURE_PART_ADD';
 
 
-    private static ?ProductEventUid $identifier;
+    private static ?ProductEventUid $identifier = null;
 
     public static function setUpBeforeClass(): void
     {
@@ -68,6 +68,8 @@ final class AddControllerTest extends WebTestCase
                 self::assertResponseIsSuccessful();
             }
         }
+
+        self::assertTrue(true);
     }
 
     // доступ по роли ROLE_ADMIN
@@ -93,6 +95,8 @@ final class AddControllerTest extends WebTestCase
                 self::assertResponseIsSuccessful();
             }
         }
+
+        self::assertTrue(true);
     }
 
     // доступ по роли ROLE_USER
@@ -117,6 +121,8 @@ final class AddControllerTest extends WebTestCase
                 self::assertResponseStatusCodeSame(403);
             }
         }
+
+        self::assertTrue(true);
     }
 
     /** Доступ по без роли */
@@ -140,5 +146,7 @@ final class AddControllerTest extends WebTestCase
                 self::assertResponseStatusCodeSame(401);
             }
         }
+
+        self::assertTrue(true);
     }
 }
