@@ -42,6 +42,9 @@ final class ActionControllerTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         self::$identifier = $em->getRepository(ManufacturePart::class)
             ->findOneBy([], ['id' => 'DESC'])?->getId();
+
+        $em->clear();
+        //$em->close();
     }
 
 

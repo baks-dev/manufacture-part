@@ -42,6 +42,9 @@ final class AddControllerTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         self::$identifier = $em->getRepository(Product::class)
             ->findOneBy([], ['id' => 'DESC'])?->getEvent();
+
+        $em->clear();
+        //$em->close();
     }
 
 

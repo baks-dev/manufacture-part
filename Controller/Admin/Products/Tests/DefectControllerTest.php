@@ -42,6 +42,9 @@ final class DefectControllerTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         self::$identifier = $em->getRepository(ManufacturePartProduct::class)
             ->findOneBy([], ['id' => 'DESC'])?->getId();
+
+        $em->clear();
+        //$em->close();
     }
 
 
