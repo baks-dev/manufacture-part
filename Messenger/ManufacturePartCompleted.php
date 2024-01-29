@@ -55,7 +55,7 @@ final class ManufacturePartCompleted
         ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         ProductsByManufacturePartInterface $productsByManufacturePart,
         CentrifugoPublishInterface $CentrifugoPublish,
-        LoggerInterface $messageDispatchLogger,
+        LoggerInterface $manufacturePartLogger,
     )
     {
         $this->activeWorkingManufacturePart = $activeWorkingManufacturePart;
@@ -63,7 +63,7 @@ final class ManufacturePartCompleted
         $this->entityManager = $entityManager;
         $this->CentrifugoPublish = $CentrifugoPublish;
         $this->productsByManufacturePart = $productsByManufacturePart;
-        $this->logger = $messageDispatchLogger;
+        $this->logger = $manufacturePartLogger;
     }
 
     /**

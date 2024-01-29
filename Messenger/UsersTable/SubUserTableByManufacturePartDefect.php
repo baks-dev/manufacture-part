@@ -48,12 +48,12 @@ final class SubUserTableByManufacturePartDefect
     public function __construct(
         EntityManagerInterface $entityManager,
         UsersTableHandler $usersTableHandler,
-        LoggerInterface $messageDispatchLogger,
+        LoggerInterface $manufacturePartLogger,
     )
     {
         $this->entityManager = $entityManager;
         $this->usersTableHandler = $usersTableHandler;
-        $this->logger = $messageDispatchLogger;
+        $this->logger = $manufacturePartLogger;
     }
 
     /**

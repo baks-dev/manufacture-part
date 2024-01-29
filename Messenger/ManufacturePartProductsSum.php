@@ -42,12 +42,12 @@ final class ManufacturePartProductsSum
     public function __construct(
         EntityManagerInterface $entityManager,
         ManufacturePartSumProductsInterface $manufacturePartSumProducts,
-        LoggerInterface $messageDispatchLogger,
+        LoggerInterface $manufacturePartLogger,
     )
     {
         $this->entityManager = $entityManager;
         $this->manufacturePartSumProducts = $manufacturePartSumProducts;
-        $this->logger = $messageDispatchLogger;
+        $this->logger = $manufacturePartLogger;
     }
 
     /**

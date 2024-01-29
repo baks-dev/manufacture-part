@@ -46,12 +46,12 @@ final class ManufacturePartClosedByZero
     public function __construct(
         EntityManagerInterface $entityManager,
         ManufacturePartClosedHandler $manufacturePartClosedHandler,
-        LoggerInterface $messageDispatchLogger,
+        LoggerInterface $manufacturePartLogger,
     )
     {
         $this->entityManager = $entityManager;
         $this->manufacturePartClosedHandler = $manufacturePartClosedHandler;
-        $this->logger = $messageDispatchLogger;
+        $this->logger = $manufacturePartLogger;
     }
 
     /**
