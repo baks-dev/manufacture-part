@@ -33,13 +33,18 @@ return static function (FrameworkConfig $framework) {
         ->transport('manufacture-part')
         ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
         ->options(['queue_name' => 'manufacture-part'])
+        ->failureTransport('failed-manufacture-part')
         ->retryStrategy()
         ->maxRetries(3)
         ->delay(1000)
         ->maxDelay(0)
         ->multiplier(3) // увеличиваем задержку перед каждой повторной попыткой
         ->service(null)
+
     ;
+
+    $messenger->transport('failed-manufacture-part')
+        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%');
 };
 
 
