@@ -31,7 +31,6 @@ interface OpenManufacturePartInterface
      * Метод возвращает список открытых партий пользователя
      */
     public function fetchOpenManufacturePartAssociative(
-        UserProfileUid $profile,
-        //UserProfileUid $current
-    ): ?array;
+        UserProfileUid $profile
+    ): bool|array;
 }

@@ -72,7 +72,7 @@ final class OpenManufacturePart implements OpenManufacturePartInterface
     public function fetchOpenManufacturePartAssociative(
         UserProfileUid $profile,
         //UserProfileUid $current
-    ): ?array
+    ): bool|array
     {
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class)->bindLocal();
 
