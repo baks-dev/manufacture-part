@@ -109,7 +109,6 @@ final class ManufacturePartComplete
         return $case;
     }
 
-
     public static function getDeclaredActionsComplete(): array
     {
         return array_filter(
@@ -118,5 +117,12 @@ final class ManufacturePartComplete
                 return in_array(ManufacturePartCompleteInterface::class, class_implements($className), true);
             },
         );
+    }
+
+    public function equals(mixed $complete): bool
+    {
+        $complete = new self($complete);
+
+        return $this->getActionCompleteValue() === $complete->getActionCompleteValue();
     }
 }

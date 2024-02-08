@@ -39,18 +39,22 @@ final class ManufacturePartCompleteType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ManufacturePartComplete
     {
-        if(!$value) { $value = 'nothing'; }
-
-        /** @var ManufacturePartComplete $actions */
-        foreach(ManufacturePartComplete::cases() as $actions)
-        {
-            if($actions->getActionComplete()::equals($value))
-            {
-                return $actions;
-            }
+        if(!$value) {
+            return new ManufacturePartComplete(ManufacturePartCompleteNothing::class);
         }
 
-        return new ManufacturePartComplete(ManufacturePartCompleteNothing::class);
+        return new ManufacturePartComplete($value);
+
+//        /** @var ManufacturePartComplete $actions */
+//        foreach(ManufacturePartComplete::cases() as $actions)
+//        {
+//            if($actions->getActionComplete()::equals($value))
+//            {
+//                return $actions;
+//            }
+//        }
+//
+//        return new ManufacturePartComplete(ManufacturePartCompleteNothing::class);
     }
 
     public function getName(): string
