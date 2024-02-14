@@ -48,7 +48,7 @@
 
             {#{% if opens %}
                 <a href="{{ path('manufacture-part:admin.newedit.new') }}"
-                   class="btn modal-btn modal-link btn-primary text-nowrap" data-bs-toggle="modal"
+                   class="btn modal-btn modal-link disabled btn-primary text-nowrap" data-bs-toggle="modal"
                    data-bs-target="#modal"
                    title="Открыть производственную партию">
                     Добавить партию
@@ -71,7 +71,7 @@
 
                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANUFACTURE_PART_NEW') %}
                     <a href="{{ path('manufacture-part:admin.newedit.new') }}"
-                       class="btn modal-btn modal-link btn-primary text-nowrap" data-bs-toggle="modal"
+                       class="btn modal-btn modal-link disabled btn-primary text-nowrap" data-bs-toggle="modal"
                        data-bs-target="#modal"
                        title="Открыть производственную партию">
                         Открыть  новую партию

@@ -52,7 +52,7 @@
 
                 {# <div>
                     <a href="{{ path('manufacture-part:admin.newedit.new') }}"
-                       class="btn modal-btn modal-link btn-primary text-nowrap" data-bs-toggle="modal"
+                       class="btn modal-btn modal-link disabled btn-primary text-nowrap" data-bs-toggle="modal"
                        data-bs-target="#modal"
                        title="Открыть поставку">
                         Добавить партию
@@ -73,7 +73,7 @@
                         >
                 <a
                         href="{{ path('manufacture-part:admin.qrcode', { id : info.id }) }}"
-                        class="btn-link btn p-0 modal-link icon"
+                        class="btn-link btn p-0 modal-link disabled icon"
                         data-bs-toggle="modal"
                         data-bs-target="#modal"
                         style="height: 55px; width: 55px;"
@@ -144,7 +144,7 @@
                         {% if info.status == 'open' and is_granted('ROLE_MANUFACTURE_PART_NEW') %}
 
                             <a href="{{ path('manufacture-part:admin.package', { id: info.id }) }}" id="close_supply_btn"
-                               class="btn modal-btn btn-danger modal-link text-nowrap"
+                               class="btn modal-btn btn-danger modal-link disabled text-nowrap"
                                data-bs-toggle="modal" data-bs-target="#modal"
                                title="Отпарвить партию на производственную линию"
                             >

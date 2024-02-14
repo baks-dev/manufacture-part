@@ -35,7 +35,7 @@
 				is_granted('ROLE_ADMIN') %}
 				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
 					<a href="{{ path('manufacture-part:admin.products.edit', {id: identifier }) }}"
-					   class="text-decoration-none text-dark w-100 modal-link"
+					   class="text-decoration-none text-dark w-100 modal-link disabled"
 					   data-bs-toggle="modal"
 					   data-bs-target="#modal"
 					   title="{{ 'btn.edit'|trans({}, 'core.btn') }}">
@@ -50,7 +50,7 @@
 				is_granted('ROLE_ADMIN') %}
 				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
 					<a href="{{ path('manufacture-part:admin.products.delete', { id: identifier }) }}"
-					   class="text-decoration-none text-dark w-100 modal-link"
+					   class="text-decoration-none text-dark w-100 modal-link disabled"
 					   data-bs-toggle="modal"
 					   data-bs-target="#modal"
 					   title="{{ 'btn.delete'|trans({}, 'core.btn') }}">
@@ -69,7 +69,7 @@
 			%}
 				<li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
 					<a href="{{ path('manufacture-part:admin.products.defect', { id: identifier }) }}"
-					   class="text-decoration-none text-dark w-100 modal-link"
+					   class="text-decoration-none text-dark w-100 modal-link disabled"
 					   data-bs-toggle="modal"
 					   data-bs-target="#modal"
 					   title="{{ 'Дефект производства'|trans({}, 'core.btn') }}">

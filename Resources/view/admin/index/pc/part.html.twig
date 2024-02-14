@@ -34,7 +34,7 @@
             >
                 <a
                         href="{{ path('manufacture-part:admin.qrcode', { id : opens.id }) }}"
-                        class="btn-link btn p-0 modal-link icon"
+                        class="btn-link btn p-0 modal-link disabled icon"
                         data-bs-toggle="modal"
                         data-bs-target="#modal"
                         style="height: 55px; width: 55px;"
@@ -85,7 +85,7 @@
 
         <div class="text-end">
             <a href="{{ path('manufacture-part:admin.package', { id: opens.id }) }}" id="close_supply_btn"
-               class="btn modal-btn btn-danger modal-link text-nowrap"
+               class="btn modal-btn btn-danger modal-link disabled text-nowrap"
                data-bs-toggle="modal" data-bs-target="#modal"
                title="Отпарвить партию на производственную линию"
             >
@@ -95,7 +95,7 @@
 
         {# <div class="text-end w-25">
             <a href="#"
-               class="btn modal-btn modal-link btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
+               class="btn modal-btn modal-link disabled btn-primary" data-bs-toggle="modal" data-bs-target="#modal"
                title="Открыть поставку">
                 Открыть партию
             </a>
