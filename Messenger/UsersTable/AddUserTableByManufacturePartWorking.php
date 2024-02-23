@@ -67,70 +67,65 @@ final class AddUserTableByManufacturePartWorking
             return;
         }
 
-        /* Получаем событие заявки на производство  */
         $this->entityManager->clear();
+
+        $ManufacturePart = $this->entityManager->getRepository(ManufacturePart::class)->find($message->getId());
+
+        if(!$ManufacturePart)
+        {
+            return;
+        }
+
         $ManufacturePartEvent = $this->entityManager
             ->getRepository(ManufacturePartEvent::class)
             ->find($message->getEvent());
 
-
-        /** Только если статус партии - Производство */
-        if($ManufacturePartEvent && $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class))
+        /** Только если статус партии - PACKAGE «На сборке (упаковке)» */
+        if(!$ManufacturePartEvent || false === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class))
         {
-            /** Если отсутствует рабочий процесс - заявка только поступила на производство */
-            if(!$ManufacturePartEvent->getWorking())
-            {
-                return;
-            }
-
-            /*
-             * Получаем рабочее состояние события
-             */
-            $WorkingManufacturePartDTO = new ManufacturePartActionDTO($message->getEvent());
-            $ManufacturePartEvent->getDto($WorkingManufacturePartDTO);
-            $ManufacturePartWorkingDTO = $WorkingManufacturePartDTO->getWorking();
-
-            /** Если не указан профиль пользователя - закрываем */
-            if(!$ManufacturePartWorkingDTO->getProfile())
-            {
-                return;
-            }
-
-            /** Получаем общее количество в заявке */
-            $ManufacturePart = $this->entityManager->getRepository(ManufacturePart::class)->find($message->getId());
-
-            if(!$ManufacturePart)
-            {
-                return;
-            }
-
-            $this->logger->info('Добавляем действие сотрудника в табель', [
-                __FILE__.':'.__LINE__,
-                'class' => self::class,
-                'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
-                    $message::class,
-                    $message->getId()::class,
-                    $message->getId(),
-                    $message->getEvent()::class,
-                    $message->getEvent()
-                )
-            ]);
-
-            /** Создаем и сохраняем табель сотруднику */
-            $UsersTableDTO = new UsersTableDTO(authority: $ManufacturePartWorkingDTO->getProfile());
-            $UsersTableDTO->setProfile($ManufacturePartWorkingDTO->getProfile());
-            $UsersTableDTO->setWorking($ManufacturePartWorkingDTO->getWorking());
-            $UsersTableDTO->setQuantity($ManufacturePart->getQuantity());
-
-            $UsersTableHandler = $this->usersTableHandler->handle($UsersTableDTO);
-
-            if(!$UsersTableHandler instanceof UsersTable)
-            {
-                throw new DomainException(sprintf('%s: Ошибка при сохранении табеля сотрудника', $UsersTableHandler) );
-            }
-
-            $this->logger->info('Добавили табель сотрудника', ['profile' => $ManufacturePartWorkingDTO->getProfile()]);
-
+            return;
         }
+
+        /** Если отсутствует рабочий процесс - заявка только поступила на производство */
+        if(!$ManufacturePartEvent->getWorking())
+        {
+            return;
+        }
+
+        /*
+         * Получаем рабочее состояние события
+         */
+        $WorkingManufacturePartDTO = new ManufacturePartActionDTO($message->getEvent());
+        $ManufacturePartEvent->getDto($WorkingManufacturePartDTO);
+        $ManufacturePartWorkingDTO = $WorkingManufacturePartDTO->getWorking();
+
+        /** Если не указан профиль пользователя - закрываем */
+        if(!$ManufacturePartWorkingDTO->getProfile())
+        {
+            return;
+        }
+
+        /** Получаем общее количество в заявке */
+        $this->logger->info('Добавляем действие сотрудника в табель', [__FILE__.':'.__LINE__]);
+
+        /** Создаем и сохраняем табель сотруднику */
+        $UsersTableDTO = new UsersTableDTO(authority: $ManufacturePartWorkingDTO->getProfile());
+        $UsersTableDTO->setProfile($ManufacturePartWorkingDTO->getProfile());
+        $UsersTableDTO->setWorking($ManufacturePartWorkingDTO->getWorking());
+        $UsersTableDTO->setQuantity($ManufacturePart->getQuantity());
+
+        $UsersTableHandler = $this->usersTableHandler->handle($UsersTableDTO);
+
+        if(!$UsersTableHandler instanceof UsersTable)
+        {
+            throw new DomainException(sprintf('%s: Ошибка при сохранении табеля сотрудника', $UsersTableHandler));
+        }
+
+        $this->logger->info('Добавили табель сотрудника', [
+            'profile' => $ManufacturePartWorkingDTO->getProfile(),
+            'working' => $ManufacturePartWorkingDTO->getWorking(),
+            'quantity' => $ManufacturePart->getQuantity()
+        ]);
+
     }
 }

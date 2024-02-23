@@ -28,6 +28,9 @@ namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * Статус производства CANCELED «Отмена»
+ */
 #[AutoconfigureTag('baks.manufacture.status')]
 class ManufacturePartStatusCanceled implements ManufacturePartStatusInterface
 {
@@ -39,6 +42,11 @@ class ManufacturePartStatusCanceled implements ManufacturePartStatusInterface
     private static int $sort = 400;
 
     private static string $color = '#DC3545';
+
+    public function __toString(): string
+    {
+        return $this->getValue();
+    }
 
     /** Возвращает значение (value) */
     public function getValue(): string

@@ -23,22 +23,18 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit;
+namespace BaksDev\Manufacture\Part\UseCase\Admin\AddProduct;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
-use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\UseCase\Admin\Package\ManufacturePartPackageDTO;
 use DomainException;
 
-final class ManufacturePartHandler extends AbstractHandler
+final class Handler extends AbstractHandler
 {
 
     /** @see ManufacturePart */
     public function handle(
-        ManufacturePartDTO|ManufacturePartPackageDTO $command
+        DTO $command
     ): string|ManufacturePart
     {
 

@@ -79,6 +79,11 @@ class ManufacturePart
         $this->number = number_format(microtime(true) * 100, 0, '.', '.');
     }
 
+    public function __toString(): string
+    {
+        return (string) $this->id;
+    }
+
     /**
      * Идентификатор
      */

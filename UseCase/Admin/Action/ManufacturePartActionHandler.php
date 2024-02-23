@@ -38,29 +38,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ManufacturePartActionHandler extends AbstractHandler
 {
-//    private EntityManagerInterface $entityManager;
-//
-//    private ValidatorInterface $validator;
-//
-//    private LoggerInterface $logger;
-//
-//    private MessageDispatchInterface $messageDispatch;
-//
-//    public function __construct(
-//        EntityManagerInterface $entityManager,
-//        ValidatorInterface $validator,
-//        LoggerInterface $logger,
-//        MessageDispatchInterface $messageDispatch
-//    )
-//    {
-//        $this->entityManager = $entityManager;
-//        $this->validator = $validator;
-//        $this->logger = $logger;
-//        $this->messageDispatch = $messageDispatch;
-//
-//    }
-
-
 
     /** @see ManufacturePart */
     public function handle(ManufacturePartActionDTO $command,): string|ManufacturePart

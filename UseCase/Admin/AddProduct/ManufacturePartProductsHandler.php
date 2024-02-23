@@ -26,7 +26,11 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\UseCase\Admin\AddProduct;
 
 
+use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
+use BaksDev\Core\Validator\ValidatorCollectionInterface;
+use BaksDev\Files\Resources\Upload\File\FileUploadInterface;
+use BaksDev\Files\Resources\Upload\Image\ImageUploadInterface;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
@@ -38,45 +42,29 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class ManufacturePartProductsHandler
+final class ManufacturePartProductsHandler extends AbstractHandler
 {
-    private EntityManagerInterface $entityManager;
-
-    private ValidatorInterface $validator;
-
-    private LoggerInterface $logger;
-
-    private MessageDispatchInterface $messageDispatch;
 
     private OpenManufacturePartByActionInterface $openManufacturePartByAction;
 
-//    private ActionByProductInterface $actionByProduct;
-//    private ActionByCategoryInterface $actionByCategory;
-
-    //private ManufacturePartHandler $ManufacturePartHandler;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        LoggerInterface $logger,
         MessageDispatchInterface $messageDispatch,
+        ValidatorCollectionInterface $validatorCollection,
+        ImageUploadInterface $imageUpload,
+        FileUploadInterface $fileUpload,
         OpenManufacturePartByActionInterface $openManufacturePartByAction,
-
-//        ActionByProductInterface $actionByProduct,
-//        ActionByCategoryInterface $actionByCategory,
-//        ManufacturePartHandler $ManufacturePartHandler,
+        LoggerInterface $manufacturePartLogger
     )
     {
-        $this->entityManager = $entityManager;
-        $this->validator = $validator;
-        $this->logger = $logger;
-        $this->messageDispatch = $messageDispatch;
-        $this->openManufacturePartByAction = $openManufacturePartByAction;
+        parent::__construct($entityManager, $messageDispatch, $validatorCollection, $imageUpload, $fileUpload);
 
-//        $this->actionByProduct = $actionByProduct;
-//        $this->actionByCategory = $actionByCategory;
-//        $this->ManufacturePartHandler = $ManufacturePartHandler;
+        $this->openManufacturePartByAction = $openManufacturePartByAction;
+        $this->logger = $manufacturePartLogger;
     }
+
 
     /** @see ManufacturePart */
     public function handle(
@@ -85,19 +73,8 @@ final class ManufacturePartProductsHandler
     ): string|ManufacturePart|ManufacturePartProduct
     {
 
-        /**
-         *  Валидация ManufacturePartProductsDTO
-         */
-        $errors = $this->validator->validate($command);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [__FILE__.':'.__LINE__]);
-
-            return $uniqid;
-        }
+        /** Валидация DTO  */
+        $this->validatorCollection->add($command);
 
         /** Получаем активную открытую производственную партию ответственного лица */
         $ManufacturePartEvent = $this->openManufacturePartByAction
@@ -116,13 +93,12 @@ final class ManufacturePartProductsHandler
         }
 
 
-
         /** Получаем категорию продукции */
         $ProductEvent = $this->entityManager->getRepository(ProductEvent::class)->find(
             $command->getProduct()
         );
 
-        if(!$ProductEvent->getRootCategory())
+        if(!$ProductEvent || !$ProductEvent->getRootCategory())
         {
             $uniqid = uniqid('', false);
             $errorsString = sprintf(
@@ -156,70 +132,6 @@ final class ManufacturePartProductsHandler
         }
 
 
-
-        //        /** Получаем Индивидуальный способ производства продукции */
-//
-//        $UsersTableActionsEvent = $this->actionByProduct
-//            ->findUsersTableActionsByProduct($ProductEvent->getProduct());
-//
-//        /* Если нет индивидуального способ производства - ищем по категории */
-//        if(!$UsersTableActionsEvent)
-//        {
-//            $UsersTableActionsEvent = $this->actionByCategory
-//                ->findUsersTableActionsByCategory($ProductEvent->getRootCategory());
-//        }
-//
-//        if(!$UsersTableActionsEvent)
-//        {
-//            $uniqid = uniqid('', false);
-//            $errorsString = sprintf(
-//                'Not found action user table %s (product: %s, root category: %s)',
-//                ProductEvent::class,
-//                $ProductEvent->getProduct(),
-//                $ProductEvent->getRootCategory()
-//            );
-//            $this->logger->error($uniqid.': '.$errorsString);
-//
-//            return $uniqid;
-//        }
-//
-//
-//        /** Получаем активную открытую производственную партию */
-//        $ManufacturePartEvent = $this->openManufacturePartByAction
-//            ->findManufacturePartEventOrNull(
-//                $command->getProfile(),
-//                $UsersTableActionsEvent,
-//                //$marketplace
-//            );
-
-//        /** Если открытой партии нет - открываем */
-//        if(!$ManufacturePartEvent)
-//        {
-//
-//            $ManufacturePartDTO = new ManufacturePartDTO();
-//            $ManufacturePartDTO
-//                ->setProfile($command->getProfile())
-//                //->setMarketplace($marketplace)
-//                ->setAction($UsersTableActionsEvent)
-//            ;
-//
-//            /** Открываем партию на указанную категорию и маркетплейс */
-//            $ManufacturePart = $this->ManufacturePartHandler->handle($ManufacturePartDTO);
-//
-//            if(!$ManufacturePart instanceof ManufacturePart)
-//            {
-//                return $ManufacturePart;
-//            }
-//
-//            /** Получаем активную открытую производственную партию */
-//            $ManufacturePartEvent = $this->openManufacturePartByAction
-//                ->findManufacturePartEventOrNull(
-//                    $command->getProfile(),
-//                    $UsersTableActionsEvent,
-//                    //$marketplace
-//                );
-//        }
-
         /**
          * Добавляем к открытой партии продукт
          */
@@ -227,18 +139,10 @@ final class ManufacturePartProductsHandler
         $ManufacturePartProduct = new ManufacturePartProduct($ManufacturePartEvent);
         $ManufacturePartProduct->setEntity($command);
 
-        /**
-         * Валидация Event
-         */
-        $errors = $this->validator->validate($ManufacturePartProduct);
-
-        if(count($errors) > 0)
+        /** Валидация всех объектов */
+        if($this->validatorCollection->isInvalid())
         {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [__FILE__.':'.__LINE__]);
-
-            return $uniqid;
+            return $this->validatorCollection->getErrorUniqid();
         }
 
 

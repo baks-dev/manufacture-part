@@ -23,54 +23,47 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\UseCase\Admin\Delete;
+namespace BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent;
 
-
-use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Core\Doctrine\ORMQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use DomainException;
+use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 
-final class ManufacturePartDeleteHandler extends AbstractHandler
+final class ManufacturePartCurrentEvent implements ManufacturePartCurrentEventInterface
 {
+    private ORMQueryBuilder $ORMQueryBuilder;
 
-    /** @see ManufacturePart */
-    public function handle(
-        ManufacturePartDeleteDTO $command
-    ): string|ManufacturePart
+    public function __construct(ORMQueryBuilder $ORMQueryBuilder)
+    {
+        $this->ORMQueryBuilder = $ORMQueryBuilder;
+    }
+
+    /**
+     * Возвращает активное событие по идентификатору ManufacturePart
+     */
+    public function findByManufacturePart(ManufacturePart|ManufacturePartUid|string $part): ?ManufacturePartEvent
     {
 
-        /** Валидация DTO  */
-        $this->validatorCollection->add($command);
+        $part = is_string($part) ? new ManufacturePartUid($part) : $part;
+        $part = $part instanceof ManufacturePart ? $part->getId() : $part;
 
-        $this->main = new ManufacturePart();
-        $this->event = new ManufacturePartEvent();
+        $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
 
-        try
-        {
-            $this->preRemove($command);
-        }
-        catch(DomainException $errorUniqid)
-        {
-            return $errorUniqid->getMessage();
-        }
+        $orm->select('event');
 
-        /** Валидация всех объектов */
-        if($this->validatorCollection->isInvalid())
-        {
-            return $this->validatorCollection->getErrorUniqid();
-        }
+        $orm
+            ->from(ManufacturePart::class, 'main')
+            ->where('main.id = :main')
+            ->setParameter('main', $part, ManufacturePartUid::TYPE);
 
-        $this->entityManager->flush();
+        $orm->join(
+            ManufacturePartEvent::class,
+            'event',
+            'WITH',
+            'event.id = main.event'
+        );
 
-
-//        /* Отправляем сообщение в шину */
-//        $this->messageDispatch->dispatch(
-//            message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-//            transport: 'manufacture-part'
-//        );
-
-        return $this->main;
+        return $orm->getOneOrNullResult();
     }
 }

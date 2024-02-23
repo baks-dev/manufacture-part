@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Closed\ManufacturePartClosedDTO;
@@ -42,16 +43,19 @@ final class ManufacturePartClosedByZero
     private EntityManagerInterface $entityManager;
     private ManufacturePartClosedHandler $manufacturePartClosedHandler;
     private LoggerInterface $logger;
+    private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         ManufacturePartClosedHandler $manufacturePartClosedHandler,
         LoggerInterface $manufacturePartLogger,
+        ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
     )
     {
         $this->entityManager = $entityManager;
         $this->manufacturePartClosedHandler = $manufacturePartClosedHandler;
         $this->logger = $manufacturePartLogger;
+        $this->manufacturePartCurrentEvent = $manufacturePartCurrentEvent;
     }
 
     /**
@@ -63,37 +67,47 @@ final class ManufacturePartClosedByZero
 
         $ManufacturePart = $this->entityManager->getRepository(ManufacturePart::class)->find($message->getId());
 
-        if($ManufacturePart && $ManufacturePart->getQuantity() === 0)
+        if(!$ManufacturePart || $ManufacturePart->getQuantity() !== 0)
         {
-            /** Проверяем, что статус заявки - "На производстве" */
-            $ManufacturePartEvent = $this->entityManager->getRepository(ManufacturePartEvent::class)->find($ManufacturePart->getEvent());
-
-            if(
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
-            )
-            {
-                /** Производственная партия выполнена (статус Closed) */
-                $ManufacturePartCompletedDTO = new ManufacturePartClosedDTO($message->getEvent());
-                $handle = $this->manufacturePartClosedHandler->handle($ManufacturePartCompletedDTO);
-
-                if(!$handle instanceof ManufacturePart)
-                {
-                    throw new DomainException(sprintf('%s: Ошибка при закрытии (статус Closed) производственной партии', $handle));
-                }
-
-                $this->logger->info('Закрыли производственную партию м нулевым количеством', [
-                    __FILE__.':'.__LINE__,
-                    'class' => self::class,
-                    'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
-                        $message::class,
-                        $message->getId()::class,
-                        $message->getId(),
-                        $message->getEvent()::class,
-                        $message->getEvent()
-                    )
-                ]);
-            }
+            return;
         }
+
+        $ManufacturePartEvent = $this->manufacturePartCurrentEvent->findByManufacturePart($message->getId());
+
+        if(!$ManufacturePartEvent)
+        {
+            return;
+        }
+
+        /**
+         * Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве»
+         */
+        if(
+            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
+            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
+        )
+        {
+            /** Производственная партия выполнена (статус Closed) */
+            $ManufacturePartCompletedDTO = new ManufacturePartClosedDTO($message->getEvent());
+            $handle = $this->manufacturePartClosedHandler->handle($ManufacturePartCompletedDTO);
+
+            if(!$handle instanceof ManufacturePart)
+            {
+                throw new DomainException(sprintf('%s: Ошибка при закрытии (статус Closed) производственной партии', $handle));
+            }
+
+            $this->logger->info('Закрыли производственную партию м нулевым количеством', [
+                __FILE__.':'.__LINE__,
+                'class' => self::class,
+                'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
+                    $message::class,
+                    $message->getId()::class,
+                    $message->getId(),
+                    $message->getEvent()::class,
+                    $message->getEvent()
+                )
+            ]);
+        }
+
     }
 }

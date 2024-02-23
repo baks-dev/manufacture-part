@@ -59,23 +59,16 @@ final class ManufacturePartProductsSum
 
         $ManufacturePart = $this->entityManager->getRepository(ManufacturePart::class)->find($message->getId());
 
-        if($ManufacturePart)
+        if(!$ManufacturePart)
         {
-            $quantity = $this->manufacturePartSumProducts->sumManufacturePartProductsByEvent($ManufacturePart->getEvent());
-            $ManufacturePart->setQuantity($quantity);
-            $this->entityManager->flush();
-
-            $this->logger->info('Выполнили пересчет всей продукции в производственной партии', [
-                __FILE__.':'.__LINE__,
-                'class' => self::class,
-                'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
-                    $message::class,
-                    $message->getId()::class,
-                    $message->getId(),
-                    $message->getEvent()::class,
-                    $message->getEvent()
-                )
-            ]);
+            return;
         }
+
+        $quantity = $this->manufacturePartSumProducts->sumManufacturePartProductsByEvent($ManufacturePart->getEvent());
+        $ManufacturePart->setQuantity($quantity);
+        $this->entityManager->flush();
+
+        $this->logger->info('Выполнили пересчет всей продукции в производственной партии', [__FILE__.':'.__LINE__]);
+
     }
 }

@@ -70,6 +70,9 @@ final class ActionController extends AbstractController
 
         $data = sprintf('%s', $ManufacturePart->getId());
 
+        /**
+         * Если все этапы выполнены - получаем все выполненные этапы
+         */
         if(!$working)
         {
             $all = $activeWorkingManufacturePart->fetchCompleteWorkingByManufacturePartAssociative($ManufacturePart->getId());
@@ -80,11 +83,7 @@ final class ActionController extends AbstractController
                 'all' => $all,
                 'qrcode' => (new QRCode())->render($data),
             ], file: 'completed.html.twig');
-            //return $this->redirectToReferer();
         }
-
-
-
 
 
         $ManufacturePartActionDTO = new ManufacturePartActionDTO($ManufacturePart->getEvent());

@@ -28,6 +28,9 @@ namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * Статус производства CLOSED «Выполнена (закрыта)»
+ */
 #[AutoconfigureTag('baks.manufacture.status')]
 class ManufacturePartStatusClosed implements ManufacturePartStatusInterface
 {
@@ -39,6 +42,11 @@ class ManufacturePartStatusClosed implements ManufacturePartStatusInterface
     private static int $sort = 300;
 
     private static string $color = '#198754';
+
+    public function __toString(): string
+    {
+        return $this->getValue();
+    }
 
     /**
      * Возвращает значение (value)

@@ -29,9 +29,11 @@ namespace BaksDev\Manufacture\Part\Controller\Admin;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteForm;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteHandler;
+use InvalidArgumentException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,11 +48,20 @@ final class DeleteController extends AbstractController
     public function delete(
         Request $request,
         #[MapEntity] ManufacturePart $ManufacturePart,
+        ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent,
         ManufacturePartDeleteHandler $ManufacturePartDeleteHandler,
     ): Response
     {
 
-        $ManufacturePartDeleteDTO = new ManufacturePartDeleteDTO($ManufacturePart->getEvent());
+        $ManufacturePartEvent = $manufacturePartCurrentEvent->findByManufacturePart($ManufacturePart->getId());
+
+        if(!$ManufacturePartEvent)
+        {
+            throw new InvalidArgumentException('Page not found');
+        }
+
+        $ManufacturePartDeleteDTO = new ManufacturePartDeleteDTO();
+        $ManufacturePartEvent->getDto($ManufacturePartDeleteDTO);
 
         $form = $this->createForm(ManufacturePartDeleteForm::class, $ManufacturePartDeleteDTO, [
             'action' => $this->generateUrl('manufacture-part:admin.delete',

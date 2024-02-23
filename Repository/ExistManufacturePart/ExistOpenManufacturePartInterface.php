@@ -27,12 +27,12 @@ namespace BaksDev\Manufacture\Part\Repository\ExistManufacturePart;
 //use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace\Collection\ManufacturePartMarketplaceInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-interface ExistManufacturePartByActionInterface
+interface ExistOpenManufacturePartInterface
 {
     /**
      * Метод проверяет, имеется ли открытая поставка у профиля на указанный категорию производства
      */
-    public function existByProfileAction(
+    public function isExistByProfile(
         UserProfileUid $profile,
         //UsersTableActionsEventUid $action,
         //ManufacturePartMarketplace|ManufacturePartMarketplaceInterface $marketplace = null

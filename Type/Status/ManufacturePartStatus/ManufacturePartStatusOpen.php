@@ -29,6 +29,9 @@ namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * Статус производства OPEN «Открыта»
+ */
 #[AutoconfigureTag('baks.manufacture.status')]
 class ManufacturePartStatusOpen implements ManufacturePartStatusInterface
 {
@@ -40,6 +43,11 @@ class ManufacturePartStatusOpen implements ManufacturePartStatusInterface
     private static int $sort = 100;
 
     private static string $color = '#4684D0';
+
+    public function __toString(): string
+    {
+       return $this->getValue();
+    }
 
     /**
      * Возвращает значение (value)

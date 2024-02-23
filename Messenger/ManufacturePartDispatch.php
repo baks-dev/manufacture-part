@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Core\Cache\AppCacheInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

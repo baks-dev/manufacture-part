@@ -32,13 +32,9 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-//use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
-//use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace\Collection\ManufacturePartMarketplaceInterface;
-//use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace\ManufacturePartMarketplaceSystem;
 
-final class ExistManufacturePartByAction implements ExistManufacturePartByActionInterface
+final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePartInterface
 {
-
     private DBALQueryBuilder $DBALQueryBuilder;
 
     public function __construct(
@@ -49,26 +45,11 @@ final class ExistManufacturePartByAction implements ExistManufacturePartByAction
     }
 
     /**
-     * Метод проверяет, имеется ли открытая поставка у профиля на указанный категорию производства
+     * Метод проверяет, имеется ли открытая поставка у профиля
      */
-    public function existByProfileAction(
-        UserProfileUid $profile,
-        //UsersTableActionsEventUid $action,
-        //ManufacturePartMarketplace|ManufacturePartMarketplaceInterface $marketplace = null
-    ): bool
+    public function isExistByProfile(UserProfileUid $profile): bool
     {
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
-
-//        if(!$marketplace)
-//        {
-//            $marketplace = new ManufacturePartMarketplace(ManufacturePartMarketplaceSystem::class);
-//        }
-//
-//        if($marketplace instanceof ManufacturePartMarketplaceInterface)
-//        {
-//            $marketplace = new ManufacturePartMarketplace($marketplace);
-//        }
-
 
         $qb->from(ManufacturePart::TABLE, 'part');
 
@@ -77,24 +58,15 @@ final class ExistManufacturePartByAction implements ExistManufacturePartByAction
             ManufacturePartEvent::TABLE,
             'part_event',
             '
-            part_event.id = part.event AND 
-            part_event.status = :status
+                part_event.id = part.event AND 
+                part_event.profile = :profile AND
+                part_event.status = :status
             '
-        );
-
-        //  AND
-        //            //part_event.marketplace = :marketplace
-
-        $qb->setParameter('status', new ManufacturePartStatus(ManufacturePartStatusOpen::class), ManufacturePartStatus::TYPE);
-        //$qb->setParameter('marketplace',  $marketplace, ManufacturePartMarketplace::TYPE);
-
-        $qb->andWhere('part_event.profile = :profile');
-        $qb->setParameter('profile', $profile, UserProfileUid::TYPE);
-
-//        $qb->andWhere('part_event.action = :action');
-//        $qb->setParameter('action', $action, UsersTableActionsEventUid::TYPE);
-
+        )
+            ->setParameter('status', new ManufacturePartStatus(ManufacturePartStatusOpen::class), ManufacturePartStatus::TYPE)
+            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
         return $qb->fetchExist();
     }
+
 }

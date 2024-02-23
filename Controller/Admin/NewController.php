@@ -29,7 +29,7 @@ namespace BaksDev\Manufacture\Part\Controller\Admin;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Repository\ExistManufacturePart\ExistManufacturePartByActionInterface;
+use BaksDev\Manufacture\Part\Repository\ExistManufacturePart\ExistOpenManufacturePartInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartForm;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
@@ -46,7 +46,7 @@ final class NewController extends AbstractController
     public function news(
         Request $request,
         ManufacturePartHandler $ManufacturePartHandler,
-        ExistManufacturePartByActionInterface $existManufacturePartByAction
+        ExistOpenManufacturePartInterface $existManufacturePartByAction
     ): Response
     {
 
@@ -54,7 +54,6 @@ final class NewController extends AbstractController
         $ManufacturePartDTO
             ->setProfile($this->getCurrentProfileUid())
             ->setFilter($this->getProfileUid())
-            //->setMarketplace(new ManufacturePartMarketplace(ManufacturePartMarketplaceSystem::class)
         ;
 
         // Форма
@@ -69,12 +68,7 @@ final class NewController extends AbstractController
             /**
              * Проверяем, имеется ли открытая партия
              */
-            if(
-                $existManufacturePartByAction->existByProfileAction(
-                    $ManufacturePartDTO->getProfile(),
-                    //$ManufacturePartDTO->getAction()
-                )
-            )
+            if($existManufacturePartByAction->isExistByProfile($ManufacturePartDTO->getProfile()))
             {
                 $this->addFlash
                 (

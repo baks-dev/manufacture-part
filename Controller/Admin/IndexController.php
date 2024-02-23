@@ -45,6 +45,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[RoleSecurity('ROLE_MANUFACTURE_PART')]
 final class IndexController extends AbstractController
 {
+    /**
+     * Производственный процесс. Список продукции ждя производства
+     */
     #[Route('/admin/manufacture/parts/{page<\d+>}', name: 'admin.index', methods: ['GET', 'POST'])]
     public function index(
         Request $request,
@@ -68,7 +71,6 @@ final class IndexController extends AbstractController
          */
         $opens = $openManufacturePart
             ->fetchOpenManufacturePartAssociative($this->getCurrentProfileUid());
-
 
         /**
          * Фильтр продукции

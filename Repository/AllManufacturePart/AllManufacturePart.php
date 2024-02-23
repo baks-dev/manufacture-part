@@ -72,68 +72,110 @@ final class AllManufacturePart implements AllManufacturePartInterface
 
     ): PaginatorInterface
     {
-        $qb = $this->DBALQueryBuilder
+        $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $qb->select('part.id');
-        $qb->addSelect('part.event');
-        $qb->addSelect('part.number');
-        $qb->addSelect('part.quantity');
-        $qb->from(ManufacturePart::TABLE, 'part');
+        $dbal->select('part.id');
+        $dbal->addSelect('part.event');
+        $dbal->addSelect('part.number');
+        $dbal->addSelect('part.quantity');
+        $dbal->from(ManufacturePart::TABLE, 'part');
 
 
-        //$qb->addSelect('part_event.marketplace');
-        $qb->addSelect('part_event.status');
-        $qb->addSelect('part_event.complete');
+        //$dbal->addSelect('part_event.marketplace');
+        $dbal->addSelect('part_event.status');
+        $dbal->addSelect('part_event.complete');
 
 
-        $qb->join(
-            'part',
-            ManufacturePartEvent::TABLE,
-            'part_event',
-            'part_event.id = part.event '.(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
-        );
-
-        $qb->setParameter('status', $filter->getStatus(), ManufacturePartStatus::TYPE);
+//        $dbal->join(
+//            'part',
+//            ManufacturePartEvent::TABLE,
+//            'part_event',
+//            'part_event.id = part.event '.(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
+//        );
 
 
-        /** Партии других пользователей */
+//        /** Свои партии и партии доверенных профилей */
+//        if($authority)
+//        {
+//            /** Профили доверенных пользователей */
+//            $dbal
+//                ->leftJoin(
+//                    'part',
+//                    ProfileGroupUsers::TABLE,
+//                    'profile_group_users',
+//                    'profile_group_users.authority = :authority '.($other ? '' : ' AND profile_group_users.profile = :profile')
+//                );
+//
+//
+//            $dbal->join(
+//                'part',
+//                ManufacturePartEvent::TABLE,
+//                'part_event',
+//                'part_event.id = part.event '.(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
+//            );
+//
+//            $dbal
+//                ->andWhere('part_event.profile = profile_group_users.profile')
+//                ->setParameter('authority', $authority, UserProfileUid::TYPE);
+//        }
+//        else
+//        {
+//
+//
+//            $dbal->andWhere('part_event.profile = :profile');
+//        }
+
+
+
+        /** Партии доверенных профилей */
         if($authority)
         {
-            /** Профили доверенных пользователей */
-            $qb->leftJoin(
+            $dbal->leftJoin(
                 'part',
                 ProfileGroupUsers::TABLE,
                 'profile_group_users',
-                'profile_group_users.authority = :authority '.($other ? '' : ' AND profile_group_users.profile = :profile')
-            );
+                'profile_group_users.authority = :authority'
+            )
+                ->setParameter('authority', $authority, UserProfileUid::TYPE);
 
-            $qb
-                ->andWhere('part_event.profile = profile_group_users.profile')
-                ->setParameter('authority', $authority, UserProfileUid::TYPE)
-                ->setParameter('profile', $profile, UserProfileUid::TYPE);
+            $dbal->join(
+                'part',
+                ManufacturePartEvent::TABLE,
+                'part_event',
+                'part_event.id = part.event AND (part_event.profile = profile_group_users.profile OR part_event.profile = :profile)'
+                .(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
+            );
         }
         else
         {
-            $qb
-                ->andWhere('part_event.profile = :profile')
-                ->setParameter('profile', $profile, UserProfileUid::TYPE);
+            $dbal->join(
+                'part',
+                ManufacturePartEvent::TABLE,
+                'part_event',
+                'part_event.id = part.event AND part_event.profile = :profile'
+                .(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
+            );
         }
+
+        $dbal
+            ->setParameter('profile', $profile, UserProfileUid::TYPE)
+            ->setParameter('status', $filter->getStatus(), ManufacturePartStatus::TYPE);
 
 
         /** Ответственное лицо (Профиль пользователя) */
 
-        $qb->leftJoin(
+        $dbal->leftJoin(
             'part_event',
             UserProfile::TABLE,
             'users_profile',
             'users_profile.id = part_event.profile'
         );
 
-        $qb->addSelect('users_profile_personal.username AS users_profile_username');
+        $dbal->addSelect('users_profile_personal.username AS users_profile_username');
 
-        $qb->leftJoin(
+        $dbal->leftJoin(
             'users_profile',
             UserProfilePersonal::TABLE,
             'users_profile_personal',
@@ -141,8 +183,8 @@ final class AllManufacturePart implements AllManufacturePartInterface
         );
 
 
-        $qb->addSelect('part_modify.mod_date AS part_date');
-        $qb->join(
+        $dbal->addSelect('part_modify.mod_date AS part_date');
+        $dbal->join(
             'part',
             ManufacturePartModify::TABLE,
             'part_modify',
@@ -160,17 +202,15 @@ final class AllManufacturePart implements AllManufacturePartInterface
             $endOfDay = $date->setTime(23, 59, 59);
 
             //($date ? ' AND part_modify.mod_date = :date' : '')
-            $qb->andWhere('part_modify.mod_date BETWEEN :start AND :end');
+            $dbal->andWhere('part_modify.mod_date BETWEEN :start AND :end');
 
-            $qb->setParameter('start', $startOfDay->format("Y-m-d H:i:s"));
-            $qb->setParameter('end', $endOfDay->format("Y-m-d H:i:s"));
+            $dbal->setParameter('start', $startOfDay->format("Y-m-d H:i:s"));
+            $dbal->setParameter('end', $endOfDay->format("Y-m-d H:i:s"));
         }
 
 
-
-
-        $qb->addSelect('part_working.working AS part_working_uid');
-        $qb->leftJoin(
+        $dbal->addSelect('part_working.working AS part_working_uid');
+        $dbal->leftJoin(
             'part',
             ManufacturePartWorking::TABLE,
             'part_working',
@@ -181,16 +221,16 @@ final class AllManufacturePart implements AllManufacturePartInterface
         /**
          * Действие
          */
-        $qb->leftJoin(
+        $dbal->leftJoin(
             'part_working',
             UsersTableActionsWorking::TABLE,
             'action_working',
             'action_working.id = part_working.working'
         );
 
-        $qb->addSelect('action_working_trans.name AS part_working');
+        $dbal->addSelect('action_working_trans.name AS part_working');
 
-        $qb->leftJoin(
+        $dbal->leftJoin(
             'action_working',
             UsersTableActionsWorkingTrans::TABLE,
             'action_working_trans',
@@ -200,8 +240,8 @@ final class AllManufacturePart implements AllManufacturePartInterface
         /**
          * Производственный процесс
          */
-        $qb->addSelect('action_trans.name AS action_name');
-        $qb->leftJoin(
+        $dbal->addSelect('action_trans.name AS action_name');
+        $dbal->leftJoin(
             'part_event',
             UsersTableActionsTrans::TABLE,
             'action_trans',
@@ -211,24 +251,24 @@ final class AllManufacturePart implements AllManufacturePartInterface
 
         /** Категория производства */
 
-        $qb->addSelect('actions_event.id AS actions_event');
-        $qb->leftJoin(
+        $dbal->addSelect('actions_event.id AS actions_event');
+        $dbal->leftJoin(
             'part_event',
             UsersTableActionsEvent::TABLE,
             'actions_event',
             'actions_event.id = part_event.action'
         );
 
-        $qb->addSelect('category.id AS category_id');
-        $qb->leftJoin(
+        $dbal->addSelect('category.id AS category_id');
+        $dbal->leftJoin(
             'actions_event',
             ProductCategory::TABLE,
             'category',
             'category.id = actions_event.category'
         );
 
-        $qb->addSelect('trans.name AS category_name');
-        $qb->leftJoin(
+        $dbal->addSelect('trans.name AS category_name');
+        $dbal->leftJoin(
             'category',
             ProductCategoryTrans::TABLE,
             'trans',
@@ -241,16 +281,16 @@ final class AllManufacturePart implements AllManufacturePartInterface
         {
 
 
-            $qb
+            $dbal
                 ->createSearchQueryBuilder($search)
                 ->addSearchEqualUid('part.id')
                 ->addSearchLike('part.number');
         }
 
 
-        $qb->orderBy('part_modify.mod_date', 'DESC');
+        $dbal->orderBy('part_modify.mod_date', 'DESC');
 
-        return $this->paginator->fetchAllAssociative($qb);
+        return $this->paginator->fetchAllAssociative($dbal);
 
     }
 }

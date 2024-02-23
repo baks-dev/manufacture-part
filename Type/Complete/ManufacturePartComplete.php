@@ -38,6 +38,16 @@ final class ManufacturePartComplete
 
     public function __construct(self|string|ManufacturePartCompleteInterface $complete)
     {
+        if(is_string($complete) && class_exists($complete))
+        {
+            $instance = new $complete();
+
+            if($instance instanceof ManufacturePartCompleteInterface)
+            {
+                $this->complete = $instance;
+                return;
+            }
+        }
 
         if($complete instanceof ManufacturePartCompleteInterface)
         {

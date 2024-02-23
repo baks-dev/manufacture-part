@@ -87,12 +87,11 @@ class ManufacturePartEvent extends EntityEvent
     #[ORM\Column(type: UserProfileUid::TYPE)]
     private UserProfileUid $profile;
 
-    //    /**
-    //     * Маркетплейс
-    //     */
-    //    #[Assert\NotBlank]
-    //    #[ORM\Column(type: ManufacturePartMarketplace::TYPE)]
-    //    private ManufacturePartMarketplace $marketplace;
+    /**
+     * Фиксация производственной партии
+     */
+    #[ORM\Column(type: UserProfileUid::TYPE, nullable: true)]
+    private ?UserProfileUid $fixed = null;
 
     /**
      * Статус производственной партии

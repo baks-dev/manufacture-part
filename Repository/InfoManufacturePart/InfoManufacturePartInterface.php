@@ -35,5 +35,5 @@ interface InfoManufacturePartInterface
         ManufacturePartUid $part,
         UserProfileUid $profile,
         ?UserProfileUid $authority
-    ): ?array;
+    ): array|bool;
 }

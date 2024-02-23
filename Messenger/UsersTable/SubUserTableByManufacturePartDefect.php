@@ -61,7 +61,6 @@ final class SubUserTableByManufacturePartDefect
      */
     public function __invoke(ManufacturePartMessage $message): void
     {
-
         if(!class_exists(UsersTable::class))
         {
             return;

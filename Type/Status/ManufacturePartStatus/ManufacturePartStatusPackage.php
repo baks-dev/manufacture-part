@@ -29,6 +29,9 @@ namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+/**
+ * Статус производства PACKAGE «На сборке (упаковке)»
+ */
 #[AutoconfigureTag('baks.manufacture.status')]
 class ManufacturePartStatusPackage implements ManufacturePartStatusInterface
 {
@@ -40,6 +43,11 @@ class ManufacturePartStatusPackage implements ManufacturePartStatusInterface
     private static int $sort = 200;
 
     private static string $color = '#4684D0';
+
+    public function __toString(): string
+    {
+        return $this->getValue();
+    }
 
     /**
      * Возвращает значение (value)

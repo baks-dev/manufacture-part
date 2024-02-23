@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,38 +21,16 @@
  *  THE SOFTWARE.
  */
 
-namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection;
+namespace BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent;
 
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 
-#[AutoconfigureTag('baks.manufacture.status')]
-interface ManufacturePartStatusInterface
+interface ManufacturePartCurrentEventInterface
 {
-
-    public function __toString(): string;
     /**
-     * Возвращает значение (value)
+     * Возвращает активное событие по идентификатору ManufacturePart
      */
-    public function getValue(): string;
-
-    /**
-     * Цвет (background)
-     */
-    public static function color(): string;
-
-    /**
-     * Сортировка
-     */
-    public static function sort(): int;
-
-    /**
-     * Проверяет, относится ли строка к данному объекту
-     */
-    public static function statusEquals(string $status): bool;
-
-//    /**
-//     * Правило доступа
-//     */
-//    public static function getVoter(): string;
-
+    public function findByManufacturePart(ManufacturePart|ManufacturePartUid|string $part): ?ManufacturePartEvent;
 }

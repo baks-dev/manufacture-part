@@ -22,7 +22,9 @@ use BaksDev\Users\User\Tests\TestUserAccount;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/** @group delivery */
+/**
+ * @group manufacture-part
+ */
 #[When(env: 'test')]
 final class NewControllerTest extends WebTestCase
 {

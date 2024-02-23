@@ -29,6 +29,7 @@ use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
@@ -44,26 +45,26 @@ final class ManufacturePartCompleted
 {
     private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart;
     private ManufacturePartCompletedHandler $manufacturePartCompletedHandler;
-    private EntityManagerInterface $entityManager;
     private CentrifugoPublishInterface $CentrifugoPublish;
     private ProductsByManufacturePartInterface $productsByManufacturePart;
     private LoggerInterface $logger;
+    private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         ProductsByManufacturePartInterface $productsByManufacturePart,
         CentrifugoPublishInterface $CentrifugoPublish,
         LoggerInterface $manufacturePartLogger,
+        ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
     )
     {
         $this->activeWorkingManufacturePart = $activeWorkingManufacturePart;
         $this->manufacturePartCompletedHandler = $manufacturePartCompletedHandler;
-        $this->entityManager = $entityManager;
         $this->CentrifugoPublish = $CentrifugoPublish;
         $this->productsByManufacturePart = $productsByManufacturePart;
         $this->logger = $manufacturePartLogger;
+        $this->manufacturePartCurrentEvent = $manufacturePartCurrentEvent;
     }
 
     /**
@@ -72,20 +73,7 @@ final class ManufacturePartCompleted
      */
     public function __invoke(ManufacturePartMessage $message): void
     {
-
-        /** Проверяем exist партии */
-        $ManufacturePart = $this->entityManager
-            ->getRepository(ManufacturePart::class)
-            ->find($message->getId());
-
-        if(!$ManufacturePart)
-        {
-            return;
-        }
-
-        $ManufacturePartEvent = $this->entityManager
-            ->getRepository(ManufacturePartEvent::class)
-            ->find($message->getEvent());
+        $ManufacturePartEvent = $this->manufacturePartCurrentEvent->findByManufacturePart($message->getId());
 
         if(!$ManufacturePartEvent)
         {
@@ -104,10 +92,11 @@ final class ManufacturePartCompleted
             )
         ]);
 
-        /** Проверяем, что статус заявки - "На производстве" */
+
+        /** Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве» */
         if(
-            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
-            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
+            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) === true ||
+            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class) === true
         )
         {
             $working = $this->activeWorkingManufacturePart
@@ -122,7 +111,6 @@ final class ManufacturePartCompleted
             /** Производственная партия выполнена (статус Complete) */
             $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
             $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
-
 
             /** Получаем всю продукцию в партии и снимаем блокировку */
             $ProductsManufacture = $this->productsByManufacturePart

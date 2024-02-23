@@ -66,6 +66,7 @@ final class IndexController extends AbstractController
         $searchForm->handleRequest($request);
 
 
+
         /** Информация о производственной партии */
         $info = $infoManufacturePart->fetchInfoManufacturePartAssociative(
             $ManufacturePart->getId(),
@@ -93,8 +94,6 @@ final class IndexController extends AbstractController
                 $this->getProfileUid(),
                 $this->isGranted('ROLE_MANUFACTURE_PART_OTHER')
             );
-
-
 
         return $this->render(
             [

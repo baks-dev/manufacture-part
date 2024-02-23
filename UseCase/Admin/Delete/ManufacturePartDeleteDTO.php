@@ -46,9 +46,9 @@ final class ManufacturePartDeleteDTO implements ManufacturePartEventInterface
 	#[Assert\Valid]
 	private readonly Modify\ModifyDTO $modify;
 	
-	public function __construct(ManufacturePartEventUid $id) {
+	public function __construct(/*ManufacturePartEventUid $id*/) {
 		$this->modify = new Modify\ModifyDTO();
-        $this->id = $id;
+        //$this->id = $id;
     }
 	
 	

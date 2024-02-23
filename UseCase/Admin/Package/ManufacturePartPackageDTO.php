@@ -52,9 +52,8 @@ final class ManufacturePartPackageDTO implements ManufacturePartEventInterface
     private readonly ManufacturePartStatus $status;
 
 
-    public function __construct(ManufacturePartEventUid $id) {
+    public function __construct() {
         $this->status = new ManufacturePartStatus(ManufacturePartStatusPackage::class);
-        $this->id = $id;
     }
 
     /**

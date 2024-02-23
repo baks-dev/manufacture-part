@@ -35,6 +35,11 @@ final class ManufacturePartStatusType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
+//        if(is_string($value) && class_exists($value))
+//        {
+//            $value = new $value();
+//        }
+
         return (string) $value;
     }
 
