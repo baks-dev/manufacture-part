@@ -49,7 +49,6 @@ final class NewController extends AbstractController
         ExistOpenManufacturePartInterface $existManufacturePartByAction
     ): Response
     {
-
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartDTO
             ->setProfile($this->getCurrentProfileUid())

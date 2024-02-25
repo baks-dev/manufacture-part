@@ -193,6 +193,13 @@ class ManufacturePartEvent extends EntityEvent
         return $this->action;
     }
 
+    /**
+     * Profile
+     */
+    public function getProfile(): UserProfileUid
+    {
+        return $this->profile;
+    }
 
     /**
      * Идентификатор ManufacturePart
