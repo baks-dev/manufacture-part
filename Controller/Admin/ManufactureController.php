@@ -55,7 +55,9 @@ final class ManufactureController extends AbstractController
     {
         // Поиск
         $search = new SearchDTO();
-        $searchForm = $this->createForm(SearchForm::class, $search);
+        $searchForm = $this->createForm(SearchForm::class, $search,
+            ['action' => $this->generateUrl('manufacture-part:admin.manufacture')]
+        );
         $searchForm->handleRequest($request);
 
         // Фильтр
