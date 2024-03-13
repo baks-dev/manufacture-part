@@ -42,8 +42,8 @@
 #}
 
 {% block javascript %}
-<script nonce="{{ csp_nonce() }}" data-src="https://unpkg.com/centrifuge@3.1.1/dist/centrifuge.js" class='lazy'></script>
-<script async data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="https://unpkg.com/centrifuge@3.1.1/dist/centrifuge.js" class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async  data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
 
 <script nonce="{{ csp_nonce() }}">
 document.addEventListener("DOMContentLoaded", (event) => {

@@ -14,7 +14,7 @@
 
 
 {% block javascript %}
-    <script async nonce="{{ csp_nonce() }}" data-src="/assets/manufacture_part/script.js?v={{ version }}" class="lazy"></script>
-    <script async nonce="{{ csp_nonce() }}" data-src="/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}" class="lazy"></script>
+    <script nonce='{{ csp_nonce() }}' async  data-src="/assets/manufacture_part/script.js?v={{ version }}" class="lazy"></script>
+    <script nonce='{{ csp_nonce() }}' async  data-src="/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}" class="lazy"></script>
 {% endblock %}
 

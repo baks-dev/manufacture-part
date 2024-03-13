@@ -6,7 +6,3 @@
 	{{ include(_self|replace({ "template.html.twig": baks_settings.device~"/content.html.twig" })) }}
 {% endblock %}
 
-
-{% block javascript %}
-{#<script defer src="{{ path(app.request.attributes.get('_route')~'.js') }}"></script>#}
-{% endblock %}
