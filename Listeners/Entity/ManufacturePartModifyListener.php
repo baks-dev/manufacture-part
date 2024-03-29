@@ -25,33 +25,45 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 #[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: ManufacturePartModify::class)]
 final class ManufacturePartModifyListener
 {
     private RequestStack $request;
-    private ?User $usr;
+    private TokenStorageInterface $token;
 
     public function __construct(
-        #[CurrentUser] ?User $usr,
         RequestStack $request,
-    )
-    {
+        TokenStorageInterface $token,
+    ) {
         $this->request = $request;
-        $this->usr = $usr;
+        $this->token = $token;
     }
 
     public function prePersist(ManufacturePartModify $data, LifecycleEventArgs $event)
     {
-        $data->setUsr($this->usr?->getId());
+        $token = $this->token->getToken();
 
-        /* Если пользователь не из консоли */
-        if($this->request->getCurrentRequest())
-        {
+        if ($token) {
+
+            $data->setUsr($token->getUser());
+
+            if($token instanceof SwitchUserToken)
+            {
+                /** @var User $originalUser */
+                $originalUser = $token->getOriginalToken()->getUser();
+                $data->setUsr($originalUser);
+            }
+        }
+
+        // Если пользователь не из консоли
+        if ($this->request->getCurrentRequest()) {
             $data->upModifyAgent(
-                new IpAddress($this->request->getCurrentRequest()->getClientIp()), /* Ip */
-                $this->request->getCurrentRequest()->headers->get('User-Agent') /* User-Agent */
+                new IpAddress($this->request->getCurrentRequest()->getClientIp()), // Ip
+                $this->request->getCurrentRequest()->headers->get('User-Agent') // User-Agent
             );
         }
     }
