@@ -52,7 +52,7 @@ use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-final class AllManufactureManufactureProducts implements AllManufactureProductsInterface
+final class AllManufactureProductsRepository implements AllManufactureProductsInterface
 {
     private PaginatorInterface $paginator;
     private DBALQueryBuilder $DBALQueryBuilder;

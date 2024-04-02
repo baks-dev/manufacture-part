@@ -35,7 +35,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
 
-final class ActionTableByExistManufacturePart implements ActionTableByExistManufacturePartInterface
+final class ActionTableByExistManufacturePartRepository implements ActionTableByExistManufacturePartInterface
 {
     private ORMQueryBuilder $ORMQueryBuilder;
 

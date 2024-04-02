@@ -29,7 +29,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 
-final class ManufacturePartSumProducts implements ManufacturePartSumProductsInterface
+final class ManufacturePartSumProductsRepository implements ManufacturePartSumProductsInterface
 {
     private DBALQueryBuilder $DBALQueryBuilder;
 

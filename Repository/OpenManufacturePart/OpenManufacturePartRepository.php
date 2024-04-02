@@ -55,7 +55,7 @@ use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 
 //use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
 
-final class OpenManufacturePart implements OpenManufacturePartInterface
+final class OpenManufacturePartRepository implements OpenManufacturePartInterface
 {
     private DBALQueryBuilder $DBALQueryBuilder;
 

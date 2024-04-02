@@ -46,7 +46,7 @@ use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorki
 use BaksDev\Users\UsersTable\Entity\Actions\Working\UsersTableActionsWorking;
 use DateTimeImmutable;
 
-final class AllManufacturePart implements AllManufacturePartInterface
+final class AllManufacturePartRepository implements AllManufacturePartInterface
 {
     private PaginatorInterface $paginator;
 

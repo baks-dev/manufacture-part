@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2023.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,16 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent;
+namespace BaksDev\Manufacture\Part\Repository\OpenManufacturePartByAction;
 
 use BaksDev\Core\Doctrine\ORMQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-final class ManufacturePartCurrentEvent implements ManufacturePartCurrentEventInterface
+final class OpenManufacturePartByActionRepository implements OpenManufacturePartByActionInterface
 {
     private ORMQueryBuilder $ORMQueryBuilder;
 
@@ -40,30 +42,35 @@ final class ManufacturePartCurrentEvent implements ManufacturePartCurrentEventIn
     }
 
     /**
-     * Возвращает активное событие по идентификатору ManufacturePart
+     * Возвращает событие (ManufacturePartEvent) открытой активной производственной партии ответственного лица
      */
-    public function findByManufacturePart(ManufacturePart|ManufacturePartUid|string $part): ?ManufacturePartEvent
+    public function findManufacturePartEventOrNull(
+        UserProfileUid $profile,
+    ): ?ManufacturePartEvent
     {
+        $qb = $this->ORMQueryBuilder->createQueryBuilder(self::class);
 
-        $part = is_string($part) ? new ManufacturePartUid($part) : $part;
-        $part = $part instanceof ManufacturePart ? $part->getId() : $part;
+        $qb->select('event');
+        $qb->from(ManufacturePartEvent::class, 'event');
 
-        $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
+        $qb
+            ->andWhere('event.profile = :profile')
+            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
-        $orm->select('event');
+        $qb
+            ->andWhere('event.status = :status')
+            ->setParameter('status', ManufacturePartStatusOpen::STATUS);
 
-        $orm
-            ->from(ManufacturePart::class, 'main')
-            ->where('main.id = :main')
-            ->setParameter('main', $part, ManufacturePartUid::TYPE);
 
-        $orm->join(
-            ManufacturePartEvent::class,
-            'event',
+        $qb->join(
+            ManufacturePart::class,
+            'part',
             'WITH',
-            'event.id = main.event'
+            'part.event = event.id'
         );
 
-        return $orm->getOneOrNullResult();
+        
+
+        return $qb->getOneOrNullResult();
     }
 }

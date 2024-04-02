@@ -33,7 +33,7 @@ use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\UsersTableActionsWorking;
 
-final class AllWorkingByManufacturePart implements AllWorkingByManufacturePartInterface
+final class AllWorkingByManufacturePartRepository implements AllWorkingByManufacturePartInterface
 {
 
     private DBALQueryBuilder $DBALQueryBuilder;

@@ -38,7 +38,7 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 
-final class InfoManufacturePart implements InfoManufacturePartInterface
+final class InfoManufacturePartRepository implements InfoManufacturePartInterface
 {
     private DBALQueryBuilder $DBALQueryBuilder;
 

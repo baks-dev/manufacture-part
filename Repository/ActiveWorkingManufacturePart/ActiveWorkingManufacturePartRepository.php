@@ -40,7 +40,7 @@ use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use Doctrine\DBAL\ArrayParameterType;
 
-final class ActiveWorkingManufacturePart implements ActiveWorkingManufacturePartInterface
+final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManufacturePartInterface
 {
 
     private DBALQueryBuilder $DBALQueryBuilder;

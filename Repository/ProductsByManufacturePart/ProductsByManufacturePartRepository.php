@@ -55,7 +55,7 @@ use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 
-final class ProductsByManufacturePart implements ProductsByManufacturePartInterface
+final class ProductsByManufacturePartRepository implements ProductsByManufacturePartInterface
 {
     private PaginatorInterface $paginator;
     private DBALQueryBuilder $DBALQueryBuilder;

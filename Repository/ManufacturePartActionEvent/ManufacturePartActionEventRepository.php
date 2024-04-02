@@ -31,7 +31,7 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 
-final class ManufacturePartActionEvent implements ManufacturePartActionEventInterface
+final class ManufacturePartActionEventRepository implements ManufacturePartActionEventInterface
 {
     private DBALQueryBuilder $DBALQueryBuilder;
 
