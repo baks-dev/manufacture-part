@@ -42,9 +42,10 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
     /**
      * Возвращает активное событие по идентификатору ManufacturePart
      */
-    public function findByManufacturePart(ManufacturePart|ManufacturePartUid|string $part): ?ManufacturePartEvent
+    public function findByManufacturePart(
+        ManufacturePart|ManufacturePartUid|string $part
+    ): ?ManufacturePartEvent
     {
-
         $part = is_string($part) ? new ManufacturePartUid($part) : $part;
         $part = $part instanceof ManufacturePart ? $part->getId() : $part;
 

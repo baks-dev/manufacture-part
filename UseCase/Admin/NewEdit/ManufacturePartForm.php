@@ -28,7 +28,7 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit;
 
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Products\Category\Repository\CategoryChoice\CategoryChoiceInterface;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\UsersTable\Repository\Actions\UsersTableActionsChoice\UsersTableActionsChoiceInterface;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Symfony\Component\Form\AbstractType;
@@ -71,10 +71,10 @@ final class ManufacturePartForm extends AbstractType
         $builder
             ->add('category', ChoiceType::class, [
                 'choices' => $this->category->getCategoryCollection(),
-                'choice_value' => function(?ProductCategoryUid $category) {
+                'choice_value' => function(?CategoryProductUid $category) {
                     return $category?->getValue();
                 },
-                'choice_label' => function(ProductCategoryUid $category) {
+                'choice_label' => function(CategoryProductUid $category) {
                     return $category->getOptions();
                 },
 
@@ -88,16 +88,15 @@ final class ManufacturePartForm extends AbstractType
         $builder->get('category')->addModelTransformer(
             new CallbackTransformer(
                 function($category) {
-                    return $category instanceof ProductCategoryUid ? $category->getValue() : $category;
+                    return $category instanceof CategoryProductUid ? $category->getValue() : $category;
                 },
                 function($category) {
-
-                    return $category instanceof ProductCategoryUid ? $category : new ProductCategoryUid($category);
+                    return $category instanceof CategoryProductUid ? $category : new CategoryProductUid($category);
                 }
             )
         );
 
-        $formModifier = function (FormInterface $form, ProductCategoryUid $category = null): void {
+        $formModifier = function (FormInterface $form, CategoryProductUid $category = null): void {
 
             $data = $form->getData();
 
@@ -158,7 +157,7 @@ final class ManufacturePartForm extends AbstractType
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($formModifier): void {
                 $data = $event->getData();
-                $formModifier($event->getForm()->getParent(), $data ? new ProductCategoryUid($data) : null);
+                $formModifier($event->getForm()->getParent(), $data ? new CategoryProductUid($data) : null);
             }
         );
 

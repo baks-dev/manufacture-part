@@ -34,10 +34,11 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Products\Category\Entity\Offers\ProductCategoryOffers;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\ProductCategoryModification;
-use BaksDev\Products\Category\Entity\Offers\Variation\ProductCategoryVariation;
-use BaksDev\Products\Category\Entity\Trans\ProductCategoryTrans;
+use BaksDev\Products\Category\Entity\CategoryProduct;
+use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
+use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
+use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 use BaksDev\Products\Product\Entity\Category\ProductCategory;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Products\Product\Entity\Info\ProductInfo;
@@ -205,7 +206,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_offer.reference as product_offer_reference')
             ->leftJoin(
                 'product_offer',
-                ProductCategoryOffers::TABLE,
+                CategoryProductOffers::TABLE,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -239,7 +240,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_variation.reference as product_variation_reference')
             ->leftJoin(
                 'product_variation',
-                ProductCategoryVariation::TABLE,
+                CategoryProductVariation::TABLE,
                 'category_variation',
                 'category_variation.id = product_variation.category_variation'
             );
@@ -272,7 +273,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_modification.reference as product_modification_reference')
             ->leftJoin(
                 'product_modification',
-                ProductCategoryModification::TABLE,
+                CategoryProductModification::TABLE,
                 'category_modification',
                 'category_modification.id = product_modification.category_modification'
             );
@@ -371,20 +372,15 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         /* Категория */
         $dbal->join(
             'product_event',
-            ProductCategory::TABLE,
+            ProductCategory::class,
             'product_event_category',
             'product_event_category.event = product_event.id AND product_event_category.root = true'
         );
 
-        //        if($filter->getCategory())
-        //        {
-        //            $dbal->andWhere('product_event_category.category = :category');
-        //            $dbal->setParameter('category', $filter->getCategory(), ProductCategoryUid::TYPE);
-        //        }
 
         $dbal->join(
             'product_event_category',
-            \BaksDev\Products\Category\Entity\ProductCategory::TABLE,
+            CategoryProduct::class,
             'category',
             'category.id = product_event_category.category'
         );
@@ -393,7 +389,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_trans.name AS category_name')
             ->leftJoin(
                 'category',
-                ProductCategoryTrans::TABLE,
+                CategoryProductTrans::class,
                 'category_trans',
                 'category_trans.event = category.event AND category_trans.local = :local'
             );
@@ -501,7 +497,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_offer.reference as product_offer_reference')
             ->leftJoin(
                 'product_offer',
-                ProductCategoryOffers::TABLE,
+                CategoryProductOffers::TABLE,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -527,7 +523,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_variation.reference as product_variation_reference')
             ->leftJoin(
                 'product_variation',
-                ProductCategoryVariation::TABLE,
+                CategoryProductVariation::TABLE,
                 'category_variation',
                 'category_variation.id = product_variation.category_variation'
             );
@@ -553,7 +549,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_modification.reference as product_modification_reference')
             ->leftJoin(
                 'product_modification',
-                ProductCategoryModification::TABLE,
+                CategoryProductModification::TABLE,
                 'category_modification',
                 'category_modification.id = product_modification.category_modification'
             );

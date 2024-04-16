@@ -34,8 +34,8 @@ use BaksDev\Manufacture\Part\Entity\Modify\ManufacturePartModify;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Forms\ManufactureFilter\ManufactureFilterInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
-use BaksDev\Products\Category\Entity\ProductCategory;
-use BaksDev\Products\Category\Entity\Trans\ProductCategoryTrans;
+use BaksDev\Products\Category\Entity\CategoryProduct;
+use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 use BaksDev\Users\Profile\Group\Entity\Users\ProfileGroupUsers;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
@@ -61,6 +61,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $this->paginator = $paginator;
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
+
 
     /** Метод возвращает пагинатор ManufacturePart */
     public function fetchAllManufacturePartAssociative(
@@ -262,7 +263,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('category.id AS category_id');
         $dbal->leftJoin(
             'actions_event',
-            ProductCategory::TABLE,
+            CategoryProduct::TABLE,
             'category',
             'category.id = actions_event.category'
         );
@@ -270,7 +271,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('trans.name AS category_name');
         $dbal->leftJoin(
             'category',
-            ProductCategoryTrans::TABLE,
+            CategoryProductTrans::TABLE,
             'trans',
             'trans.event = category.event AND trans.local = :local'
         )

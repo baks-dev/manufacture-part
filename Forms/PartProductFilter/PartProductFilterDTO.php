@@ -18,7 +18,7 @@
 
 namespace BaksDev\Manufacture\Part\Forms\PartProductFilter;
 
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use Symfony\Component\HttpFoundation\Request;
 
 final class PartProductFilterDTO implements PartProductFilterInterface
@@ -34,7 +34,7 @@ final class PartProductFilterDTO implements PartProductFilterInterface
     /**
      * Категория
      */
-    private readonly ProductCategoryUid $category;
+    private readonly CategoryProductUid $category;
 
     /**
      * Торговое предложение
@@ -52,7 +52,7 @@ final class PartProductFilterDTO implements PartProductFilterInterface
     private ?string $modification = null;
 
 
-    public function __construct(ProductCategoryUid $category, Request $request)
+    public function __construct(CategoryProductUid $category, Request $request)
     {
         $this->request = $request;
         $this->category = $category;
@@ -63,7 +63,7 @@ final class PartProductFilterDTO implements PartProductFilterInterface
      * Категория
      */
 
-    public function getCategory(): ProductCategoryUid
+    public function getCategory(): CategoryProductUid
     {
         return $this->category;
     }

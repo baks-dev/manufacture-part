@@ -67,7 +67,7 @@ final class PartProductFilterForm extends AbstractType
                 $this->request->getSession()->set(PartProductFilterDTO::offer, $data->getOffer());
                 $this->request->getSession()->set(PartProductFilterDTO::variation, $data->getVariation());
                 $this->request->getSession()->set(PartProductFilterDTO::modification, $data->getModification());
-                
+
             }
         );
 
@@ -75,7 +75,6 @@ final class PartProductFilterForm extends AbstractType
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
             function(FormEvent $event): void {
-                // this would be your entity, i.e. SportMeetup
 
                 /** @var PartProductFilterDTO $data */
 
@@ -88,7 +87,7 @@ final class PartProductFilterForm extends AbstractType
                 {
                     /** Торговое предложение раздела */
 
-                    $offerField = $this->offerChoice->getOfferFieldCollection($Category);
+                    $offerField = $this->offerChoice->findByCategory($Category);
 
                     if($offerField)
                     {
@@ -101,12 +100,8 @@ final class PartProductFilterForm extends AbstractType
                                 $inputOffer->form(),
                                 [
                                     'label' => $offerField->getOption(),
-                                    //'mapped' => false,
                                     'priority' => 200,
                                     'required' => false,
-
-                                    //'block_name' => $field['type'],
-                                    //'data' => isset($session[$field['type']]) ? $session[$field['type']] : null,
                                 ]
                             );
 
@@ -126,18 +121,14 @@ final class PartProductFilterForm extends AbstractType
                                         $inputVariation->form(),
                                         [
                                             'label' => $variationField->getOption(),
-                                            //'mapped' => false,
                                             'priority' => 199,
                                             'required' => false,
-
-                                            //'block_name' => $field['type'],
-                                            //'data' => isset($session[$field['type']]) ? $session[$field['type']] : null,
                                         ]
                                     );
 
                                     /** Модификации множественных вариантов торгового предложения */
 
-                                    $modificationField = $this->modificationChoice->getModificationFieldType($variationField);
+                                    $modificationField = $this->modificationChoice->findByVariation($variationField);
 
 
                                     if($modificationField)
@@ -150,12 +141,8 @@ final class PartProductFilterForm extends AbstractType
                                                 $inputModification->form(),
                                                 [
                                                     'label' => $modificationField->getOption(),
-                                                    //'mapped' => false,
                                                     'priority' => 198,
                                                     'required' => false,
-
-                                                    //'block_name' => $field['type'],
-                                                    //'data' => isset($session[$field['type']]) ? $session[$field['type']] : null,
                                                 ]
                                             );
                                         }
@@ -175,7 +162,7 @@ final class PartProductFilterForm extends AbstractType
         );
 
     }
-    
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults

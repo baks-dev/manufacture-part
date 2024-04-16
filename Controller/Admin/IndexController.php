@@ -33,7 +33,7 @@ use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Repository\AllProducts\AllManufactureProductsInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartInterface;
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterForm;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,7 +80,7 @@ final class IndexController extends AbstractController
         if($opens)
         {
             /* Если открыт производственный процесс - жестко указываем категорию и скрываем выбор */
-            $filter->setCategory(new ProductCategoryUid($opens['category_id'], $opens['category_name']));
+            $filter->setCategory(new CategoryProductUid($opens['category_id'], $opens['category_name']));
         }
 
         $filterForm = $this->createForm(ProductFilterForm::class, $filter, [

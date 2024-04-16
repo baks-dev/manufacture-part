@@ -19,9 +19,9 @@
 namespace BaksDev\Manufacture\Part\Forms\PartProductFilter;
 
 
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 
 interface PartProductFilterInterface
 {
-    public function getCategory(): ProductCategoryUid;
+    public function getCategory(): CategoryProductUid;
 }

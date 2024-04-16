@@ -29,8 +29,8 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Products\Category\Entity\ProductCategory;
-use BaksDev\Products\Category\Entity\Trans\ProductCategoryTrans;
+use BaksDev\Products\Category\Entity\CategoryProduct;
+use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 use BaksDev\Users\Profile\Group\Entity\Users\ProfileGroupUsers;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
@@ -142,7 +142,6 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
                 'action_trans.event = part_event.action AND action_trans.local = :local'
             );
 
-
         /** Категория производства */
 
         $dbal
@@ -158,7 +157,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('category.id AS category_id')
             ->leftJoin(
                 'actions_event',
-                ProductCategory::TABLE,
+                CategoryProduct::TABLE,
                 'category',
                 'category.id = actions_event.category'
             );
@@ -167,7 +166,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('trans.name AS category_name')
             ->leftJoin(
                 'category',
-                ProductCategoryTrans::TABLE,
+                CategoryProductTrans::TABLE,
                 'trans',
                 'trans.event = category.event AND trans.local = :local'
             );

@@ -36,7 +36,7 @@ use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusCollection;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,7 +91,7 @@ class ManufacturePartEditHandlerTest extends KernelTestCase
         $ManufacturePartDTO->setProfile(new UserProfileUid());
 
 
-        $ManufacturePartDTO->setCategory(new ProductCategoryUid());
+        $ManufacturePartDTO->setCategory(new CategoryProductUid());
         $ManufacturePartDTO->setFilter(new UserProfileUid());
 
 

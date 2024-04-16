@@ -34,7 +34,7 @@ use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusCollection;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -98,8 +98,8 @@ class ManufacturePartNewHandlerTest extends KernelTestCase
         self::assertSame($UsersTableActionsEventUid, $ManufacturePartDTO->getAction());
 
 
-        $ManufacturePartDTO->setCategory($ProductCategoryUid = clone (new ProductCategoryUid()));
-        self::assertSame($ProductCategoryUid, $ManufacturePartDTO->getCategory());
+        $ManufacturePartDTO->setCategory($CategoryProductUid = clone (new CategoryProductUid()));
+        self::assertSame($CategoryProductUid, $ManufacturePartDTO->getCategory());
 
 
         $ManufacturePartDTO->setComplete($ManufacturePartComplete = new ManufacturePartComplete(ManufacturePartCompleteNothing::class));

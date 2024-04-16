@@ -29,7 +29,7 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteNothing;
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -73,7 +73,7 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
      * Категория производства
      */
     #[Assert\Uuid]
-    private ?ProductCategoryUid $category = null;
+    private ?CategoryProductUid $category = null;
 
 
     /**
@@ -159,16 +159,16 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
      * Категория производства
      */
 
-    public function getCategory(): ?ProductCategoryUid
+    public function getCategory(): ?CategoryProductUid
     {
         return $this->category;
     }
 
-    public function setCategory(ProductCategoryUid|string $category): void
+    public function setCategory(CategoryProductUid|string $category): void
     {
         if(is_string($category))
         {
-            $category = new ProductCategoryUid($category);
+            $category = new CategoryProductUid($category);
         }
 
         $this->category = $category;

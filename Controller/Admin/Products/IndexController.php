@@ -35,7 +35,7 @@ use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterDTO;
 use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterForm;
 use BaksDev\Manufacture\Part\Repository\InfoManufacturePart\InfoManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
-use BaksDev\Products\Category\Type\Id\ProductCategoryUid;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,7 +78,7 @@ final class IndexController extends AbstractController
         /**
          * Фильтр продукции
          */
-        $filter = new PartProductFilterDTO(new ProductCategoryUid($info['category_id'] ?? null), $request);
+        $filter = new PartProductFilterDTO(new CategoryProductUid($info['category_id'] ?? null), $request);
         $filterForm = $this->createForm(PartProductFilterForm::class, $filter, [
             'action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]),
         ]);

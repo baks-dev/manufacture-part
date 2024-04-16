@@ -43,6 +43,7 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
 
+
     /**
      * Возвращает этапы производства указанной производственной партии
      */

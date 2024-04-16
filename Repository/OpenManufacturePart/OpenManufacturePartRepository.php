@@ -30,14 +30,14 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
-use BaksDev\Products\Category\Entity\Offers\ProductCategoryOffers;
-use BaksDev\Products\Category\Entity\Offers\Trans\ProductCategoryOffersTrans;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\ProductCategoryModification;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\ProductCategoryModificationTrans;
-use BaksDev\Products\Category\Entity\Offers\Variation\ProductCategoryVariation;
-use BaksDev\Products\Category\Entity\Offers\Variation\Trans\ProductCategoryVariationTrans;
-use BaksDev\Products\Category\Entity\ProductCategory;
-use BaksDev\Products\Category\Entity\Trans\ProductCategoryTrans;
+use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
+use BaksDev\Products\Category\Entity\Offers\Trans\CategoryProductOffersTrans;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\Trans\CategoryProductModificationTrans;
+use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
+use BaksDev\Products\Category\Entity\Offers\Variation\Trans\CategoryProductVariationTrans;
+use BaksDev\Products\Category\Entity\CategoryProduct;
+use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Products\Product\Entity\Offers\Image\ProductOfferImage;
 use BaksDev\Products\Product\Entity\Offers\ProductOffer;
@@ -175,7 +175,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_offer.reference AS product_offer_reference');
         $qb->leftJoin(
             'product_offer',
-            ProductCategoryOffers::TABLE,
+            CategoryProductOffers::TABLE,
             'category_offer',
             'category_offer.id = product_offer.category_offer'
         );
@@ -185,7 +185,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_offer_trans.postfix as product_offer_name_postfix');
         $qb->leftJoin(
             'category_offer',
-            ProductCategoryOffersTrans::TABLE,
+            CategoryProductOffersTrans::TABLE,
             'category_offer_trans',
             'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
         );
@@ -209,7 +209,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_variation.reference as product_variation_reference');
         $qb->leftJoin(
             'product_variation',
-            ProductCategoryVariation::TABLE,
+            CategoryProductVariation::TABLE,
             'category_variation',
             'category_variation.id = product_variation.category_variation'
         );
@@ -220,7 +220,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_variation_trans.postfix as product_variation_name_postfix');
         $qb->leftJoin(
             'category_variation',
-            ProductCategoryVariationTrans::TABLE,
+            CategoryProductVariationTrans::TABLE,
             'category_variation_trans',
             'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local'
         );
@@ -245,7 +245,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_modification.reference as product_modification_reference');
         $qb->leftJoin(
             'product_modification',
-            ProductCategoryModification::TABLE,
+            CategoryProductModification::TABLE,
             'category_modification',
             'category_modification.id = product_modification.category_modification'
         );
@@ -255,7 +255,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category_modification_trans.postfix as product_modification_name_postfix');
         $qb->leftJoin(
             'category_modification',
-            ProductCategoryModificationTrans::TABLE,
+            CategoryProductModificationTrans::TABLE,
             'category_modification_trans',
             'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
         );
@@ -368,7 +368,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('category.id AS category_id');
         $qb->leftJoin(
             'actions_event',
-            ProductCategory::TABLE,
+            CategoryProduct::TABLE,
             'category',
             'category.id = actions_event.category'
         );
@@ -376,7 +376,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
         $qb->addSelect('trans.name AS category_name');
         $qb->leftJoin(
             'category',
-            ProductCategoryTrans::TABLE,
+            CategoryProductTrans::TABLE,
             'trans',
             'trans.event = category.event AND trans.local = :local'
         );

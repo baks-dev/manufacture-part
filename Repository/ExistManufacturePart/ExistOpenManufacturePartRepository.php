@@ -44,6 +44,7 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
 
+
     /**
      * Метод проверяет, имеется ли открытая поставка у профиля
      */
