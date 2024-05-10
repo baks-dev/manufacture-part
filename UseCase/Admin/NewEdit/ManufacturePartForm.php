@@ -47,16 +47,16 @@ final class ManufacturePartForm extends AbstractType
 
     private UsersTableActionsChoiceInterface $usersTableActionsChoice;
 
-    private CategoryChoiceInterface $category;
+    private CategoryChoiceInterface $categoryChoice;
 
     public function __construct(
         UsersTableActionsChoiceInterface $usersTableActionsChoice,
-        CategoryChoiceInterface $category,
+        CategoryChoiceInterface $categoryChoice,
     ) {
 
         $this->usersTableActionsChoice = $usersTableActionsChoice;
 
-        $this->category = $category;
+        $this->categoryChoice = $categoryChoice;
 
     }
 
@@ -70,7 +70,7 @@ final class ManufacturePartForm extends AbstractType
 
         $builder
             ->add('category', ChoiceType::class, [
-                'choices' => $this->category->getCategoryCollection(),
+                'choices' => $this->categoryChoice->findAll(),
                 'choice_value' => function(?CategoryProductUid $category) {
                     return $category?->getValue();
                 },

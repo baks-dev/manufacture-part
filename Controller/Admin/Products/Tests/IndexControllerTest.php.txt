@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 /** @group manufacture-part */
 #[When(env: 'test')]
-final class ProductsControllerTest extends WebTestCase
+final class IndexControllerTest extends WebTestCase
 {
     private const URL = '/admin/manufacture/part/products/%s';
 
