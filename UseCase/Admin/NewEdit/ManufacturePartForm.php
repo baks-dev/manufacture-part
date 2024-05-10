@@ -62,8 +62,6 @@ final class ManufacturePartForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
-
         /**
          * Категория производства
          */
