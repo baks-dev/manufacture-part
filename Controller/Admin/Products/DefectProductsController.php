@@ -65,6 +65,8 @@ final class DefectProductsController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_product_defect'))
         {
+            $this->refreshTokenForm($form);
+
             $handle = $ManufacturePartProductDefectHandler->handle($ManufacturePartDTO);
 
             if($handle instanceof ManufacturePart)

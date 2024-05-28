@@ -63,6 +63,7 @@ final class NewController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part'))
         {
+            $this->refreshTokenForm($form);
 
             /**
              * Проверяем, имеется ли открытая партия

@@ -98,6 +98,8 @@ final class ActionController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_action'))
         {
+            $this->refreshTokenForm($form);
+
             $handle = $ManufacturePartActionHandler->handle($ManufacturePartActionDTO);
 
             if($handle instanceof ManufacturePart)

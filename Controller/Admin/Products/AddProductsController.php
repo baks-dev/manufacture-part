@@ -93,6 +93,8 @@ final class AddProductsController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_products'))
         {
+            $this->refreshTokenForm($form);
+
             $handle = $ManufacturePartProductHandler
                 ->handle($ManufacturePartProductDTO, $this->getCurrentProfileUid());
 

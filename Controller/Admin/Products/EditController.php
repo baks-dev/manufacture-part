@@ -61,6 +61,8 @@ final class EditController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_product_edit'))
         {
+            $this->refreshTokenForm($form);
+
             $handle = $ManufacturePartProductEditHandler->handle(
                 $ManufacturePartProductDTO,
                 $this->isGranted('ROLE_ADMIN') ? null : $this->getCurrentProfileUid()

@@ -77,6 +77,8 @@ final class PackageController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_package'))
         {
+            $this->refreshTokenForm($form);
+
             $handle = $ManufacturePartHandler->handle($ManufacturePartPackageDTO);
 
             if($handle instanceof ManufacturePart)

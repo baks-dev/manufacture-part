@@ -63,6 +63,7 @@ final class DeleteProductsController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_product_delete'))
         {
+            $this->refreshTokenForm($form);
 
             $handle = $ManufacturePartProductDefectHandler->handle(
                 $ManufacturePartDTO,
