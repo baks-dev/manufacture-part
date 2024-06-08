@@ -23,6 +23,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use BaksDev\Manufacture\Part\BaksDevManufacturePartBundle;
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartCompleteType;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventType;
@@ -50,11 +51,10 @@ return static function(ContainerConfigurator $container, DoctrineConfig $doctrin
 
     $emDefault = $doctrine->orm()->entityManager('default')->autoMapping(true);
 
-    $MODULE = substr(__DIR__, 0, strpos(__DIR__, "Resources"));
-    
+
     $emDefault->mapping('manufacture-part')
         ->type('attribute')
-        ->dir($MODULE.'Entity')
+        ->dir(BaksDevManufacturePartBundle::PATH.'Entity')
         ->isBundle(false)
         ->prefix('BaksDev\Manufacture\Part')
         ->alias('manufacture-part');
