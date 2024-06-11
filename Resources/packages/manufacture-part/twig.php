@@ -30,7 +30,7 @@ return static function(TwigConfig $twig) {
 
     $twig->path(
         BaksDevManufacturePartBundle::PATH.'Resources/view',
-        'wildberries-orders'
+        'manufacture-part'
     );
 
 };
