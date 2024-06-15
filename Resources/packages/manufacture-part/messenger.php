@@ -31,8 +31,8 @@ return static function (FrameworkConfig $framework) {
 
     $messenger
         ->transport('manufacture-part')
-        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
-        ->options(['queue_name' => 'manufacture-part'])
+        ->dsn('redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%?auto_setup=true')
+        ->options(['stream' => 'manufacture-part'])
         ->failureTransport('failed-manufacture-part')
         ->retryStrategy()
         ->maxRetries(3)
@@ -43,7 +43,9 @@ return static function (FrameworkConfig $framework) {
 
     ;
 
-    $messenger->transport('failed-manufacture-part')
+    $failure = $framework->messenger();
+
+    $failure->transport('failed-manufacture-part')
         ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
         ->options(['queue_name' => 'failed-manufacture-part'])
     ;
