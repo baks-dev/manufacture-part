@@ -65,6 +65,7 @@
             <div class="card-body d-flex flex-column p-2">
 
                 <div class="text-truncate bg-contain"
+                     role="tooltip"
                      data-bs-toggle="tooltip"
                      data-bs-placement="top"
                      data-bs-delay='{"show":600,"hide":100}'
@@ -110,6 +111,7 @@
                         {% if opens %}
 
                             <span
+                                    role="tooltip"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     data-bs-delay='{"show":600,"hide":100}'
@@ -139,6 +141,7 @@
 
                             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MANUFACTURE_PART_NEW') %}
                                 <span
+                                        role="tooltip"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         data-bs-delay='{"show":600,"hide":100}'
