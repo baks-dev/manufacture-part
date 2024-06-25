@@ -31,36 +31,20 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class PartProductFilterForm extends AbstractType
 {
-    private RequestStack $request;
-
-    private OfferFieldsCategoryChoiceInterface $offerChoice;
-    private VariationFieldsCategoryChoiceInterface $variationChoice;
-    private ModificationFieldsCategoryChoiceInterface $modificationChoice;
-    private FieldsChoice $choice;
-
     public function __construct(
-        RequestStack $request,
-
-        OfferFieldsCategoryChoiceInterface $offerChoice,
-        VariationFieldsCategoryChoiceInterface $variationChoice,
-        ModificationFieldsCategoryChoiceInterface $modificationChoice,
-        FieldsChoice $choice,
-
-    )
-    {
-        $this->request = $request;
-        $this->offerChoice = $offerChoice;
-        $this->variationChoice = $variationChoice;
-        $this->modificationChoice = $modificationChoice;
-        $this->choice = $choice;
-    }
+        private readonly RequestStack $request,
+        private readonly OfferFieldsCategoryChoiceInterface $offerChoice,
+        private readonly VariationFieldsCategoryChoiceInterface $variationChoice,
+        private readonly ModificationFieldsCategoryChoiceInterface $modificationChoice,
+        private readonly FieldsChoice $choice,
+    ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
         $builder->addEventListener(
             FormEvents::POST_SUBMIT,
-            function(FormEvent $event): void {
+            function (FormEvent $event): void {
                 /** @var PartProductFilterDTO $data */
                 $data = $event->getData();
 
@@ -74,7 +58,7 @@ final class PartProductFilterForm extends AbstractType
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function(FormEvent $event): void {
+            function (FormEvent $event): void {
 
                 /** @var PartProductFilterDTO $data */
 
@@ -87,7 +71,9 @@ final class PartProductFilterForm extends AbstractType
                 {
                     /** Торговое предложение раздела */
 
-                    $offerField = $this->offerChoice->findByCategory($Category);
+                    $offerField = $this->offerChoice
+                        ->category($Category)
+                        ->findAllCategoryProductOffers();
 
                     if($offerField)
                     {
@@ -95,8 +81,8 @@ final class PartProductFilterForm extends AbstractType
 
                         if($inputOffer)
                         {
-                            $builder->add('offer',
-
+                            $builder->add(
+                                'offer',
                                 $inputOffer->form(),
                                 [
                                     'label' => $offerField->getOption(),
@@ -107,8 +93,9 @@ final class PartProductFilterForm extends AbstractType
 
 
                             /** Множественные варианты торгового предложения */
-
-                            $variationField = $this->variationChoice->getVariationFieldType($offerField);
+                            $variationField = $this->variationChoice
+                                ->offer($offerField)
+                                ->findCategoryProductVariation();
 
                             if($variationField)
                             {
@@ -117,7 +104,8 @@ final class PartProductFilterForm extends AbstractType
 
                                 if($inputVariation)
                                 {
-                                    $builder->add('variation',
+                                    $builder->add(
+                                        'variation',
                                         $inputVariation->form(),
                                         [
                                             'label' => $variationField->getOption(),
@@ -128,7 +116,9 @@ final class PartProductFilterForm extends AbstractType
 
                                     /** Модификации множественных вариантов торгового предложения */
 
-                                    $modificationField = $this->modificationChoice->findByVariation($variationField);
+                                    $modificationField = $this->modificationChoice
+                                        ->variation($variationField)
+                                        ->findAllModification();
 
 
                                     if($modificationField)
@@ -137,7 +127,8 @@ final class PartProductFilterForm extends AbstractType
 
                                         if($inputModification)
                                         {
-                                            $builder->add('modification',
+                                            $builder->add(
+                                                'modification',
                                                 $inputModification->form(),
                                                 [
                                                     'label' => $modificationField->getOption(),
@@ -165,8 +156,7 @@ final class PartProductFilterForm extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults
-        (
+        $resolver->setDefaults(
             [
                 'data_class' => PartProductFilterDTO::class,
                 'validation_groups' => false,
