@@ -55,8 +55,7 @@ final class IndexController extends AbstractController
         AllManufactureProductsInterface $allManufactureProducts,
         TokenUserGenerator $tokenUserGenerator,
         int $page = 0,
-    ): Response
-    {
+    ): Response {
 
         // Поиск
         $search = new SearchDTO($request);

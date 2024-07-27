@@ -48,14 +48,14 @@
                 </svg>
             </a>
 
-            {#{% if opens %}
+            {# {% if opens %}
                 <a href="{{ path('manufacture-part:admin.newedit.new') }}"
                    class="btn modal-btn modal-link disabled btn-primary text-nowrap" data-bs-toggle="modal"
                    data-bs-target="#modal"
                    title="Открыть производственную партию">
                     Добавить партию
                 </a>
-            {% endif %}#}
+            {% endif %} #}
 
         </div>
 
@@ -76,7 +76,7 @@
                        class="btn modal-btn modal-link disabled btn-primary text-nowrap" data-bs-toggle="modal"
                        data-bs-target="#modal"
                        title="Открыть производственную партию">
-                        Открыть  новую партию
+                        Открыть новую партию
                     </a>
                 {% endif %}
 
@@ -93,8 +93,8 @@
                 </h2>
             </div>
 
-            {#<div class="w-100 d-flex align-items-center gap-3 justify-content-end">
-                #}{#{{ form_start(profile) }}
+            {# <div class="w-100 d-flex align-items-center gap-3 justify-content-end">
+            #}{# {{ form_start(profile) }}
                 <div class="d-flex justify-content-end position-relative my-1 gap-3">
 
                     <div class="w-50">
@@ -102,8 +102,8 @@
                             placeholder: 'Выберите профиль из списка ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
                     </div>
                 </div>
-                {{ form_end(profile) }}#}{#
-            </div>#}
+                {{ form_end(profile) }} #}{#
+            </div> #}
 
         </div>
 
@@ -114,83 +114,18 @@
                 {% include Template('/_includes/'~baks_settings.device~'/search.html.twig') %}
 
                 <div class="w-100">
-                    {{ form_start(filter) }}
-                    <div class="d-flex justify-content-end align-items-center my-1 gap-3">
-
-                        <div class="w-25">
-                            {{ form_widget(filter.category, { placeholder: 'Все категории ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                        </div>
-
-                        {% if filter.vars.data.category %}
-
-                            {% if filter.offer is defined %}
-
-                                <div class="w-25">
-                                    {{ form_widget(filter.offer, { placeholder: filter.offer.vars.label~' ...' , attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-
-                            {% if filter.variation is defined %}
-                                <div class="w-25">
-                                    {{ form_widget(filter.variation, { placeholder: filter.variation.vars.label~' ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-                            {% if filter.modification is defined %}
-                                <div class="w-25">
-                                    {{ form_widget(filter.modification, { placeholder:  filter.modification.vars.label~' ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-                        {% endif %}
-
-
+                    {# Фильтр по продукции #}
+                    <div class="w-100">
+                        {% include Template('@products-product/filter/'~baks_settings.device~'/filter.html.twig') %}
                     </div>
-
-
-                    {# <div class="collapse multi-collapse" id="multiCollapseExample2">
-                            <div class="d-flex justify-content-end align-items-center my-1 gap-3" style="clear: both;">
-
-                            </div>
-                        </div> #}
-
-
-                    {{ form_end(filter) }}
                 </div>
 
             </div>
 
-
             <div class="row cards-box-body mt-3">
 
-                <div class="d-flex gap-3">
-
-                    {% if filter.category.vars.data.options is defined %}
-                        <div><small class="text-muted">Категория:</small>&nbsp;
-                            <strong>{{ filter.category.vars.data.options }}</strong>
-                        </div>
-                    {% endif %}
-
-                    {% if filter.offer is defined and filter.offer.vars.data %}
-                        <div><small class="text-muted small">{{ filter.offer.vars.label }}:</small>&nbsp;
-                            <strong> {{ filter.offer.vars.data|trans({}, 'reference.color') }}</strong>
-                        </div>
-                    {% endif %}
-
-                    {% if filter.variation is defined and filter.variation.vars.data %}
-                        <div><small class="text-muted small">{{ filter.variation.vars.label }}:</small>&nbsp;
-                            <strong>{{ filter.variation.vars.data }}</strong>
-                        </div>
-                    {% endif %}
-
-                    {% if filter.modification is defined and filter.modification.vars.data %}
-                        <div><small class="text-muted small">{{ filter.modification.vars.label }}:</small>&nbsp;
-                            <strong>{{ filter.modification.vars.data }}</strong>
-                        </div>
-                    {% endif %}
-
-                </div>
+                {# Текстовый результат фильтра #}
+                {% include Template('@products-product/filter/'~baks_settings.device~'/filter_text.html.twig') %}
 
                 {% for item in query.data %}
                     {{ include(_self|replace({ "content.html.twig": "card.html.twig" })) }}

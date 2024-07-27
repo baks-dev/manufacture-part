@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Controller\Admin\Products;
 
-
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Form\Search\SearchForm;
@@ -56,15 +55,13 @@ final class IndexController extends AbstractController
         ProductsByManufacturePartInterface $productsByManufacturePart,
         InfoManufacturePartInterface $infoManufacturePart,
         int $page = 0,
-    ): Response
-    {
+    ): Response {
         // Поиск
         $search = new SearchDTO($request);
         $searchForm = $this->createForm(SearchForm::class, $search, [
             'action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]),
         ]);
         $searchForm->handleRequest($request);
-
 
 
         /** Информация о производственной партии */
@@ -88,7 +85,8 @@ final class IndexController extends AbstractController
         // Получаем список продукции в партии
         $ProductsManufacturePart = $productsByManufacturePart
             ->fetchAllProductsByManufacturePartAssociative(
-                $search, $filter,
+                $search,
+                $filter,
                 $ManufacturePart->getId(),
                 $this->getCurrentProfileUid(),
                 $this->getProfileUid(),
@@ -100,7 +98,7 @@ final class IndexController extends AbstractController
                 'query' => $ProductsManufacturePart,
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
-                'info' =>  $info,
+                'info' => $info,
             ]
         );
     }

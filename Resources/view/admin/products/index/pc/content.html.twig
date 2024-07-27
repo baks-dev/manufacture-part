@@ -71,9 +71,9 @@
                         <span
                                 role="tooltip"
                                 data-bs-toggle="tooltip"
-                              data-bs-placement="bottom"
-                              data-bs-delay='{"show":600,"hide":100}'
-                              title='QR производственной партии'
+                                data-bs-placement="bottom"
+                                data-bs-delay='{"show":600,"hide":100}'
+                                title='QR производственной партии'
                         >
                 <a
                         href="{{ path('manufacture-part:admin.qrcode', { id : info.id }) }}"
@@ -147,7 +147,8 @@
 
                         {% if info.status == 'open' and is_granted('ROLE_MANUFACTURE_PART_NEW') %}
 
-                            <a href="{{ path('manufacture-part:admin.package', { id: info.id }) }}" id="close_supply_btn"
+                            <a href="{{ path('manufacture-part:admin.package', { id: info.id }) }}"
+                               id="close_supply_btn"
                                class="btn modal-btn btn-danger modal-link disabled text-nowrap"
                                data-bs-toggle="modal" data-bs-target="#modal"
                                title="Отпарвить партию на производственную линию"
@@ -164,9 +165,6 @@
                         {% endif %}
 
 
-
-
-
                     </div>
                 </div>
             </div>
@@ -179,49 +177,16 @@
 
                 {% include Template('/_includes/'~baks_settings.device~'/search.html.twig') %}
 
+                {# Фильтр по продукции #}
                 <div class="w-100">
-                    {{ form_start(filter) }}
-                    <div class="d-flex justify-content-end align-items-center my-1 gap-3">
-
-                        {% if filter.vars.data.category %}
-
-                            {% if filter.offer is defined %}
-
-                                <div class="w-25">
-                                    {{ form_widget(filter.offer, { placeholder: filter.offer.vars.label~' ...' , attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-
-                            {% if filter.variation is defined %}
-                                <div class="w-25">
-                                    {{ form_widget(filter.variation, { placeholder: filter.variation.vars.label~' ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-                            {% if filter.modification is defined %}
-                                <div class="w-25">
-                                    {{ form_widget(filter.modification, { placeholder:  filter.modification.vars.label~' ...', attr: { 'data-select' : 'select2', class: 'mb-0' } }) }}
-                                </div>
-                            {% endif %}
-
-                        {% endif %}
-
-
-                    </div>
-
-
-                    {# <div class="collapse multi-collapse" id="multiCollapseExample2">
-                            <div class="d-flex justify-content-end align-items-center my-1 gap-3" style="clear: both;">
-
-                            </div>
-                        </div> #}
-
-
-                    {{ form_end(filter) }}
+                    {% include Template('@products-product/filter/'~baks_settings.device~'/filter.html.twig') %}
                 </div>
 
+
             </div>
+
+            {# Текстовый результат фильтра #}
+            {% include Template('@products-product/filter/'~baks_settings.device~'/filter_text.html.twig') %}
 
             <div class="row cards-box-body mt-3">
                 {% for item in query.data %}

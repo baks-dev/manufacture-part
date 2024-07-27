@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *  
+ *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *  
+ *
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *  
+ *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,7 +47,9 @@ use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModific
 use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
 use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Product;
+use BaksDev\Products\Product\Entity\Property\ProductProperty;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
+use BaksDev\Products\Product\Forms\ProductFilter\Admin\Property\ProductFilterPropertyDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\ProductFilterInterface;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
@@ -61,8 +63,7 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
     public function __construct(
         DBALQueryBuilder $DBALQueryBuilder,
         PaginatorInterface $paginator,
-    )
-    {
+    ) {
         $this->paginator = $paginator;
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
@@ -75,8 +76,7 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         ?UserProfileUid $profile,
         ProductFilterInterface $filter,
         ?ManufacturePartComplete $complete = null
-    ): PaginatorInterface
-    {
+    ): PaginatorInterface {
 
         $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class)->bindLocal();
 
@@ -336,6 +336,30 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         );
 
 
+        if($filter->getProperty())
+        {
+            $filterProperty = null;
+
+            /** @var ProductFilterPropertyDTO $property */
+            foreach($filter->getProperty() as $property)
+            {
+                if($property->getValue())
+                {
+                    $filterProperty = ['(product_property.field = :'.$property->getType().'_const AND product_property.value = :'.$property->getType().'_value )'];
+                    $dbal->setParameter($property->getType().'_const', $property->getConst());
+                    $dbal->setParameter($property->getType().'_value', $property->getValue());
+                }
+            }
+
+            $dbal->join(
+                'product',
+                ProductProperty::class,
+                'product_property',
+                'product_property.event = product.event '.($filterProperty ? ' AND '.implode(' AND ', $filterProperty) : '')
+            );
+        }
+
+
         if($complete)
         {
 
@@ -346,7 +370,8 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
 
             $dbalExist->from(ManufacturePartProduct::class, 'exist_product');
 
-            $dbalExist->join('exist_product',
+            $dbalExist->join(
+                'exist_product',
                 ManufacturePart::class,
                 'exist_part',
                 '
@@ -354,7 +379,8 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             '
             );
 
-            $dbalExist->join('exist_part',
+            $dbalExist->join(
+                'exist_part',
                 ManufacturePartEvent::class,
                 'exist_product_event',
                 '

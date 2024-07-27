@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart;
 
-
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
@@ -55,7 +54,6 @@ use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-
 final class ProductsByManufacturePartRepository implements ProductsByManufacturePartInterface
 {
     private PaginatorInterface $paginator;
@@ -64,8 +62,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
     public function __construct(
         DBALQueryBuilder $DBALQueryBuilder,
         PaginatorInterface $paginator,
-    )
-    {
+    ) {
         $this->paginator = $paginator;
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
@@ -78,8 +75,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         UserProfileUid $profile,
         ?UserProfileUid $authority,
         $other
-    ): PaginatorInterface
-    {
+    ): PaginatorInterface {
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
@@ -281,7 +277,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
         /** Артикул продукта */
 
-        $dbal->addSelect("
+        $dbal->addSelect(
+            "
 					CASE
 					   WHEN product_modification.article IS NOT NULL THEN product_modification.article
 					   WHEN product_variation.article IS NOT NULL THEN product_variation.article
@@ -323,7 +320,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
         );
 
-        $dbal->addSelect("
+        $dbal->addSelect(
+            "
 			CASE
 			   WHEN product_modification_image.name IS NOT NULL THEN
 					CONCAT ( '/upload/".ProductModificationImage::TABLE."' , '/', product_modification_image.name)
@@ -393,6 +391,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'category_trans',
                 'category_trans.event = category.event AND category_trans.local = :local'
             );
+
 
 
         if($search->getQuery())
@@ -556,7 +555,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
 
         /** Артикул продукта */
-        $dbal->addSelect("
+        $dbal->addSelect(
+            "
 					CASE
 					   WHEN product_modification.article IS NOT NULL THEN product_modification.article
 					   WHEN product_variation.article IS NOT NULL THEN product_variation.article
