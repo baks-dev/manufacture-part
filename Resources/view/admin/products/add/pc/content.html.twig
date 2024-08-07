@@ -1,109 +1,113 @@
 {% trans_default_domain 'admin.manufacture.part' %}
 
-{% set arr_property = card.category_section_field|json_decode %}
+{% if card %}
 
-<div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+    {% set arr_property = card.category_section_field|json_decode %}
 
-    <div class="modal-content p-3 border-bottom border-5 border-primary">
-        {{ form_start(form) }}
-        <div class="modal-header border-0">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
 
-            <div class='d-flex gap-3'>
-                <h5 class='lh-1'>
-                    {{ 'admin.page.add'|trans }}
+        <div class="modal-content p-3 border-bottom border-5 border-primary">
 
 
-                </h5>
+            {{ form_start(form) }}
+            <div class="modal-header border-0">
 
-                <div class='d-flex gap-2 align-items-center'>
+                <div class='d-flex gap-3'>
+                    <h5 class='lh-1'>
+                        {{ 'admin.page.add'|trans }}
 
-                    {# Свойства, учавствующие в превью карточки #}
-                    {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
-                        {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
-                    {% endfor %}
 
+                    </h5>
+
+                    <div class='d-flex gap-2 align-items-center'>
+
+                        {# Свойства, учавствующие в превью карточки #}
+                        {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
+                            {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
+                        {% endfor %}
+
+                    </div>
                 </div>
+
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
 
+            <div class="modal-body d-flex justify-content-between ">
 
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-        </div>
+                <div class="d-flex justify-content-between gap-3 align-items-center w-100">
 
-        <div class="modal-body d-flex justify-content-between ">
+                    {# Обложка  #}
+                    {% set image_path = '/assets/img/blank.svg' %}
 
-            <div class="d-flex justify-content-between gap-3 align-items-center w-100">
-
-                {# Обложка  #}
-                {% set image_path = '/assets/img/blank.svg' %}
-
-                {% if card.product_image_ext is defined and card.product_image_ext is not null %}
-                    {% set img_host =  card.product_image_cdn == true  ? CDN_HOST : '' %}
-                    {% set img_dir = card.product_image %}
-                    {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ card.product_image_ext %}
-                    {% set image_path = img_host ~ img_dir ~ img_file %}
-                {% endif %}
+                    {% if card.product_image_ext is defined and card.product_image_ext is not null %}
+                        {% set img_host =  card.product_image_cdn == true  ? CDN_HOST : '' %}
+                        {% set img_dir = card.product_image %}
+                        {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ card.product_image_ext %}
+                        {% set image_path = img_host ~ img_dir ~ img_file %}
+                    {% endif %}
 
 
 
-                {# ФОТО ПРОДУКТА  #}
-                <div>
-                    <div class="icon rounded-4 mb-2 bg-cover p-1"
-                         style="width: 75px; height: 75px; background-image: url('{{ image_path }}');"
-                    ></div>
-                </div>
-
-
-                <div class='w-100'>
-
-                    <div class="text-truncate"
-                         role="tooltip"
-                         data-bs-toggle="tooltip"
-                         data-bs-placement="top"
-                         data-bs-delay='{"show":600,"hide":100}'
-                         title="{{ card.product_name }}"
-                    >
-                        <a href="{# /admin/product/edit/06420615-8809-4662-9a2c-e3643dc95c48 #}"
-                           class="fw-bolder mb-1 text-dark text-decoration-none">
-                            {{ card.product_name|capitalize }}
-                        </a>
-                    </div>
-
+                    {# ФОТО ПРОДУКТА  #}
                     <div>
-                        {% if card.product_offer_name %}
-                            <small class="opacity-50">{{ card.product_offer_name }}:</small>&nbsp;
-                            <strong>{{ card.product_offer_value|call_twig_func(card.product_offer_reference) }} {{ card.product_offer_postfix }}</strong>
-                        {% endif %}
-                    </div>
-                    <div>
-                        {% if card.product_variation_name %}
-                            <small class="opacity-50">{{ card.product_variation_name }}:</small>&nbsp;
-                            <strong>{{ card.product_variation_value|call_twig_func(card.product_variation_reference) }} {{ card.product_variation_postfix }}</strong>
-                        {% endif %}
-                    </div>
-                    <div>
-                        {% if card.product_modification_name %}
-                            <small class="opacity-50">{{ card.product_modification_name }}:</small>&nbsp;
-                            <strong>{{ card.product_modification_value|call_twig_func(card.product_modification_reference) }} {{ card.product_modification_postfix }}</strong>
-                        {% endif %}
+                        <div class="icon rounded-4 mb-2 bg-cover p-1"
+                             style="width: 75px; height: 75px; background-image: url('{{ image_path }}');"
+                        ></div>
                     </div>
 
-                </div>
 
-                <div class="d-flex justify-content-center align-items-center text-center w-50">
+                    <div class='w-100'>
 
-                    <button type='button' class="btn btn-lg btn-link text-decoration-none"
-                            aria-label="Отнять количество" id="minus"
-                    >
-                        <span class="h4 text-muted opacity-50">-</span>
-                    </button>
+                        <div class="text-truncate"
+                             role="tooltip"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="top"
+                             data-bs-delay='{"show":600,"hide":100}'
+                             title="{{ card.product_name }}"
+                        >
+                            <a href="{# /admin/product/edit/06420615-8809-4662-9a2c-e3643dc95c48 #}"
+                               class="fw-bolder mb-1 text-dark text-decoration-none">
+                                {{ card.product_name|capitalize }}
+                            </a>
+                        </div>
 
-                    <span
-                            role="tooltip"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="bottom"
-                            data-bs-delay='{"show":600,"hide":100}'
-                            title="Количество выполненных заказов"
-                    >
+                        <div>
+                            {% if card.product_offer_name %}
+                                <small class="opacity-50">{{ card.product_offer_name }}:</small>&nbsp;
+                                <strong>{{ card.product_offer_value|call_twig_func(card.product_offer_reference) }} {{ card.product_offer_postfix }}</strong>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if card.product_variation_name %}
+                                <small class="opacity-50">{{ card.product_variation_name }}:</small>&nbsp;
+                                <strong>{{ card.product_variation_value|call_twig_func(card.product_variation_reference) }} {{ card.product_variation_postfix }}</strong>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if card.product_modification_name %}
+                                <small class="opacity-50">{{ card.product_modification_name }}:</small>&nbsp;
+                                <strong>{{ card.product_modification_value|call_twig_func(card.product_modification_reference) }} {{ card.product_modification_postfix }}</strong>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-center align-items-center text-center w-50">
+
+                        <button type='button' class="btn btn-lg btn-link text-decoration-none"
+                                aria-label="Отнять количество" id="minus"
+                        >
+                            <span class="h4 text-muted opacity-50">-</span>
+                        </button>
+
+                        <span
+                                role="tooltip"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                data-bs-delay='{"show":600,"hide":100}'
+                                title="Количество выполненных заказов"
+                        >
 
 
                     {{ form_widget(form.total, {
@@ -118,28 +122,35 @@
                     }) }}
  </span>
 
-                    <button type='button' class="btn btn-lg btn-link text-decoration-none"
-                            aria-label="Добавить количество" id="plus"
-                    >
-                        <span class="h5 text-muted opacity-50">+</span>
-                    </button>
+                        <button type='button' class="btn btn-lg btn-link text-decoration-none"
+                                aria-label="Добавить количество" id="plus"
+                        >
+                            <span class="h5 text-muted opacity-50">+</span>
+                        </button>
 
 
-                </div>
+                    </div>
 
 
-                <div class="w-50">
-                    {{ form_widget(form.manufacture_part_products, { label: '
+                    <div class="w-50">
+                        {{ form_widget(form.manufacture_part_products, { label: '
                     <span>'~ 'btn.add'|trans({}, 'core.btn') ~'</span>
                     <span class="spinner-border spinner-border-sm vertical-middle d-none"></span>
                 '}) }}
 
+                    </div>
+
+
                 </div>
-
-
             </div>
-        </div>
 
-        {{ form_end(form) }}
+            {{ form_end(form) }}
+
+
+
+
+
+        </div>
     </div>
-</div>
+
+{% endif %}
