@@ -25,7 +25,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection;
 
-use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 
 final class ManufacturePartStatusCollection
@@ -33,7 +33,7 @@ final class ManufacturePartStatusCollection
     private iterable $status;
 
     public function __construct(
-        #[TaggedIterator('baks.manufacture.status')] iterable $status)
+        #[AutowireIterator('baks.manufacture.status')] iterable $status)
     {
         $this->status = $status;
     }

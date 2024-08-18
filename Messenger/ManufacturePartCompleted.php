@@ -81,7 +81,7 @@ final class ManufacturePartCompleted
         }
 
         $this->logger->info('Проверяем, что производственная партия не выполнена', [
-            __FILE__.':'.__LINE__,
+            self::class.':'.__LINE__,
             'class' => self::class,
             'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
                 $message::class,

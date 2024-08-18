@@ -97,7 +97,7 @@ final class ManufacturePartClosedByZero
             }
 
             $this->logger->info('Закрыли производственную партию м нулевым количеством', [
-                __FILE__.':'.__LINE__,
+                self::class.':'.__LINE__,
                 'class' => self::class,
                 'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
                     $message::class,

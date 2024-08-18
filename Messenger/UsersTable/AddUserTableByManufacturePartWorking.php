@@ -106,7 +106,7 @@ final class AddUserTableByManufacturePartWorking
         }
 
         /** Получаем общее количество в заявке */
-        $this->logger->info('Добавляем действие сотрудника в табель', [__FILE__.':'.__LINE__]);
+        $this->logger->info('Добавляем действие сотрудника в табель', [self::class.':'.__LINE__]);
 
         /** Создаем и сохраняем табель сотруднику */
         $UsersTableDTO = new UsersTableDTO(authority: $ManufacturePartWorkingDTO->getProfile());

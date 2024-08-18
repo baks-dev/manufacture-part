@@ -25,13 +25,13 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Type\Complete\Collection;
 
-use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final class ManufacturePartCompleteCollection
 {
     private iterable $actions;
 
-    public function __construct(#[TaggedIterator('baks.part.complete')] iterable $actions,)
+    public function __construct(#[AutowireIterator('baks.part.complete')] iterable $actions,)
     {
         $this->actions = $actions;
     }

@@ -98,7 +98,7 @@ final class SubUserTableByManufacturePartDefect
             }
 
             $this->logger->info('Добавляем штраф сотруднику', [
-                __FILE__.':'.__LINE__,
+                self::class.':'.__LINE__,
                 'class' => self::class,
                 'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
                     $message::class,

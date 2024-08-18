@@ -68,7 +68,7 @@ final class ManufacturePartProductsSum
         $ManufacturePart->setQuantity($quantity);
         $this->entityManager->flush();
 
-        $this->logger->info('Выполнили пересчет всей продукции в производственной партии', [__FILE__.':'.__LINE__]);
+        $this->logger->info('Выполнили пересчет всей продукции в производственной партии', [self::class.':'.__LINE__]);
 
     }
 }
