@@ -10,7 +10,7 @@
 # systemctl stop baks-manufacture-part@1.service
 
 [Unit]
-Description=Symfony messenger manufacture-part %i
+Description=manufacture-part
 StartLimitBurst=5
 StartLimitIntervalSec=0
 
