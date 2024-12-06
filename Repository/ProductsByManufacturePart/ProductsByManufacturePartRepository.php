@@ -277,17 +277,14 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
         /** Артикул продукта */
 
-        $dbal->addSelect(
-            "
-					CASE
-					   WHEN product_modification.article IS NOT NULL THEN product_modification.article
-					   WHEN product_variation.article IS NOT NULL THEN product_variation.article
-					   WHEN product_offer.article IS NOT NULL THEN product_offer.article
-					   WHEN product_info.article IS NOT NULL THEN product_info.article
-					   ELSE NULL
-					END AS product_article
-				"
-        );
+        $dbal->addSelect('
+            COALESCE(
+                product_modification.article, 
+                product_variation.article, 
+                product_offer.article, 
+                product_info.article
+            ) AS product_article
+		');
 
 
         /** Фото продукта */
@@ -555,17 +552,14 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
 
         /** Артикул продукта */
-        $dbal->addSelect(
-            "
-					CASE
-					   WHEN product_modification.article IS NOT NULL THEN product_modification.article
-					   WHEN product_variation.article IS NOT NULL THEN product_variation.article
-					   WHEN product_offer.article IS NOT NULL THEN product_offer.article
-					   WHEN product_info.article IS NOT NULL THEN product_info.article
-					   ELSE NULL
-					END AS product_article
-				"
-        );
+        $dbal->addSelect('
+            COALESCE(
+                product_modification.article, 
+                product_variation.article, 
+                product_offer.article, 
+                product_info.article
+            ) AS product_article
+		');
 
 
         $dbal->orderBy('part_product.id', 'DESC');
