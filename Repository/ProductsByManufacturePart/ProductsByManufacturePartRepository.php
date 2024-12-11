@@ -35,8 +35,8 @@ use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Category\Entity\CategoryProduct;
 use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
-use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
 use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
+use BaksDev\Products\Category\Entity\Offers\Variation\Modification\CategoryProductModification;
 use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 use BaksDev\Products\Product\Entity\Category\ProductCategory;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
@@ -62,7 +62,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
     public function __construct(
         DBALQueryBuilder $DBALQueryBuilder,
         PaginatorInterface $paginator,
-    ) {
+    )
+    {
         $this->paginator = $paginator;
         $this->DBALQueryBuilder = $DBALQueryBuilder;
     }
@@ -75,7 +76,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         UserProfileUid $profile,
         ?UserProfileUid $authority,
         $other
-    ): PaginatorInterface {
+    ): PaginatorInterface
+    {
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
@@ -83,7 +85,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         $dbal
             ->select('part.id')
             ->addSelect('part.event')
-            ->from(ManufacturePart::TABLE, 'part')
+            ->from(ManufacturePart::class, 'part')
             ->where('part.id = :part')
             ->setParameter('part', $part, ManufacturePartUid::TYPE);
 
@@ -93,7 +95,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         {
             $dbal->leftJoin(
                 'part',
-                ProfileGroupUsers::TABLE,
+                ProfileGroupUsers::class,
                 'profile_group_users',
                 'profile_group_users.authority = :authority'
             )
@@ -101,7 +103,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
             $dbal->join(
                 'part',
-                ManufacturePartEvent::TABLE,
+                ManufacturePartEvent::class,
                 'part_event',
                 'part_event.id = part.event AND (part_event.profile = profile_group_users.profile OR part_event.profile = :profile)'
             );
@@ -110,7 +112,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         {
             $dbal->join(
                 'part',
-                ManufacturePartEvent::TABLE,
+                ManufacturePartEvent::class,
                 'part_event',
                 'part_event.id = part.event AND part_event.profile = :profile'
             );
@@ -125,7 +127,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('part_product.total AS product_total')
             ->leftJoin(
                 'part',
-                ManufacturePartProduct::TABLE,
+                ManufacturePartProduct::class,
                 'part_product',
                 'part_product.event = part.event'
             );
@@ -133,7 +135,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
         $dbal->join(
             'part_product',
-            ProductEvent::TABLE,
+            ProductEvent::class,
             'product_event',
             'product_event.id = part_product.product'
         );
@@ -142,7 +144,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_info.url')
             ->leftJoin(
                 'product_event',
-                ProductInfo::TABLE,
+                ProductInfo::class,
                 'product_info',
                 'product_info.product = product_event.main'
             );
@@ -151,7 +153,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         /** Ответственное лицо (Профиль пользователя) */
         $dbal->leftJoin(
             'product_info',
-            UserProfile::TABLE,
+            UserProfile::class,
             'users_profile',
             'users_profile.id = product_info.profile'
         );
@@ -160,7 +162,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('users_profile_personal.username AS users_profile_username')
             ->leftJoin(
                 'users_profile',
-                UserProfilePersonal::TABLE,
+                UserProfilePersonal::class,
                 'users_profile_personal',
                 'users_profile_personal.event = users_profile.event'
             );
@@ -170,7 +172,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_trans.name AS product_name')
             ->leftJoin(
                 'product_event',
-                ProductTrans::TABLE,
+                ProductTrans::class,
                 'product_trans',
                 'product_trans.event = product_event.id AND product_trans.local = :local'
             );
@@ -185,7 +187,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_offer.postfix as product_offer_postfix')
             ->leftJoin(
                 'product_event',
-                ProductOffer::TABLE,
+                ProductOffer::class,
                 'product_offer',
                 'product_offer.id = part_product.offer OR product_offer.id IS NULL'
             );
@@ -202,7 +204,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_offer.reference as product_offer_reference')
             ->leftJoin(
                 'product_offer',
-                CategoryProductOffers::TABLE,
+                CategoryProductOffers::class,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -218,7 +220,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_variation.postfix as product_variation_postfix')
             ->leftJoin(
                 'product_offer',
-                ProductVariation::TABLE,
+                ProductVariation::class,
                 'product_variation',
                 'product_variation.id = part_product.variation OR product_variation.id IS NULL'
             );
@@ -236,7 +238,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_variation.reference as product_variation_reference')
             ->leftJoin(
                 'product_variation',
-                CategoryProductVariation::TABLE,
+                CategoryProductVariation::class,
                 'category_variation',
                 'category_variation.id = product_variation.category_variation'
             );
@@ -252,7 +254,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_modification.postfix as product_modification_postfix')
             ->leftJoin(
                 'part_product',
-                ProductModification::TABLE,
+                ProductModification::class,
                 'product_modification',
                 'product_modification.id = part_product.modification OR product_modification.id IS NULL'
             );
@@ -269,7 +271,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_modification.reference as product_modification_reference')
             ->leftJoin(
                 'product_modification',
-                CategoryProductModification::TABLE,
+                CategoryProductModification::class,
                 'category_modification',
                 'category_modification.id = product_modification.category_modification'
             );
@@ -291,28 +293,28 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
         $dbal->leftJoin(
             'product_event',
-            ProductPhoto::TABLE,
+            ProductPhoto::class,
             'product_photo',
             'product_photo.event = product_event.id AND product_photo.root = true'
         );
 
         $dbal->leftJoin(
             'product_modification',
-            ProductModificationImage::TABLE,
+            ProductModificationImage::class,
             'product_modification_image',
             'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
         );
 
         $dbal->leftJoin(
             'product_variation',
-            ProductVariationImage::TABLE,
+            ProductVariationImage::class,
             'product_variation_image',
             'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
         );
 
         $dbal->leftJoin(
             'product_offer',
-            ProductOfferImage::TABLE,
+            ProductOfferImage::class,
             'product_offer_images',
             'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
         );
@@ -321,13 +323,13 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             "
 			CASE
 			   WHEN product_modification_image.name IS NOT NULL THEN
-					CONCAT ( '/upload/".ProductModificationImage::TABLE."' , '/', product_modification_image.name)
+					CONCAT ( '/upload/".$dbal->table(ProductModificationImage::class)."' , '/', product_modification_image.name)
 			   WHEN product_variation_image.name IS NOT NULL THEN
-					CONCAT ( '/upload/".ProductVariationImage::TABLE."' , '/', product_variation_image.name)
+					CONCAT ( '/upload/".$dbal->table(ProductVariationImage::class)."' , '/', product_variation_image.name)
 			   WHEN product_offer_images.name IS NOT NULL THEN
-					CONCAT ( '/upload/".ProductOfferImage::TABLE."' , '/', product_offer_images.name)
+					CONCAT ( '/upload/".$dbal->table(ProductOfferImage::class)."' , '/', product_offer_images.name)
 			   WHEN product_photo.name IS NOT NULL THEN
-					CONCAT ( '/upload/".ProductPhoto::TABLE."' , '/', product_photo.name)
+					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
 		"
@@ -390,7 +392,6 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             );
 
 
-
         if($search->getQuery())
         {
 
@@ -427,13 +428,13 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         //        $dbal->addSelect('part.event');
 
         $dbal
-            ->from(ManufacturePart::TABLE, 'part')
+            ->from(ManufacturePart::class, 'part')
             ->where('part.id = :part')
             ->setParameter('part', $part, ManufacturePartUid::TYPE);
 
         $dbal->leftJoin(
             'part',
-            ManufacturePartEvent::TABLE,
+            ManufacturePartEvent::class,
             'part_event',
             'part_event.id = part.event'
         );
@@ -443,7 +444,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('part_product.total AS product_total')
             ->leftJoin(
                 'part',
-                ManufacturePartProduct::TABLE,
+                ManufacturePartProduct::class,
                 'part_product',
                 'part_product.event = part.event'
             );
@@ -452,14 +453,14 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_event.id AS product_event')
             ->join(
                 'part_product',
-                ProductEvent::TABLE,
+                ProductEvent::class,
                 'product_event',
                 'product_event.id = part_product.product'
             );
 
         $dbal->leftJoin(
             'product_event',
-            ProductInfo::TABLE,
+            ProductInfo::class,
             'product_info',
             'product_info.product = product_event.main'
         );
@@ -468,7 +469,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_trans.name AS product_name')
             ->leftJoin(
                 'product_event',
-                ProductTrans::TABLE,
+                ProductTrans::class,
                 'product_trans',
                 'product_trans.event = product_event.id AND product_trans.local = :local'
             );
@@ -483,7 +484,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_offer.postfix as product_offer_postfix')
             ->leftJoin(
                 'product_event',
-                ProductOffer::TABLE,
+                ProductOffer::class,
                 'product_offer',
                 'product_offer.id = part_product.offer OR product_offer.id IS NULL'
             );
@@ -493,7 +494,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_offer.reference as product_offer_reference')
             ->leftJoin(
                 'product_offer',
-                CategoryProductOffers::TABLE,
+                CategoryProductOffers::class,
                 'category_offer',
                 'category_offer.id = product_offer.category_offer'
             );
@@ -509,7 +510,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_variation.postfix as product_variation_postfix')
             ->leftJoin(
                 'product_offer',
-                ProductVariation::TABLE,
+                ProductVariation::class,
                 'product_variation',
                 'product_variation.id = part_product.variation OR product_variation.id IS NULL'
             );
@@ -519,7 +520,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_variation.reference as product_variation_reference')
             ->leftJoin(
                 'product_variation',
-                CategoryProductVariation::TABLE,
+                CategoryProductVariation::class,
                 'category_variation',
                 'category_variation.id = product_variation.category_variation'
             );
@@ -535,7 +536,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('product_modification.postfix as product_modification_postfix')
             ->leftJoin(
                 'part_product',
-                ProductModification::TABLE,
+                ProductModification::class,
                 'product_modification',
                 'product_modification.id = part_product.modification OR product_modification.id IS NULL'
             );
@@ -545,7 +546,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             ->addSelect('category_modification.reference as product_modification_reference')
             ->leftJoin(
                 'product_modification',
-                CategoryProductModification::TABLE,
+                CategoryProductModification::class,
                 'category_modification',
                 'category_modification.id = product_modification.category_modification'
             );
