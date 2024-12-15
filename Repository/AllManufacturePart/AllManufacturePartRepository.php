@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -48,19 +48,11 @@ use DateTimeImmutable;
 
 final class AllManufacturePartRepository implements AllManufacturePartInterface
 {
-    private PaginatorInterface $paginator;
-
-    private DBALQueryBuilder $DBALQueryBuilder;
 
     public function __construct(
-        DBALQueryBuilder $DBALQueryBuilder,
-        PaginatorInterface $paginator,
-    )
-    {
-
-        $this->paginator = $paginator;
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-    }
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly PaginatorInterface $paginator,
+    ) {}
 
 
     /** Метод возвращает пагинатор ManufacturePart */
@@ -73,6 +65,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
     ): PaginatorInterface
     {
+
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
@@ -81,61 +74,19 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('part.event');
         $dbal->addSelect('part.number');
         $dbal->addSelect('part.quantity');
-        $dbal->from(ManufacturePart::TABLE, 'part');
+        $dbal->from(ManufacturePart::class, 'part');
 
 
         //$dbal->addSelect('part_event.marketplace');
         $dbal->addSelect('part_event.status');
         $dbal->addSelect('part_event.complete');
 
-
-//        $dbal->join(
-//            'part',
-//            ManufacturePartEvent::TABLE,
-//            'part_event',
-//            'part_event.id = part.event '.(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
-//        );
-
-
-//        /** Свои партии и партии доверенных профилей */
-//        if($authority)
-//        {
-//            /** Профили доверенных пользователей */
-//            $dbal
-//                ->leftJoin(
-//                    'part',
-//                    ProfileGroupUsers::TABLE,
-//                    'profile_group_users',
-//                    'profile_group_users.authority = :authority '.($other ? '' : ' AND profile_group_users.profile = :profile')
-//                );
-//
-//
-//            $dbal->join(
-//                'part',
-//                ManufacturePartEvent::TABLE,
-//                'part_event',
-//                'part_event.id = part.event '.(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
-//            );
-//
-//            $dbal
-//                ->andWhere('part_event.profile = profile_group_users.profile')
-//                ->setParameter('authority', $authority, UserProfileUid::TYPE);
-//        }
-//        else
-//        {
-//
-//
-//            $dbal->andWhere('part_event.profile = :profile');
-//        }
-
-
-
         /** Партии доверенных профилей */
         if($authority)
         {
             $dbal->leftJoin(
                 'part',
-                ProfileGroupUsers::TABLE,
+                ProfileGroupUsers::class,
                 'profile_group_users',
                 'profile_group_users.authority = :authority'
             )
@@ -143,7 +94,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
             $dbal->join(
                 'part',
-                ManufacturePartEvent::TABLE,
+                ManufacturePartEvent::class,
                 'part_event',
                 'part_event.id = part.event AND (part_event.profile = profile_group_users.profile OR part_event.profile = :profile)'
                 .(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
@@ -153,7 +104,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         {
             $dbal->join(
                 'part',
-                ManufacturePartEvent::TABLE,
+                ManufacturePartEvent::class,
                 'part_event',
                 'part_event.id = part.event AND part_event.profile = :profile'
                 .(!$search->getQuery() && $filter->getStatus() ? ' AND part_event.status = :status' : '')
@@ -169,7 +120,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
         $dbal->leftJoin(
             'part_event',
-            UserProfile::TABLE,
+            UserProfile::class,
             'users_profile',
             'users_profile.id = part_event.profile'
         );
@@ -178,7 +129,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
         $dbal->leftJoin(
             'users_profile',
-            UserProfilePersonal::TABLE,
+            UserProfilePersonal::class,
             'users_profile_personal',
             'users_profile_personal.event = users_profile.event'
         );
@@ -187,7 +138,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('part_modify.mod_date AS part_date');
         $dbal->join(
             'part',
-            ManufacturePartModify::TABLE,
+            ManufacturePartModify::class,
             'part_modify',
             'part_modify.event = part.event'
         );
@@ -213,7 +164,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('part_working.working AS part_working_uid');
         $dbal->leftJoin(
             'part',
-            ManufacturePartWorking::TABLE,
+            ManufacturePartWorking::class,
             'part_working',
             'part_working.event = part.event'
         );
@@ -224,7 +175,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
          */
         $dbal->leftJoin(
             'part_working',
-            UsersTableActionsWorking::TABLE,
+            UsersTableActionsWorking::class,
             'action_working',
             'action_working.id = part_working.working'
         );
@@ -233,7 +184,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
         $dbal->leftJoin(
             'action_working',
-            UsersTableActionsWorkingTrans::TABLE,
+            UsersTableActionsWorkingTrans::class,
             'action_working_trans',
             'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
         );
@@ -244,7 +195,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('action_trans.name AS action_name');
         $dbal->leftJoin(
             'part_event',
-            UsersTableActionsTrans::TABLE,
+            UsersTableActionsTrans::class,
             'action_trans',
             'action_trans.event = part_event.action AND action_trans.local = :local'
         );
@@ -255,7 +206,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('actions_event.id AS actions_event');
         $dbal->leftJoin(
             'part_event',
-            UsersTableActionsEvent::TABLE,
+            UsersTableActionsEvent::class,
             'actions_event',
             'actions_event.id = part_event.action'
         );
@@ -263,7 +214,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('category.id AS category_id');
         $dbal->leftJoin(
             'actions_event',
-            CategoryProduct::TABLE,
+            CategoryProduct::class,
             'category',
             'category.id = actions_event.category'
         );
@@ -271,7 +222,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal->addSelect('trans.name AS category_name');
         $dbal->leftJoin(
             'category',
-            CategoryProductTrans::TABLE,
+            CategoryProductTrans::class,
             'trans',
             'trans.event = category.event AND trans.local = :local'
         )
@@ -280,8 +231,6 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
 
         if($search->getQuery())
         {
-
-
             $dbal
                 ->createSearchQueryBuilder($search)
                 ->addSearchEqualUid('part.id')

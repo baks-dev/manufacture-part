@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,16 +33,9 @@ use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\UsersTableActionsWorking;
 
-final class AllWorkingByManufacturePartRepository implements AllWorkingByManufacturePartInterface
+final readonly class AllWorkingByManufacturePartRepository implements AllWorkingByManufacturePartInterface
 {
-
-    private DBALQueryBuilder $DBALQueryBuilder;
-
-    public function __construct(DBALQueryBuilder $DBALQueryBuilder,)
-    {
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-    }
-
+    public function __construct(private DBALQueryBuilder $DBALQueryBuilder) {}
 
     /**
      * Возвращает этапы производства указанной производственной партии
@@ -54,7 +47,7 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $qb->from(ManufacturePart::TABLE, 'part');
+        $qb->from(ManufacturePart::class, 'part');
         $qb->where('part.id = :part');
         $qb->setParameter('part', $part, ManufacturePartUid::TYPE);
 
@@ -62,7 +55,7 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
         $qb->select('part_event.comment AS part_comment');
         $qb->join(
             'part',
-            ManufacturePartEvent::TABLE,
+            ManufacturePartEvent::class,
             'part_event',
             'part_event.id = part.event'
         );
@@ -73,24 +66,16 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
 
         $qb->join(
             'part_event',
-            UsersTableActionsEvent::TABLE,
+            UsersTableActionsEvent::class,
             'action_event',
             'action_event.id = part_event.action'
         );
-
-        /*$qb->join(
-            'action_event',
-            UsersTableActions::TABLE,
-            'action',
-            'action.event = action_event.id'
-        );*/
-
 
         $qb->addSelect('action_working.id AS working_id');
 
         $qb->leftJoin(
             'action_event',
-            UsersTableActionsWorking::TABLE,
+            UsersTableActionsWorking::class,
             'action_working',
             'action_working.event = action_event.id'
         );
@@ -100,7 +85,7 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
 
         $qb->leftJoin(
             'action_event',
-            UsersTableActionsWorkingTrans::TABLE,
+            UsersTableActionsWorkingTrans::class,
             'action_working_trans',
             'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
         );
@@ -113,7 +98,6 @@ final class AllWorkingByManufacturePartRepository implements AllWorkingByManufac
             ->fetchAllAssociative();
 
     }
-
 
 
 }

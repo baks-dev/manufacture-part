@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,15 +38,10 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 
-final class InfoManufacturePartRepository implements InfoManufacturePartInterface
+final readonly class InfoManufacturePartRepository implements InfoManufacturePartInterface
 {
-    private DBALQueryBuilder $DBALQueryBuilder;
 
-    public function __construct(DBALQueryBuilder $DBALQueryBuilder,)
-    {
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-    }
-
+    public function __construct(private DBALQueryBuilder $DBALQueryBuilder) {}
 
     /**
      * Возвращает информацию о производственной партии
@@ -57,13 +52,15 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
         ?UserProfileUid $authority
     ): array|bool
     {
-        $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class)->bindLocal();
+        $dbal = $this->DBALQueryBuilder
+            ->createQueryBuilder(self::class)
+            ->bindLocal();
 
         $dbal
             ->select('part.id')
             ->addSelect('part.quantity')
             ->addSelect('part.number')
-            ->from(ManufacturePart::TABLE, 'part')
+            ->from(ManufacturePart::class, 'part')
             ->where('part.id = :part')
             ->setParameter('part', $part, ManufacturePartUid::TYPE);
 
@@ -73,7 +70,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('part_event.status')
             ->addSelect('part_event.complete')
             ->join(
-                'part', ManufacturePartEvent::TABLE,
+                'part', ManufacturePartEvent::class,
                 'part_event',
                 'part_event.id = part.event'
             );
@@ -86,7 +83,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             /** Профили доверенных пользователей */
             $dbal->leftJoin(
                 'part',
-                ProfileGroupUsers::TABLE,
+                ProfileGroupUsers::class,
                 'profile_group_users',
                 'profile_group_users.authority = :authority'
             );
@@ -116,7 +113,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('users_profile.event as users_profile_event')
             ->leftJoin(
                 'part_event',
-                UserProfile::TABLE,
+                UserProfile::class,
                 'users_profile',
                 'users_profile.id = part_event.profile'
             );
@@ -125,7 +122,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('users_profile_personal.username AS users_profile_username')
             ->leftJoin(
                 'users_profile',
-                UserProfilePersonal::TABLE,
+                UserProfilePersonal::class,
                 'users_profile_personal',
                 'users_profile_personal.event = users_profile.event'
             );
@@ -137,7 +134,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('action_trans.name AS action_name')
             ->leftJoin(
                 'part_event',
-                UsersTableActionsTrans::TABLE,
+                UsersTableActionsTrans::class,
                 'action_trans',
                 'action_trans.event = part_event.action AND action_trans.local = :local'
             );
@@ -148,7 +145,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('actions_event.id AS actions_event')
             ->leftJoin(
                 'part_event',
-                UsersTableActionsEvent::TABLE,
+                UsersTableActionsEvent::class,
                 'actions_event',
                 'actions_event.id = part_event.action'
             );
@@ -157,7 +154,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('category.id AS category_id')
             ->leftJoin(
                 'actions_event',
-                CategoryProduct::TABLE,
+                CategoryProduct::class,
                 'category',
                 'category.id = actions_event.category'
             );
@@ -166,7 +163,7 @@ final class InfoManufacturePartRepository implements InfoManufacturePartInterfac
             ->addSelect('trans.name AS category_name')
             ->leftJoin(
                 'category',
-                CategoryProductTrans::TABLE,
+                CategoryProductTrans::class,
                 'trans',
                 'trans.event = category.event AND trans.local = :local'
             );

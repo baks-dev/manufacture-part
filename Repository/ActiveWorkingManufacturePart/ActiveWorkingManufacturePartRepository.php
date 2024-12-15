@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,18 +43,10 @@ use Doctrine\DBAL\ArrayParameterType;
 final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManufacturePartInterface
 {
 
-    private DBALQueryBuilder $DBALQueryBuilder;
-    private ManufacturePartActionEventInterface $manufacturePartActionEvent;
-
     public function __construct(
-        DBALQueryBuilder $DBALQueryBuilder,
-        ManufacturePartActionEventInterface $manufacturePartActionEvent,
-    )
-    {
-
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-        $this->manufacturePartActionEvent = $manufacturePartActionEvent;
-    }
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly ManufacturePartActionEventInterface $manufacturePartActionEvent,
+    ) {}
 
     /**
      * Метод возвращает рабочее состояние заявки на производство продукции
@@ -70,7 +62,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
          */
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
 
-        $qb->from(ManufacturePart::TABLE, 'part');
+        $qb->from(ManufacturePart::class, 'part');
         $qb->where('part.id = :part');
         $qb->setParameter('part', $part, ManufacturePartUid::TYPE);
 
@@ -78,7 +70,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         //$qb->addSelect('part_event.action');
         $qb->leftJoin(
             'part',
-            ManufacturePartEvent::TABLE,
+            ManufacturePartEvent::class,
             'part_event',
             'part_event.main = part.id'
         );
@@ -87,7 +79,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         $qb->addSelect('part_working.working');
         $qb->leftJoin(
             'part_event',
-            ManufacturePartWorking::TABLE,
+            ManufacturePartWorking::class,
             'part_working',
             'part_working.event = part_event.id'
         );
@@ -107,14 +99,14 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $qb->from(UsersTableActionsEvent::TABLE, 'action_event');
+        $qb->from(UsersTableActionsEvent::class, 'action_event');
         $qb->where('action_event.id = :action');
         $qb->setParameter('action', $action, UsersTableActionsEventUid::TYPE);
 
         $qb->addSelect('action_working.id');
         $qb->join(
             'action_event',
-            UsersTableActionsWorking::TABLE,
+            UsersTableActionsWorking::class,
             'action_working',
             'action_working.event = action_event.id'
         );
@@ -122,7 +114,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         $qb->addSelect('working_trans.name');
         $qb->leftJoin(
             'action_working',
-            UsersTableActionsWorkingTrans::TABLE,
+            UsersTableActionsWorkingTrans::class,
             'working_trans',
             'working_trans.working = action_working.id AND working_trans.local = :local'
         );
@@ -136,12 +128,11 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         $qb->orderBy('action_working.sort', 'ASC');
         $qb->setMaxResults(1);
 
-        $result = $qb->enableCache('manufacture-part',86400)->fetchAssociative();
-        
+        $result = $qb->enableCache('manufacture-part', 86400)->fetchAssociative();
+
         return $result ? new UsersTableActionsWorkingUid($result['id'], $result['name']) : null;
 
     }
-
 
 
     /**
@@ -154,15 +145,14 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-
         //$qb->addSelect('part_event.id AS part_event');
-        $qb->from(ManufacturePartEvent::TABLE, 'part_event');
+        $qb->from(ManufacturePartEvent::class, 'part_event');
         $qb->where('part_event.main = :part');
         $qb->setParameter('part', $part, ManufacturePartUid::TYPE);
 
         $qb->join(
             'part_event',
-            ManufacturePartWorking::TABLE,
+            ManufacturePartWorking::class,
             'part_working',
             'part_working.event = part_event.id'
         );
@@ -171,7 +161,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
         $qb->addSelect('part.quantity AS part_quantity');
         $qb->leftJoin(
             'part_event',
-            ManufacturePart::TABLE,
+            ManufacturePart::class,
             'part',
             'part.id = part_event.main'
         );
@@ -181,7 +171,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
 
         $qb->leftJoin(
             'part_working',
-            UserProfile::TABLE,
+            UserProfile::class,
             'users_profile',
             'users_profile.id = part_working.profile'
         );
@@ -190,27 +180,27 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
 
         $qb->leftJoin(
             'users_profile',
-            UserProfilePersonal::TABLE,
+            UserProfilePersonal::class,
             'users_profile_personal',
             'users_profile_personal.event = users_profile.event'
         );
 
 
         /** Этапы производства */
-//        $qb->addSelect('action_event.id AS action_event');
-//        $qb->join(
-//            'part_event',
-//            UsersTableActionsEvent::TABLE,
-//            'action_event',
-//            'action_event.id = part_event.action'
-//        );
+        //        $qb->addSelect('action_event.id AS action_event');
+        //        $qb->join(
+        //            'part_event',
+        //            UsersTableActionsEvent::class,
+        //            'action_event',
+        //            'action_event.id = part_event.action'
+        //        );
 
 
         //$qb->addSelect('action_working.id AS working_id');
 
         $qb->leftJoin(
             'part_event',
-            UsersTableActionsWorking::TABLE,
+            UsersTableActionsWorking::class,
             'action_working',
             'action_working.id =  part_working.working'
         );
@@ -219,7 +209,7 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
 
         $qb->leftJoin(
             'action_working',
-            UsersTableActionsWorkingTrans::TABLE,
+            UsersTableActionsWorkingTrans::class,
             'action_working_trans',
             'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
         );

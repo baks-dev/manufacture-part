@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -108,8 +108,8 @@ final class ManufacturePartProductDeleteHandler
         if($profile)
         {
             $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
-            $qb->from(ManufacturePartEvent::TABLE, 'event');
-            $qb->join('event', ManufacturePart::TABLE, 'part', 'part.id = event.main AND part.event = event.id');
+            $qb->from(ManufacturePartEvent::class, 'event');
+            $qb->join('event', ManufacturePart::class, 'part', 'part.id = event.main AND part.event = event.id');
             $qb->where('event.id = :event')
                 ->setParameter('event', $Product->getEvent()->getId(),  ManufacturePartEventUid::TYPE);
             $qb->andWhere('event.profile = :profile')
