@@ -56,11 +56,11 @@ setTimeout(function SpgGHaQzun() {
     {
         centrifuge = new Centrifuge("wss://{{ centrifugo_dsn }}/connection/websocket",
             {
-                token: "{{ token }}", //"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTg2NWMxMC1jZDQ1LTdmMjEtYTUxNi0wMDM5NDFiMWM0Y2IiLCJpZCI6IjAxODY2ZjllLTcwZDAtNzNlMC1iNzYzLTg3OTRiNmU2YjFjYiIsImV2ZW50IjoiMDE4NzJjZjEtMDhjNy03NTUzLWJmMjctOTQxNTVhOTMxYjZhIiwiZXhwIjoxNjgyOTYyMzY3fQ.IeIMimmMTn2W4leLQAR3O8T70LOVaWau3B-HXHwOdzM",
+                token: "{{ token }}",
                 getToken: function (ctx) {
                     return getToken('/centrifugo/credentials/user', ctx);
                 },
-                debug: false,
+                debug: '{{ app.environment }}' === 'dev',
             });
 
 		{% if opens %}
