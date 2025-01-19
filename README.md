@@ -8,7 +8,8 @@
 ## Установка
 
 ``` bash
-$ composer require baks-dev/manufacture-part
+$ composer require baks-dev/manufacture-part \
+baks-dev/users-table
 ```
 
 ## Дополнительно
