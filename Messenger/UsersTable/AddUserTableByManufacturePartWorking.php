@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,25 +37,17 @@ use BaksDev\Users\UsersTable\UseCase\Admin\Table\NewEdit\UsersTableHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use DomainException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class AddUserTableByManufacturePartWorking
+final readonly class AddUserTableByManufacturePartWorking
 {
-    private EntityManagerInterface $entityManager;
-    private UsersTableHandler $usersTableHandler;
-    private LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        UsersTableHandler $usersTableHandler,
-        LoggerInterface $manufacturePartLogger,
-    )
-    {
-        $this->entityManager = $entityManager;
-        $this->usersTableHandler = $usersTableHandler;
-        $this->logger = $manufacturePartLogger;
-    }
+        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private UsersTableHandler $usersTableHandler,
+    ) {}
 
     /**
      * Добавляем в табель сотрудника действие

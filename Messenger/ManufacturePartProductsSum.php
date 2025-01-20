@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -29,26 +29,17 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartSumProducts\ManufacturePartSumProductsInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(priority: 99)]
-final class ManufacturePartProductsSum
+final readonly class ManufacturePartProductsSum
 {
-
-    private EntityManagerInterface $entityManager;
-    private ManufacturePartSumProductsInterface $manufacturePartSumProducts;
-    private LoggerInterface $logger;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ManufacturePartSumProductsInterface $manufacturePartSumProducts,
-        LoggerInterface $manufacturePartLogger,
-    )
-    {
-        $this->entityManager = $entityManager;
-        $this->manufacturePartSumProducts = $manufacturePartSumProducts;
-        $this->logger = $manufacturePartLogger;
-    }
+        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private ManufacturePartSumProductsInterface $manufacturePartSumProducts,
+    ) {}
 
     /**
      * Метод делает пересчет всей продукции в заявке на производство

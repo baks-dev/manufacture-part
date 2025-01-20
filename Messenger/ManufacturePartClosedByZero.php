@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Messenger;
 
-use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
@@ -35,28 +34,18 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Closed\ManufacturePartClosedHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use DomainException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(priority: 0)]
-final class ManufacturePartClosedByZero
+final readonly class ManufacturePartClosedByZero
 {
-    private EntityManagerInterface $entityManager;
-    private ManufacturePartClosedHandler $manufacturePartClosedHandler;
-    private LoggerInterface $logger;
-    private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ManufacturePartClosedHandler $manufacturePartClosedHandler,
-        LoggerInterface $manufacturePartLogger,
-        ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
-    )
-    {
-        $this->entityManager = $entityManager;
-        $this->manufacturePartClosedHandler = $manufacturePartClosedHandler;
-        $this->logger = $manufacturePartLogger;
-        $this->manufacturePartCurrentEvent = $manufacturePartCurrentEvent;
-    }
+        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private ManufacturePartClosedHandler $manufacturePartClosedHandler,
+        private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
+    ) {}
 
     /**
      * Закрываем заявку, если в рабочей партии отсутствуют товары

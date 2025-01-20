@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,33 +37,18 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartSt
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class ManufacturePartProductEditHandler
+final readonly class ManufacturePartProductEditHandler
 {
-    private EntityManagerInterface $entityManager;
-
-    private ValidatorInterface $validator;
-
-    private LoggerInterface $logger;
-    private DBALQueryBuilder $DBALQueryBuilder;
-    private MessageDispatchInterface $messageDispatch;
-
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        LoggerInterface $logger,
-        DBALQueryBuilder $DBALQueryBuilder,
-        MessageDispatchInterface $messageDispatch,
-    )
-    {
-        $this->entityManager = $entityManager;
-        $this->validator = $validator;
-        $this->logger = $logger;
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
-        $this->messageDispatch = $messageDispatch;
-    }
+        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
+        private DBALQueryBuilder $DBALQueryBuilder,
+        private MessageDispatchInterface $messageDispatch,
+    ) {}
 
     /** @see ManufacturePart */
     public function handle(
@@ -104,7 +89,6 @@ final class ManufacturePartProductEditHandler
         }
 
 
-
         if($profile)
         {
             /** Проверяем владельца */
@@ -143,7 +127,6 @@ final class ManufacturePartProductEditHandler
                 return $uniqid;
             }
         }
-
 
 
         $Product->setEntity($command);

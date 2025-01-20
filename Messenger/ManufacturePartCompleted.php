@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
-use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
@@ -35,37 +34,22 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartSt
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedHandler;
-use Doctrine\ORM\EntityManagerInterface;
 use DomainException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(priority: 0)]
-final class ManufacturePartCompleted
+final readonly class ManufacturePartCompleted
 {
-    private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart;
-    private ManufacturePartCompletedHandler $manufacturePartCompletedHandler;
-    private CentrifugoPublishInterface $CentrifugoPublish;
-    private ProductsByManufacturePartInterface $productsByManufacturePart;
-    private LoggerInterface $logger;
-    private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent;
-
     public function __construct(
-        ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
-        ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
-        ProductsByManufacturePartInterface $productsByManufacturePart,
-        CentrifugoPublishInterface $CentrifugoPublish,
-        LoggerInterface $manufacturePartLogger,
-        ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
-    )
-    {
-        $this->activeWorkingManufacturePart = $activeWorkingManufacturePart;
-        $this->manufacturePartCompletedHandler = $manufacturePartCompletedHandler;
-        $this->CentrifugoPublish = $CentrifugoPublish;
-        $this->productsByManufacturePart = $productsByManufacturePart;
-        $this->logger = $manufacturePartLogger;
-        $this->manufacturePartCurrentEvent = $manufacturePartCurrentEvent;
-    }
+        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
+        private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
+        private ProductsByManufacturePartInterface $productsByManufacturePart,
+        private CentrifugoPublishInterface $CentrifugoPublish,
+        private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
+    ) {}
 
     /**
      * Проверяем, имеется ли не выпаленное действие, если нет - заявка выполнена
