@@ -42,63 +42,61 @@
 #}
 
 {% block javascript %}
+
+<script nonce="{{ csp_nonce() }}">
+ window.centrifugo_dsn = "{{ centrifugo_dsn }}";
+ window.centrifugo_token = "{{ token }}";
+</script>
+
 <script nonce='{{ csp_nonce() }}' async data-src="/assets/centrifugo/centrifuge.min.js?v={{ version }}" class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/centrifugo/socket.min.js?v={{ version }}" class='lazy'></script>
+
 <script nonce='{{ csp_nonce() }}' async  data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
 <script nonce='{{ csp_nonce() }}' async data-src="/assets/products_product/filter.min.js?v={{ version }}" class="lazy"></script>
 <script nonce='{{ csp_nonce() }}' async data-src='/assets/js/radio.input.min.js?v={{ version }}' class='lazy'></script>
+
+
 <script nonce="{{ csp_nonce() }}">
 
-
 /** Сокеты */
-setTimeout(function SpgGHaQzun() {
 
-    if (typeof Centrifuge === 'function')
+let jGGXNNcBC = 100;
+
+setTimeout(function vwZSPXkyxD() {
+
+    if(typeof centrifuge !== 'object')
     {
-        centrifuge = new Centrifuge("wss://{{ centrifugo_dsn }}/connection/websocket",
-            {
-                token: "{{ token }}",
-                getToken: function (ctx) {
-                    return getToken('/centrifugo/credentials/user', ctx);
-                },
-                debug: '{{ app.environment }}' === 'dev',
-            });
+        if(jGGXNNcBC > 1000) { return; }
 
-		{% if opens %}
-
-			  centrifuge.newSubscription('{{ opens.event }}').on('publication', function (ctx) {
-                    document.getElementById('product-{{ opens.event }}').innerHTML = ctx.data.product;
-
-                    $total = parseInt(document.getElementById('total-{{ opens.event }}').textContent);
-                    document.getElementById('total-{{ opens.event }}').textContent = $total + ctx.data.total
-
-            }).subscribe();
-
-            centrifuge.connect();
-
-		{% endif %}
-
-        /** Удаляем из списка у всех продукт */
-		centrifuge.newSubscription('remove').on('publication', function (ctx) {
-                     $identifier = document.getElementById(ctx.data.identifier);
-                     if($identifier) { $identifier.remove(); }
-            }).subscribe();
-
-		centrifuge.connect();
-
-        return;
+        jGGXNNcBC = jGGXNNcBC * 2;
+        return setTimeout(vwZSPXkyxD, jGGXNNcBC);
     }
 
-    setTimeout(SpgGHaQzun, 100);
+    {% if opens %}
+
+          centrifuge.newSubscription('{{ opens.event }}').on('publication', function (ctx)
+          {
+            document.getElementById('product-{{ opens.event }}').innerHTML = ctx.data.product;
+
+            $total = parseInt(document.getElementById('total-{{ opens.event }}').textContent);
+            document.getElementById('total-{{ opens.event }}').textContent = $total + ctx.data.total
+
+          }).subscribe();
+
+    {% endif %}
+
+
+    /** Удаляем из списка у всех продукт */
+    centrifuge.newSubscription('remove').on('publication', function (ctx)
+    {
+        let $identifier = document.getElementById(ctx.data.identifier);
+        if($identifier) { $identifier.remove(); }
+    }).subscribe();
+
 
 }, 100);
 
-
-
-
-
 </script>
-
-
 
 
 
