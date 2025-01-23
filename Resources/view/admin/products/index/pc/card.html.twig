@@ -23,28 +23,17 @@
             </div>
 
             {# Обложка  #}
-            {% set image_path = '/assets/img/blank.svg' %}
-
-            {% if item.product_image_ext is defined and item.product_image_ext is not null %}
-                {% set img_host =  item.product_image_cdn == true  ? CDN_HOST : '' %}
-                {% set img_dir = item.product_image %}
-                {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ item.product_image_ext %}
-                {% set image_path = img_host ~ img_dir ~ img_file %}
-            {% endif %}
-
-
 
             <div class="d-flex flex-column small gap-1 p-2 bg-cover lazy col-2 w-100"
-                 style="height: 280px;"
-                 data-bg="{{ image_path }}"
+                 style="height: 200px;"
+                 data-bg="{{ cdn_image_path(item.product_image, item.product_image_ext, item.product_image_cdn) }}"
             >
-
-                    <div
-                            class="icon rounded-circle bg-contain p-1 mb-2 shadow position-absolute"
-                            style="width: 25px; height: 25px;"
-                    >
-                        {{ include(_self|replace({ "card.html.twig": "_usecase.html.twig" })) }}
-                    </div>
+                <div
+                        class="icon rounded-circle bg-contain p-1 mb-2 shadow position-absolute"
+                        style="width: 25px; height: 25px;"
+                >
+                    {{ include(_self|replace({ "card.html.twig": "_usecase.html.twig" })) }}
+                </div>
 
             </div>
 
@@ -83,14 +72,15 @@
                 <div class="d-flex justify-content-between align-items-center small">
 
                     <div>
+
                         <div class="d-flex align-items-center">
-                            <span>Арт: &nbsp;</span>
-                            <form method="post" action='{{ path('manufacture-part:admin.products.index', { id: item.id }) }}'
-                                  class="p-0">
+                            <form method="post" action='{{ path('manufacture-part:admin.index') }}' class="p-0">
                                 <input type="hidden" name="search_form[query]" value="{{ item.product_article }}">
-                                <button type="submit" class="btn btn-link text-decoration-none btn-sm p-0 border-0">
-                                    <span class="small">{{ item.product_article }}</span>
+                                <button type="submit"
+                                        class="btn btn-link text-decoration-none btn-sm p-0 border-0 small">
+                                    <span class="">{{ item.product_article }}</span>
                                 </button>
+
                             </form>
                         </div>
 
@@ -100,9 +90,7 @@
                     </div>
 
                     {# Деффектовка #}
-                    {% if  is_granted('ROLE_ADMIN') or
-                        (is_granted('ROLE_MANUFACTURE_PART_DEFECT') and info.status != 'open')
-                    %}
+                    {% if  is_granted('ROLE_ADMIN') or (is_granted('ROLE_MANUFACTURE_PART_DEFECT') and info.status != 'open') %}
                         <span
                                 role="tooltip"
                                 data-bs-toggle="tooltip"
