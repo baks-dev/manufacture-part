@@ -49,7 +49,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AddProductsController extends AbstractController
 {
     /**
-     * Добавить продукцию в производственную партию 
+     * Добавить продукцию в производственную партию
      */
     #[Route('/admin/manufacture/part/product/add/{total}', name: 'admin.products.add', methods: ['GET', 'POST'])]
     public function news(
@@ -64,7 +64,6 @@ final class AddProductsController extends AbstractController
         ?int $total = null,
     ): Response
     {
-
         $ManufacturePartProductDTO = new ManufacturePartProductsDTO($this->getProfileUid());
 
         if($request->isMethod('GET'))
@@ -77,12 +76,22 @@ final class AddProductsController extends AbstractController
                 ->setTotal($total);
         }
 
-        // Форма
-        $form = $this->createForm(ManufacturePartProductsForm::class, $ManufacturePartProductDTO, [
-            'action' => $this->generateUrl('manufacture-part:admin.products.add'),
-        ]);
 
-        $form->handleRequest($request);
+        /* Скрываем у других продукт */
+        $CentrifugoPublish
+            ->addData(['identifier' => $ManufacturePartProductDTO->getIdentifier()]) // ID продукта
+            ->addData(['profile' => (string) $this->getCurrentProfileUid()])
+            ->send('remove');
+
+
+        // Форма
+        $form = $this
+            ->createForm(
+                type: ManufacturePartProductsForm::class,
+                data: $ManufacturePartProductDTO,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.products.add')]
+            )
+            ->handleRequest($request);
 
         $details = $productDetail
             ->event($ManufacturePartProductDTO->getProduct())
@@ -98,17 +107,17 @@ final class AddProductsController extends AbstractController
             $handle = $ManufacturePartProductHandler
                 ->handle($ManufacturePartProductDTO, $this->getCurrentProfileUid());
 
-//            /** Если была открыта новая партия - делаем редирект */
-//            if($handle instanceof ManufacturePart)
-//            {
-//                $this->addFlash(
-//                    'admin.page.new',
-//                    'admin.success.new',
-//                    'admin.manufacture.part'
-//                );
-//
-//                return $this->redirectToRoute('manufacture-part:admin.index');
-//            }
+            //            /** Если была открыта новая партия - делаем редирект */
+            //            if($handle instanceof ManufacturePart)
+            //            {
+            //                $this->addFlash(
+            //                    'admin.page.new',
+            //                    'admin.success.new',
+            //                    'admin.manufacture.part'
+            //                );
+            //
+            //                return $this->redirectToRoute('manufacture-part:admin.index');
+            //            }
 
             /** Если был добавлен продукт в открытую партию отправляем сокет */
             if($handle instanceof ManufacturePartProduct)
@@ -126,9 +135,10 @@ final class AddProductsController extends AbstractController
                 /* Скрываем у всех продукт */
                 $CentrifugoPublish
                     ->addData(['identifier' => $ManufacturePartProductDTO->getIdentifier()]) // ID продукта
+                    ->addData(['profile' => false])
                     ->send('remove');
 
-                
+
                 $return = $this->addFlash(
                     type: 'admin.page.add',
                     message: 'admin.success.add',

@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,27 +25,36 @@ namespace BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart;
 
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
-use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
+use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 interface ProductsByManufacturePartInterface
 {
-    /**
-     * Возвращает всю продукцию, добавленную в производственную партию
-     */
-    public function fetchAllProductsByManufacturePartAssociative(
-        SearchDTO $search,
-        PartProductFilterInterface $filter,
-        ManufacturePartUid $part,
-        UserProfileUid $profile,
-        ?UserProfileUid $authority,
-        bool $other
-    ): PaginatorInterface;
-
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self;
 
     /**
      * Метод возвращает список продукции в производственной партии
+     *
+     * @return array{
+     *      product_id: string,
+     *      product_event: string,
+     *      product_name: string,
+     *      product_offer_id: string,
+     *      product_offer_value: string,
+     *      product_offer_postfix: string,
+     *      product_offer_reference: string,
+     *      product_variation_id: string,
+     *      product_variation_value: string,
+     *      product_variation_postfix: string,
+     *      product_variation_reference: string,
+     *       product_modification_id: string,
+     *       product_modification_value: string,
+     *       product_modification_postfix: string,
+     *       product_modification_reference: string,
+     *      product_total: int
+     *  }
+     *
      */
-    public function getAllProductsByManufacturePart(ManufacturePartUid $part): ?array;
+    public function findAll(): ?array;
 }

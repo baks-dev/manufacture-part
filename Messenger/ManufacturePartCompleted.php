@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,18 +46,20 @@ final readonly class ManufacturePartCompleted
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
-        private ProductsByManufacturePartInterface $productsByManufacturePart,
+        private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private CentrifugoPublishInterface $CentrifugoPublish,
         private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
     ) {}
 
     /**
-     * Проверяем, имеется ли не выпаленное действие, если нет - заявка выполнена
+     * Проверяем, имеется ли не выполненное действие, если нет - заявка выполнена
      * (применяем статус Complete)
      */
     public function __invoke(ManufacturePartMessage $message): void
     {
-        $ManufacturePartEvent = $this->manufacturePartCurrentEvent->findByManufacturePart($message->getId());
+        $ManufacturePartEvent = $this->manufacturePartCurrentEvent
+            ->fromPart($message->getId())
+            ->find();
 
         if(!$ManufacturePartEvent)
         {
@@ -97,8 +99,9 @@ final readonly class ManufacturePartCompleted
             $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
 
             /** Получаем всю продукцию в партии и снимаем блокировку */
-            $ProductsManufacture = $this->productsByManufacturePart
-                ->getAllProductsByManufacturePart($message->getId());
+            $ProductsManufacture = $this->ProductsByManufacturePart
+                ->forPart($message->getId())
+                ->findAll();
 
             foreach($ProductsManufacture as $complete)
             {

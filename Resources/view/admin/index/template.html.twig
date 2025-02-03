@@ -89,8 +89,18 @@ setTimeout(function vwZSPXkyxD() {
     /** Удаляем из списка у всех продукт */
     centrifuge.newSubscription('remove').on('publication', function (ctx)
     {
+        if(ctx.data.profile === '{{ current_profile }}')
+        {
+            return;
+        }
+
         let $identifier = document.getElementById(ctx.data.identifier);
-        if($identifier) { $identifier.remove(); }
+
+        if($identifier)
+        {
+            $identifier.remove();
+        }
+
     }).subscribe();
 
 

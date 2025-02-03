@@ -21,18 +21,36 @@
  *  THE SOFTWARE.
  */
 
-namespace BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent;
+declare(strict_types=1);
 
-use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+namespace BaksDev\Manufacture\Part\UseCase\ProductStocks;
 
-interface ManufacturePartCurrentEventInterface
+use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEvent;
+use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
+use BaksDev\Products\Stocks\Messenger\ProductStockMessage;
+
+final class ManufactureProductStockHandler extends AbstractHandler
 {
-    public function fromPart(ManufacturePart|ManufacturePartUid|string $part): self;
+    public function handle(ManufactureProductStockDTO $command): string|ProductStock
+    {
+        $this->setCommand($command);
+        $this->preEventPersistOrUpdate(ProductStock::class, ProductStockEvent::class);
 
-    /**
-     * Возвращает активное событие по идентификатору ManufacturePart
-     */
-    public function find(): ?ManufacturePartEvent;
+        /** Валидация всех объектов */
+        if($this->validatorCollection->isInvalid())
+        {
+            return $this->validatorCollection->getErrorUniqid();
+        }
+
+        $this->flush();
+
+        /* Отправляем сообщение в шину */
+        $this->messageDispatch->dispatch(
+            message: new ProductStockMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+            transport: 'products-stocks'
+        );
+
+        return $this->main;
+    }
 }

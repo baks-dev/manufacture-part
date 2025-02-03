@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -51,8 +51,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['complete'])]
 class ManufacturePartEvent extends EntityEvent
 {
-    public const TABLE = 'manufacture_part_event';
-
     /**
      * Идентификатор События
      */
@@ -113,21 +111,21 @@ class ManufacturePartEvent extends EntityEvent
      * Коллекция продукции
      */
     #[Assert\Valid]
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ManufacturePartProduct::class, cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: ManufacturePartProduct::class, mappedBy: 'event', cascade: ['all'])]
     private Collection $product;
 
     /**
      * Рабочее состояние партии
      */
     #[Assert\Valid]
-    #[ORM\OneToOne(mappedBy: 'event', targetEntity: ManufacturePartWorking::class, cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: ManufacturePartWorking::class, mappedBy: 'event', cascade: ['all'])]
     private ?ManufacturePartWorking $working = null;
 
     /**
      * Модификатор
      */
     #[Assert\Valid]
-    #[ORM\OneToOne(mappedBy: 'event', targetEntity: ManufacturePartModify::class, cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: ManufacturePartModify::class, mappedBy: 'event', cascade: ['all'])]
     private ManufacturePartModify $modify;
 
 
@@ -184,6 +182,13 @@ class ManufacturePartEvent extends EntityEvent
     {
         return $this->status;
     }
+
+
+    public function equalsManufacturePartStatus(mixed $status): bool
+    {
+        return $this->status->equals($status);
+    }
+
 
     /**
      * Action

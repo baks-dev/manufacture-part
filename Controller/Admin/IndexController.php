@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -55,14 +55,19 @@ final class IndexController extends AbstractController
         AllManufactureProductsInterface $allManufactureProducts,
         TokenUserGenerator $tokenUserGenerator,
         int $page = 0,
-    ): Response {
+    ): Response
+    {
 
         // Поиск
-        $search = new SearchDTO($request);
-        $searchForm = $this->createForm(SearchForm::class, $search, [
-            'action' => $this->generateUrl('manufacture-part:admin.index'),
-        ]);
-        $searchForm->handleRequest($request);
+        $search = new SearchDTO();
+
+        $searchForm = $this
+            ->createForm(
+                type: SearchForm::class,
+                data: $search,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.index'),]
+            )
+            ->handleRequest($request);
 
 
         /**
@@ -74,20 +79,24 @@ final class IndexController extends AbstractController
         /**
          * Фильтр продукции
          */
-        $filter = new ProductFilterDTO($request);
+        $filter = new ProductFilterDTO();
 
         if($opens)
         {
             /* Если открыт производственный процесс - жестко указываем категорию и скрываем выбор */
             $filter->setCategory(new CategoryProductUid($opens['category_id'], $opens['category_name']));
+            $filter->categoryInvisible();
         }
 
-        $filterForm = $this->createForm(ProductFilterForm::class, $filter, [
-            'action' => $this->generateUrl('manufacture-part:admin.index'),
-        ]);
+        $filterForm = $this
+            ->createForm(
+                type: ProductFilterForm::class,
+                data: $filter,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.index')]
+            );
 
         $filterForm->handleRequest($request);
-        !$filterForm->isSubmitted() ?: $this->redirectToReferer();
+        //!$filterForm->isSubmitted() ?: $this->redirectToReferer();
 
 
         /**
@@ -108,7 +117,7 @@ final class IndexController extends AbstractController
                 'query' => $query, //$ManufacturePart,
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
-                //'profile' => $profileForm->createView(),
+                'current_profile' => $this->getCurrentProfileUid(),
                 'token' => $tokenUserGenerator->generate($this->getUsr()),
             ]
         );

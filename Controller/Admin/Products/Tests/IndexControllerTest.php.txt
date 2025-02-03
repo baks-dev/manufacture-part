@@ -29,9 +29,9 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When(env: 'test')]
 final class IndexControllerTest extends WebTestCase
 {
-    private const URL = '/admin/manufacture/part/products/%s';
+    private const string URL = '/admin/manufacture/part/products/%s';
 
-    private const ROLE = 'ROLE_MANUFACTURE_PART';
+    private const string ROLE = 'ROLE_MANUFACTURE_PART';
 
 
     private static ?ManufacturePartUid $identifier = null;
