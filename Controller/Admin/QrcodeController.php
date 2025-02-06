@@ -50,11 +50,11 @@ final class QrcodeController extends AbstractController
      */
     #[Route('/admin/manufacture/part/qrcode/{id}', name: 'admin.qrcode', methods: ['GET', 'POST'])]
     public function qrcode(
-        Request $request,
         #[MapEntity] ManufacturePart $ManufacturePart,
         BarcodeWrite $BarcodeWrite
     ): Response
     {
+
         $data = sprintf('%s', $ManufacturePart->getId());
 
         $barcode = $BarcodeWrite
@@ -65,6 +65,11 @@ final class QrcodeController extends AbstractController
 
         if($barcode === false)
         {
+            /**
+             * Проверить права на исполнение
+             * chmod +x /home/bundles.baks.dev/vПendor/baks-dev/barcode/Writer/Generate
+             * chmod +x /home/bundles.baks.dev/vendor/baks-dev/barcode/Reader/Decode
+             * */
             throw new RuntimeException('Barcode write error');
         }
 

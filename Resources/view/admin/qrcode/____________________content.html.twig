@@ -4,14 +4,16 @@
             visibility: hidden;
         }
 
-   .main { display: none; }
+        .main {
+            display: none;
+        }
 
         .printer {
             position: absolute;
-            visibility: visible  !important;
+            visibility: visible !important;
         }
 
-        .modal-body{
+        .modal-body {
             position: fixed !important;
             top: 0;
             left: 0;
@@ -25,7 +27,7 @@
 
 {{ include(_self|replace({ "content.html.twig": baks_settings.device~"/content.html.twig" })) }}
 
-<script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/print.min.js?v={{ version }}" class="lazy"></script>
+{# <script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/print.min.js?v={{ version }}" class="lazy"></script> #}
 
 
 
