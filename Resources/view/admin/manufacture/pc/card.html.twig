@@ -10,21 +10,24 @@
     </td>
 
     <td class="text-center">
-        <span
 
+
+
+
+        <span
                 role="tooltip"
                 data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-delay='{"show":600,"hide":100}'
-              title='QR производственной партии'
+                data-bs-placement="bottom"
+                data-bs-delay='{"show":600,"hide":100}'
+                title='QR производственной партии'
         >
-                <a
-                        href="{{ path('manufacture-part:admin.qrcode', { id : item.id }) }}"
-                        class="btn-link btn p-0 modal-link disabled icon"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal"
-                        style="width: 55px; height: 55px;"
-                >
+
+            <a href="{{ path('manufacture-part:admin.qrcode', { id : item.id, print: true }) }}"
+               class="btn btn-sm btn-link disabled icon prnt"
+               data-bs-toggle="modal"
+               data-bs-target="#modal"
+               style="width: 55px; height: 55px;"
+            >
                     <svg
                             xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor"
                             class="bi bi-qr-code" viewBox="0 0 16 16"><path d="M2 2h2v2H2V2Z"></path><path
@@ -34,6 +37,8 @@
                                 d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z"></path>
                     </svg>
                 </a>
+
+
             </span>
     </td>
     <td class="w-100">

@@ -1,91 +1,12 @@
-<div class="modal-dialog modal-dialog-centered " style="max-width: 400px;">
-
-    <div class="modal-content p-3 border-bottom border-5 border-primary">
-
-        <div class="modal-header">
-            <h5 class="modal-title">
-                {{ 'QR код партии производства'|trans }}
-            </h5>
-        </div>
-
-        <div class="modal-body">
-
-            <div class="printer text-center">
-                 <div class="text-center w-100" style="min-width: 320px;">
-                     <img src='{{ qrcode }}' alt='QR Code' class="w-100"/>
-                     <h6 class="w-100 fw-bolder"># {{ item.number }}</h6>
-                     <div class="w-100">Количество: <strong>{{ item.quantity }} шт.</strong></div>
-                </div>
-
-               {# {% if item.product_offer_value %}
-                <div class="w-100"><small class="text-muted">{{ item.product_offer_name }}: </small>
-                <span class="fw-bolder">{{ item.product_offer_value|call_twig_func(item.product_offer_reference) }}
-                    {{ item.product_offer_postfix }}
-                </span>
-                </div>
-                {% endif %}#}
-
-                {#{% if item.product_variation_value %}
-                    <div class="w-100">
-                        <small class="text-muted">{{ item.product_variation_name }}: </small>
-                        <span class="fw-bolder">
-                            {{ item.product_variation_value|call_twig_func(item.product_variation_reference) }}
-                        {{ item.product_variation_postfix }}
-                            </span>
-                    </div>
-                {% endif %}#}
-
-                {#{% if item.product_modification_value %}
-                    <small class="text-muted">{{ item.product_modification_name }}: </small>
-                    <span class="fw-bolder">
-                        {{ item.product_modification_value|call_twig_func(item.product_modification_reference) }}
-                        {{ item.product_modification_postfix }}
-                    </span>
-                {% endif %}#}
-
-            </div>
-
-            <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
+<div class="{{ app.request.headers.get('X-Requested-With') is not null ? 'd-none' }} d-print-block p-0 w-100">
 
 
-            {# <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
-            <img class="printer page-break" src='{{ qrcode }}' alt='QR Code' width='300' height='300'>
-            <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
-            <img class="printer page-break" src='{{ qrcode }}' alt='QR Code' width='300' height='300'>
-            <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
-            <img class="printer page-break" src='{{ qrcode }}' alt='QR Code' width='300' height='300'>
-            <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
-            <img class="printer page-break" src='{{ qrcode }}' alt='QR Code' width='300' height='300'>
-            <div class="page-break" style="page-break-before:always; position: absolute;">&nbsp;</div>
-            <img class="printer page-break" src='{{ qrcode }}' alt='QR Code' width='300' height='300'> #}
-        </div>
-
-        <div class="modal-footer ">
-
-            <div class="flex-grow-1">
-                &nbsp;
-            </div>
-
-            <div class="d-flex gap-3">
-                {# Отмена #}
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                    {{ 'btn.cancel'|trans({}, 'core.btn') }}
-                </button>
-                {# Печать #}
-                <button id="print_all" type="button" class="btn btn-primary">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                         class="bi bi-printer-fill"
-                         viewBox="0 0 16 16">
-                        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
-                        <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-                    </svg>
-
-                    Печать
-                </button>
-
-            </div>
-        </div>
-
+    <div class="text-center w-100" style="min-width: 320px;">
+        <img src='{{ qrcode }}' alt='QR Code' class="w-100"/>
+        <h6 class="w-100 fw-bolder"># {{ item.number }}</h6>
+        <div class="w-100">Количество: <strong>{{ item.quantity }} шт.</strong></div>
     </div>
 </div>
+
+
+
