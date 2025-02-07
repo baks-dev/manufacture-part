@@ -102,8 +102,6 @@ final readonly class PackageOrdersByPartCompleted
 
         /** Получаем всю продукцию в производственной партии */
 
-
-        /** Получаем всю продукцию в партии  */
         $ProductsManufacture = $this->ProductsByManufacturePart
             ->forPart($message->getId())
             ->findAll();
@@ -117,10 +115,11 @@ final readonly class PackageOrdersByPartCompleted
          * Определяем тип производства для заказов
          */
 
+
         // TODO: Переделать завершающие этапы на типы доставки
         $orderType = match (true)
         {
-            $ManufacturePartDTO->getComplete()->equals(ManufacturePartCompleteWildberriesFbs::class) => TypeDeliveryFbsWildberries::TYPE,
+            $ManufacturePartEvent->equalsManufacturePartComplete(ManufacturePartCompleteWildberriesFbs::class) => TypeDeliveryFbsWildberries::TYPE,
             default => false,
         };
 
@@ -186,6 +185,7 @@ final readonly class PackageOrdersByPartCompleted
                     ->forOffer($ProductOfferUid)
                     ->forVariation($ProductVariationUid)
                     ->forModification($ProductModificationUid)
+                    ->onlyNewStatus()
                     ->find();
 
                 /**
@@ -258,6 +258,9 @@ final readonly class PackageOrdersByPartCompleted
 
                     $AccessOrderPriceDTO->addAccess();
 
+                    /**
+                     * Если заказ не укомплектован - увеличиваем ACCESS продукции на единицу для дальнейшей сборки
+                     */
                     if(false === $AccessOrderPriceDTO->isAccess())
                     {
                         // Увеличиваем ACCESS продукции на единицу

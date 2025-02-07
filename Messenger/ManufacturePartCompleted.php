@@ -39,7 +39,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 0)]
+#[AsMessageHandler(priority: 10)]
 final readonly class ManufacturePartCompleted
 {
     public function __construct(

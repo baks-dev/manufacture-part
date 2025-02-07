@@ -189,6 +189,11 @@ class ManufacturePartEvent extends EntityEvent
         return $this->status->equals($status);
     }
 
+    public function equalsManufacturePartComplete(mixed $complete): bool
+    {
+        return $this->complete->equals($complete);
+    }
+
 
     /**
      * Action

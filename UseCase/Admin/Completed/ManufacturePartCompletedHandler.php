@@ -35,7 +35,6 @@ use BaksDev\Wildberries\Package\Entity\Package\Event\WbPackageEvent;
 use BaksDev\Wildberries\Package\Entity\Package\WbPackage;
 use BaksDev\Wildberries\Package\Messenger\Package\WbPackageMessage;
 use Doctrine\ORM\EntityManagerInterface;
-use DomainException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -45,20 +44,8 @@ final class ManufacturePartCompletedHandler extends AbstractHandler
     /** @see ManufacturePart */
     public function handle(ManufacturePartCompletedDTO $command): string|ManufacturePart
     {
-        /* Валидация DTO  */
-        $this->validatorCollection->add($command);
-
-        $this->main = new ManufacturePart();
-        $this->event = new ManufacturePartEvent();
-
-        try
-        {
-            $this->preUpdate($command, true);
-        }
-        catch(DomainException $errorUniqid)
-        {
-            return $errorUniqid->getMessage();
-        }
+        $this->setCommand($command);
+        $this->preEventPersistOrUpdate(ManufacturePart::class, ManufacturePartEvent::class);
 
         /* Валидация всех объектов */
         if($this->validatorCollection->isInvalid())
@@ -66,8 +53,7 @@ final class ManufacturePartCompletedHandler extends AbstractHandler
             return $this->validatorCollection->getErrorUniqid();
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->clear();
+        $this->flush();
 
         /* Отправляем сообщение в шину */
         $this->messageDispatch->dispatch(
