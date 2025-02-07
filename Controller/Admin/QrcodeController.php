@@ -32,7 +32,6 @@ use BaksDev\Barcode\Writer\BarcodeWrite;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use chillerlan\QRCode\QRCode;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Filesystem\Filesystem;
