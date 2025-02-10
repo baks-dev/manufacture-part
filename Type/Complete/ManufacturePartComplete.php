@@ -27,7 +27,7 @@ namespace BaksDev\Manufacture\Part\Type\Complete;
 
 
 use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteInterface;
-use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteNothing;
+use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteStocks;
 
 final class ManufacturePartComplete
 {
@@ -109,7 +109,7 @@ final class ManufacturePartComplete
         {
             /** @var ManufacturePartCompleteInterface $complete */
             $actions = new $complete;
-            $case[ $complete === ManufacturePartCompleteNothing::class ? 0 : $key] = new self($actions);
+            $case[$complete === ManufacturePartCompleteStocks::class ? 0 : $key] = new self($actions);
             $key++;
         }
 

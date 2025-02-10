@@ -64,10 +64,17 @@ final class ManufactureController extends AbstractController
             )
             ->handleRequest($request);
 
+
         // Фильтр
         $filter = new ManufactureFilterDTO($request);
-        $filterForm = $this->createForm(ManufactureFilterForm::class, $filter);
-        $filterForm->handleRequest($request);
+
+        $filterForm = $this
+            ->createForm(
+                ManufactureFilterForm::class,
+                $filter,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.manufacture')]
+            )
+            ->handleRequest($request);
 
 
         if($filterForm->isSubmitted())

@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,11 +27,14 @@ namespace BaksDev\Manufacture\Part\Entity\Products;
 
 use BaksDev\Core\Entity\EntityEvent;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Products\Orders\ManufacturePartProductOrder;
 use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductUid;
+use BaksDev\Orders\Order\Type\Id\OrderUid;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
@@ -45,8 +48,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['product', 'offer', 'variation', 'modification'])]
 class ManufacturePartProduct extends EntityEvent
 {
-    public const TABLE = 'manufacture_part_product';
-
     /**
      * Идентификатор
      */
@@ -98,6 +99,13 @@ class ManufacturePartProduct extends EntityEvent
     #[Assert\Range(min: 1)]
     #[ORM\Column(type: Types::INTEGER)]
     private int $total;
+
+    /**
+     * Коллекция заказов, закрепленных за продуктом
+     */
+    #[Assert\Valid]
+    #[ORM\OneToMany(targetEntity: ManufacturePartProductOrder::class, mappedBy: 'product', cascade: ['all'])]
+    private Collection $ord;
 
 
     public function __construct(ManufacturePartEvent $event)

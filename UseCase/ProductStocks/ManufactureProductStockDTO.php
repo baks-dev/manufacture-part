@@ -24,6 +24,7 @@
 namespace BaksDev\Manufacture\Part\UseCase\ProductStocks;
 
 use BaksDev\Contacts\Region\Type\Call\ContactsRegionCallUid;
+use BaksDev\Manufacture\Part\UseCase\ProductStocks\Invariable\ManufactureProductStocksInvariableDTO;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
@@ -38,7 +39,7 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** @see MaterialStockEvent */
+/** @see ProductStockEvent */
 final class ManufactureProductStockDTO implements ProductStockEventInterface
 {
     /** Идентификатор */
@@ -46,30 +47,23 @@ final class ManufactureProductStockDTO implements ProductStockEventInterface
     #[Assert\IsNull]
     private ?ProductStockEventUid $id = null;
 
-    /** Ответственное лицо (Профиль пользователя) */
-    #[Assert\NotBlank]
-    #[Assert\Uuid]
-    private readonly UserProfileUid $profile;
-
     /** Статус заявки - ПРИХОД */
     #[Assert\NotBlank]
     private readonly ProductStockStatus $status;
 
-    /** Номер заявки */
-    #[Assert\NotBlank]
-    #[Assert\Type('string')]
-    #[Assert\Length(max: 36)]
-    private string $number;
 
     /** Коллекция продукции  */
     #[Assert\Valid]
     private ArrayCollection $product;
 
+    #[Assert\Valid]
+    private ManufactureProductStocksInvariableDTO $invariable;
+
     public function __construct()
     {
-        $this->number = number_format(microtime(true) * 100, 0, '.', '.');
         $this->status = new ProductStockStatus(ProductStockStatusIncoming::class);
         $this->product = new ArrayCollection();
+        $this->invariable = new ManufactureProductStocksInvariableDTO();
     }
 
     public function getEvent(): ?ProductStockEventUid
@@ -116,32 +110,18 @@ final class ManufactureProductStockDTO implements ProductStockEventInterface
     }
 
 
-    /** Ответственное лицо (Профиль пользователя) */
-    public function getProfile(): UserProfileUid
-    {
-        return $this->profile;
-    }
-
-    public function setProfile(UserProfileUid $profile): self
-    {
-        $this->profile = $profile;
-        return $this;
-    }
-
-
     /** Статус заявки - ПРИХОД */
     public function getStatus(): ProductStockStatus
     {
         return $this->status;
     }
 
-    /** Номер заявки */
-
-    public function getNumber(): string
+    /**
+     * Invariable
+     */
+    public function getInvariable(): ManufactureProductStocksInvariableDTO
     {
-
-
-        return $this->number;
+        return $this->invariable;
     }
 
 }

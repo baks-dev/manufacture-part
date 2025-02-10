@@ -23,7 +23,6 @@
 
 namespace BaksDev\Manufacture\Part\UseCase\ProductStocks\Products;
 
-use BaksDev\Contacts\Region\Type\Call\ContactsRegionCallUid;
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
@@ -77,9 +76,9 @@ final class ProductStockDTO implements ProductStockProductInterface
         return $this->offer;
     }
 
-    public function setOffer(?ProductOfferConst $offer): self
+    public function setOffer(ProductOfferConst|null|false $offer): self
     {
-        $this->offer = $offer;
+        $this->offer = empty($offer) ? null : $offer;
 
         return $this;
     }
@@ -90,9 +89,9 @@ final class ProductStockDTO implements ProductStockProductInterface
         return $this->variation;
     }
 
-    public function setVariation(?ProductVariationConst $variation): self
+    public function setVariation(ProductVariationConst|null|false $variation): self
     {
-        $this->variation = $variation;
+        $this->variation = empty($variation) ? null : $variation;
 
         return $this;
     }
@@ -103,9 +102,9 @@ final class ProductStockDTO implements ProductStockProductInterface
         return $this->modification;
     }
 
-    public function setModification(?ProductModificationConst $modification): self
+    public function setModification(ProductModificationConst|null|false $modification): self
     {
-        $this->modification = $modification;
+        $this->modification = empty($modification) ? null : $modification;
 
         return $this;
     }

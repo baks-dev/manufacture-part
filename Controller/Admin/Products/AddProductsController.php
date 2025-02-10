@@ -104,20 +104,7 @@ final class AddProductsController extends AbstractController
         {
             $this->refreshTokenForm($form);
 
-            $handle = $ManufacturePartProductHandler
-                ->handle($ManufacturePartProductDTO, $this->getCurrentProfileUid());
-
-            //            /** Если была открыта новая партия - делаем редирект */
-            //            if($handle instanceof ManufacturePart)
-            //            {
-            //                $this->addFlash(
-            //                    'admin.page.new',
-            //                    'admin.success.new',
-            //                    'admin.manufacture.part'
-            //                );
-            //
-            //                return $this->redirectToRoute('manufacture-part:admin.index');
-            //            }
+            $handle = $ManufacturePartProductHandler->handle($ManufacturePartProductDTO);
 
             /** Если был добавлен продукт в открытую партию отправляем сокет */
             if($handle instanceof ManufacturePartProduct)

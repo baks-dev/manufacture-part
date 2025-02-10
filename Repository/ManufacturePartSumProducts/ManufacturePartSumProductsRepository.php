@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,15 @@ final readonly class ManufacturePartSumProductsRepository implements Manufacture
     {
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
 
-        $qb->select('SUM(products.total)');
-        $qb->from(ManufacturePartProduct::class, 'products');
-        $qb->where('products.event = :event');
-        $qb->setParameter('event', $event, ManufacturePartEventUid::TYPE);
+        $qb
+            ->select('SUM(products.total)')
+            ->from(ManufacturePartProduct::class, 'products')
+            ->where('products.event = :event')
+            ->setParameter(
+                key: 'event',
+                value: $event,
+                type: ManufacturePartEventUid::TYPE
+            );
 
         return $qb->fetchOne() ?: 0;
     }

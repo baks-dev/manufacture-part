@@ -28,6 +28,7 @@ namespace BaksDev\Manufacture\Part\Controller\Admin;
 
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
@@ -60,22 +61,21 @@ final class PackageController extends AbstractController
             ->fromPart($ManufacturePart)
             ->find();
 
-        if(!$ManufacturePartEvent)
+        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             throw new InvalidArgumentException('Page not found');
         }
 
-        $ManufacturePartPackageDTO = new ManufacturePartPackageDTO($ManufacturePart->getEvent());
+        $ManufacturePartPackageDTO = new ManufacturePartPackageDTO();
         $ManufacturePartEvent->getDto($ManufacturePartPackageDTO);
 
-
-        $form = $this->createForm(ManufacturePartPackageForm::class, $ManufacturePartPackageDTO, [
-            'action' => $this->generateUrl('manufacture-part:admin.package',
-                ['id' => $ManufacturePart->getId()]
-            ),
-        ]);
-
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: ManufacturePartPackageForm::class,
+                data: $ManufacturePartPackageDTO,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.package', ['id' => $ManufacturePart->getId()])]
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_package'))
         {
@@ -85,9 +85,13 @@ final class PackageController extends AbstractController
 
             if($handle instanceof ManufacturePart)
             {
-                $this->addFlash('admin.page.package', 'admin.success.package', 'admin.manufacture.part');
+                $this->addFlash(
+                    'admin.page.package',
+                    'admin.success.package',
+                    'admin.manufacture.part'
+                );
 
-                return $this->redirectToRoute('manufacture-part:admin.products.index',['id' => $ManufacturePart->getId()]);
+                return $this->redirectToRoute('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]);
             }
 
             $this->addFlash(
@@ -99,10 +103,10 @@ final class PackageController extends AbstractController
 
             return $this->redirectToRoute('manufacture-part:admin.index', status: 400);
         }
-        
+
         return $this->render([
             'form' => $form->createView(),
-            'number' => $ManufacturePart->getNumber()
+            'number' => $ManufacturePartEvent->getNumber()
         ]);
     }
 }

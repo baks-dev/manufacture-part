@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
@@ -34,6 +35,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartSt
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedHandler;
+use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use DomainException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -61,78 +63,78 @@ final readonly class ManufacturePartCompleted
             ->fromPart($message->getId())
             ->find();
 
-        if(!$ManufacturePartEvent)
+        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             return;
         }
 
-        $this->logger->info('Проверяем, что производственная партия не выполнена', [
-            self::class.':'.__LINE__,
-            'class' => self::class,
-            'message' => sprintf("new %s(new %s('%s'),new %s('%s'));",
-                $message::class,
-                $message->getId()::class,
-                $message->getId(),
-                $message->getEvent()::class,
-                $message->getEvent()
-            )
-        ]);
+        $this->logger->info(
+            'Проверяем, что производственная партия не выполнена',
+            [$message, self::class.':'.__LINE__]
+        );
 
-
-        /** Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве» */
+        /**
+         * Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве»
+         */
         if(
-            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) === true ||
-            $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class) === true
+            false === (
+                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
+                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
+            )
         )
         {
-            $working = $this->activeWorkingManufacturePart
-                ->findNextWorkingByManufacturePart($message->getId());
-
-            /** Если имеется этап производства */
-            if($working)
-            {
-                return;
-            }
-
-            /** Производственная партия выполнена (статус Complete) */
-            $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
-            $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
-
-            /** Получаем всю продукцию в партии и снимаем блокировку */
-            $ProductsManufacture = $this->ProductsByManufacturePart
-                ->forPart($message->getId())
-                ->findAll();
-
-            foreach($ProductsManufacture as $complete)
-            {
-                $identifier = $complete['product_event'];
-
-                if($complete['product_offer_id'])
-                {
-                    $identifier = $complete['product_offer_id'];
-                }
-                if($complete['product_variation_id'])
-                {
-                    $identifier = $complete['product_variation_id'];
-                }
-
-                if($complete['product_modification_id'])
-                {
-                    $identifier = $complete['product_modification_id'];
-                }
-
-                /** Отправляем сокет сокет с идентификатором */
-                $this->CentrifugoPublish
-                    ->addData(['identifier' => $identifier]) // ID упаковки
-                    ->send('remove');
-            }
-
-            if(!$handle instanceof ManufacturePart)
-            {
-                throw new DomainException(sprintf('%s: Ошибка при закрытии (статус Complete) производственной партии', $handle));
-            }
-
-            $this->logger->info('Производственная партия выполнена');
+            return;
         }
+
+
+        $working = $this->activeWorkingManufacturePart
+            ->findNextWorkingByManufacturePart($message->getId());
+
+        /** Если имеется этап производства */
+        if($working instanceof UsersTableActionsWorkingUid)
+        {
+            return;
+        }
+
+        /** Производственная партия полностью выполнена (статус Complete) */
+        $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
+        $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
+
+        /** Получаем всю продукцию в партии и снимаем блокировку */
+        $ProductsManufacture = $this->ProductsByManufacturePart
+            ->forPart($message->getId())
+            ->findAll();
+
+        foreach($ProductsManufacture as $complete)
+        {
+            $identifier = $complete['product_event'];
+
+            if($complete['product_offer_id'])
+            {
+                $identifier = $complete['product_offer_id'];
+            }
+            if($complete['product_variation_id'])
+            {
+                $identifier = $complete['product_variation_id'];
+            }
+
+            if($complete['product_modification_id'])
+            {
+                $identifier = $complete['product_modification_id'];
+            }
+
+            /** Отправляем сокет сокет с идентификатором */
+            $this->CentrifugoPublish
+                ->addData(['identifier' => $identifier]) // ID упаковки
+                ->send('remove');
+        }
+
+        if(!$handle instanceof ManufacturePart)
+        {
+            throw new DomainException(sprintf('%s: Ошибка при полном выполнении (статус Complete) производственной партии', $handle));
+        }
+
+        $this->logger->info('Производственная партия выполнена');
+
     }
 }

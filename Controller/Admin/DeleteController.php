@@ -28,6 +28,7 @@ namespace BaksDev\Manufacture\Part\Controller\Admin;
 
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteDTO;
@@ -57,7 +58,7 @@ final class DeleteController extends AbstractController
             ->fromPart($ManufacturePart)
             ->find();
 
-        if(!$ManufacturePartEvent)
+        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             throw new InvalidArgumentException('Page not found');
         }
@@ -97,7 +98,7 @@ final class DeleteController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'number' => $ManufacturePart->getNumber()
+            'number' => $ManufacturePartEvent->getNumber()
         ]);
     }
 }

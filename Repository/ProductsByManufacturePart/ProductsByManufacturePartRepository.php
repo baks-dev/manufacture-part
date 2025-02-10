@@ -45,6 +45,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 {
     private ManufacturePartUid|false $part = false;
 
+    private bool|null $order = null;
+
     public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
 
     public function forPart(ManufacturePart|ManufacturePartUid|string $part): self
@@ -61,6 +63,20 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
 
         $this->part = $part;
 
+        return $this;
+    }
+
+    public function onlyProductOrder(): self
+    {
+
+        $this->order = true;
+        return $this;
+    }
+
+    public function onlyEmptyOrder(): self
+    {
+
+        $this->order = false;
         return $this;
     }
 
@@ -115,8 +131,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             'part_event.id = part.event'
         );
 
-
         $dbal
+            ->addSelect('part_product.id AS part_product_id')
             ->addSelect('part_product.total AS product_total')
             ->leftJoin(
                 'part',

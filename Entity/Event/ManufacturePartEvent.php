@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Entity\Event;
 
 use BaksDev\Core\Entity\EntityEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Modify\ManufacturePartModify;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
@@ -47,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'manufacture_part_event')]
 #[ORM\Index(columns: ['action'])]
 #[ORM\Index(columns: ['status'])]
-#[ORM\Index(columns: ['profile'])]
+#[ORM\Index(columns: ['fixed'])]
 #[ORM\Index(columns: ['complete'])]
 class ManufacturePartEvent extends EntityEvent
 {
@@ -60,7 +61,6 @@ class ManufacturePartEvent extends EntityEvent
     #[ORM\Column(type: ManufacturePartEventUid::TYPE)]
     private ManufacturePartEventUid $id;
 
-
     /**
      * Идентификатор ManufacturePart
      */
@@ -68,6 +68,12 @@ class ManufacturePartEvent extends EntityEvent
     #[Assert\Uuid]
     #[ORM\Column(type: ManufacturePartUid::TYPE, nullable: false)]
     private ?ManufacturePartUid $main = null;
+
+    /**
+     * Постоянные неизменяемые свойства
+     */
+    #[ORM\OneToOne(targetEntity: ManufacturePartInvariable::class, mappedBy: 'event', cascade: ['all'])]
+    private ?ManufacturePartInvariable $invariable = null;
 
     /**
      * Идентификатор процесса производства
@@ -78,18 +84,12 @@ class ManufacturePartEvent extends EntityEvent
     private UsersTableActionsEventUid $action;
 
     /**
-     * Профиль ответственного.
+     * Фиксация производственной партии
      */
     #[Assert\NotBlank]
     #[Assert\Uuid]
-    #[ORM\Column(type: UserProfileUid::TYPE)]
-    private UserProfileUid $profile;
-
-    /**
-     * Фиксация производственной партии
-     */
-    #[ORM\Column(type: UserProfileUid::TYPE, nullable: true)]
-    private ?UserProfileUid $fixed = null;
+    #[ORM\Column(type: UserProfileUid::TYPE,)]
+    private UserProfileUid $fixed;
 
     /**
      * Статус производственной партии
@@ -103,7 +103,7 @@ class ManufacturePartEvent extends EntityEvent
      * Завершающий этап
      */
     #[Assert\NotBlank]
-    #[ORM\Column(type: ManufacturePartComplete::TYPE, nullable: true)]
+    #[ORM\Column(type: ManufacturePartComplete::TYPE)]
     private ManufacturePartComplete $complete;
 
 
@@ -208,7 +208,17 @@ class ManufacturePartEvent extends EntityEvent
      */
     public function getProfile(): UserProfileUid
     {
-        return $this->profile;
+        return $this->invariable->getProfile();
+    }
+
+    public function getQuantity(): int
+    {
+        return $this->invariable->getQuantity();
+    }
+
+    public function getNumber(): string
+    {
+        return $this->invariable->getNumber();
     }
 
     /**

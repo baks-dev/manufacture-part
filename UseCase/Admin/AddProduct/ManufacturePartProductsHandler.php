@@ -31,12 +31,12 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Core\Validator\ValidatorCollectionInterface;
 use BaksDev\Files\Resources\Upload\File\FileUploadInterface;
 use BaksDev\Files\Resources\Upload\Image\ImageUploadInterface;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePartByAction\OpenManufacturePartByActionInterface;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -61,34 +61,27 @@ final class ManufacturePartProductsHandler extends AbstractHandler
 
 
     /** @see ManufacturePart */
-    public function handle(
-        ManufacturePartProductsDTO $command,
-        UserProfileUid $current,
-    ): string|ManufacturePart|ManufacturePartProduct
+    public function handle(ManufacturePartProductsDTO $command): string|ManufacturePart|ManufacturePartProduct
     {
-
         /** Валидация DTO  */
         $this->validatorCollection->add($command);
 
-        /** Получаем активную открытую производственную партию ответственного лица */
-        $ManufacturePartEvent = $this->openManufacturePartByAction
-            ->findManufacturePartEventOrNull($current);
+        /**
+         * Получаем активную открытую производственную партию ответственного лица
+         */
+        $ManufacturePartEvent = $this->openManufacturePartByAction->find();
 
-        if(!$ManufacturePartEvent)
+        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'У профиля %s нет открытой производственной партии',
-                $current,
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
+            $this->logger->error($uniqid.': У профиля нет открытой производственной партии');
 
             return $uniqid;
         }
 
 
         /** Получаем категорию продукции */
-        $ProductEvent = $this->entityManager->getRepository(ProductEvent::class)->find(
+        $ProductEvent = $this->getRepository(ProductEvent::class)->find(
             $command->getProduct()
         );
 
@@ -107,7 +100,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
 
 
         /** Проверяем, что категория продукции соответствует категории партии */
-        $UsersTableActionsEvent = $this->entityManager->getRepository(UsersTableActionsEvent::class)->findOneBy(
+        $UsersTableActionsEvent = $this->getRepository(UsersTableActionsEvent::class)->findOneBy(
             [
                 'id' => $ManufacturePartEvent->getAction(),
                 'category' => $ProductEvent->getRootCategory()
@@ -139,16 +132,16 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             return $this->validatorCollection->getErrorUniqid();
         }
 
-
-        $this->entityManager->persist($ManufacturePartProduct);
-        $this->entityManager->flush();
+        $this->persist($ManufacturePartProduct);
+        $this->flush();
 
         /* Отправляем сообщение в шину */
-        $this->messageDispatch->dispatch(
-            message: new ManufacturePartMessage($ManufacturePartEvent->getMain(), $ManufacturePartEvent->getId()),
-            transport: 'manufacture-part'
-        );
-
+        $this->messageDispatch
+            ->addClearCacheOther('wildberries-manufacture')
+            ->dispatch(
+                message: new ManufacturePartMessage($ManufacturePartEvent->getMain(), $ManufacturePartEvent->getId()),
+                transport: 'manufacture-part'
+            );
 
         // 'manufacture_part_high'
         return $ManufacturePartProduct;

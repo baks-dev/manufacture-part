@@ -16,14 +16,20 @@
         </div>
 
         <div class="modal-body d-flex gap-3 align-items-center">
-            <div>
-                <img src='{{ qrcode }}' alt='QR Code' class="icon" style="width: 150px; height: 150px;">
+
+            <div class="w-75">
+                <div class="icon p-3 rounded-3" style="width: 180px; height: 180px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="currentColor"
+                         viewBox="0 10 30 30">
+                        {{ qrcode|striptags('<path>')|raw }}
+                    </svg>
+                </div>
             </div>
 
             {% set bg = 'text-success' %}
             {% set color = 'text-dark' %}
 
-            <div>
+            <div class="w-100">
 
                 <div class="my-3">
 
@@ -65,11 +71,15 @@
                 </div>
 
 
-                {{ form_row(form.working.profile, {
-                    label: 'Исполнитель'|trans,
-                    placeholder: 'Выберите исполнителя этапа производства ...'|trans,
-                    attr: { 'data-select' : 'select2' }
-                }) }}
+                <div class="w-100">
+
+                    {{ form_row(form.working.profile, {
+                        label: 'Исполнитель'|trans,
+                        placeholder: 'Выберите исполнителя этапа производства ...'|trans,
+                        attr: { 'data-select' : 'select2' }
+                    }) }}
+                </div>
+
             </div>
 
 

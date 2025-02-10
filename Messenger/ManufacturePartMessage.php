@@ -52,15 +52,16 @@ final class ManufacturePartMessage
 
 
     public function __construct(
-        ManufacturePartUid $id,
-        ManufacturePartEventUid $event,
-        ?ManufacturePartEventUid $last = null,
+        ManufacturePartUid|string $id,
+        ManufacturePartEventUid|string $event,
+        ManufacturePartEventUid|string|null $last = null,
         int $total = 0
     )
     {
         $this->id = (string) $id;
         $this->event = (string) $event;
         $this->last = $last ? (string) $last : null;
+
         $this->total = $total;
     }
 

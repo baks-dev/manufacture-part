@@ -34,5 +34,5 @@ interface ManufacturePartCurrentEventInterface
     /**
      * Возвращает активное событие по идентификатору ManufacturePart
      */
-    public function find(): ?ManufacturePartEvent;
+    public function find(): ManufacturePartEvent|false;
 }

@@ -46,7 +46,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class IndexController extends AbstractController
 {
     /**
-     * Производственный процесс. Список продукции ждя производства
+     * Производственный процесс. Список продукции для производства
      */
     #[Route('/admin/manufacture/parts/{page<\d+>}', name: 'admin.index', methods: ['GET', 'POST'])]
     public function index(
@@ -74,7 +74,8 @@ final class IndexController extends AbstractController
          * Получаем активную открытую поставку ответственного (Независимо от авторизации)
          */
         $opens = $openManufacturePart
-            ->fetchOpenManufacturePartAssociative($this->getCurrentProfileUid());
+            ->forFixed($this->getCurrentProfileUid())
+            ->fetchOpenManufacturePartAssociative();
 
         /**
          * Фильтр продукции
@@ -93,11 +94,8 @@ final class IndexController extends AbstractController
                 type: ProductFilterForm::class,
                 data: $filter,
                 options: ['action' => $this->generateUrl('manufacture-part:admin.index')]
-            );
-
-        $filterForm->handleRequest($request);
-        //!$filterForm->isSubmitted() ?: $this->redirectToReferer();
-
+            )
+            ->handleRequest($request);
 
         /**
          * Список продукции

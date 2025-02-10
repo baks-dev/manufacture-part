@@ -32,6 +32,7 @@ use BaksDev\Barcode\Writer\BarcodeWrite;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Filesystem\Filesystem;
@@ -50,11 +51,14 @@ final class QrcodeController extends AbstractController
     #[Route('/admin/manufacture/part/qrcode/{id}', name: 'admin.qrcode', methods: ['GET', 'POST'])]
     public function qrcode(
         #[MapEntity] ManufacturePart $ManufacturePart,
+        ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         BarcodeWrite $BarcodeWrite
     ): Response
     {
 
-        $data = sprintf('%s', $ManufacturePart->getId());
+        $ManufacturePartEvent = $ManufacturePartCurrentEvent->fromPart($ManufacturePart)->find();
+
+        $data = sprintf('%s', $ManufacturePartEvent->getMain());
 
         $barcode = $BarcodeWrite
             ->text($data)
@@ -79,7 +83,7 @@ final class QrcodeController extends AbstractController
         return $this->render(
             [
                 'qrcode' => $QRCode,
-                'item' => $ManufacturePart
+                'item' => $ManufacturePartEvent
             ]
         );
     }

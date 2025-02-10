@@ -28,7 +28,7 @@ namespace BaksDev\Manufacture\Part\Repository\AllProductsByManufacturePart;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
-use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
@@ -52,6 +52,7 @@ use BaksDev\Products\Product\Entity\Trans\ProductTrans;
 use BaksDev\Users\Profile\Group\Entity\Users\ProfileGroupUsers;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 final readonly class AllProductsByManufacturePartRepository implements AllProductsByManufacturePartInterface
@@ -59,6 +60,7 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
     public function __construct(
         private DBALQueryBuilder $DBALQueryBuilder,
         private PaginatorInterface $paginator,
+        private UserProfileTokenStorageInterface $UserProfileTokenStorage
     ) {}
 
     /** Метод возвращает пагинатор ManufacturePart */
@@ -75,44 +77,85 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
+
+        /** ManufacturePartInvariable */
+
         $dbal
-            ->select('part.id')
+            ->addSelect('invariable.number')
+            ->addSelect('invariable.quantity')
+            ->from(ManufacturePartInvariable::class, 'invariable');
+
+
+        $dbal
+            ->where('invariable.main = :part')
+            ->setParameter(
+                key: 'part',
+                value: $part,
+                type: ManufacturePartUid::TYPE
+            );
+
+        $dbal
+            ->andWhere('invariable.profile = :profile')
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE
+            );
+
+
+
+        $dbal
+            ->addSelect('part.id')
             ->addSelect('part.event')
-            ->from(ManufacturePart::class, 'part')
-            ->where('part.id = :part')
-            ->setParameter('part', $part, ManufacturePartUid::TYPE);
-
-
-        /** Партии доверенных профилей */
-        if($authority)
-        {
-            $dbal->leftJoin(
+            ->join(
+                'invariable',
+                ManufacturePart::class,
                 'part',
-                ProfileGroupUsers::class,
-                'profile_group_users',
-                'profile_group_users.authority = :authority'
-            )
-                ->setParameter('authority', $authority, UserProfileUid::TYPE);
-
-            $dbal->join(
-                'part',
-                ManufacturePartEvent::class,
-                'part_event',
-                'part_event.id = part.event AND (part_event.profile = profile_group_users.profile OR part_event.profile = :profile)'
+                'part.id = invariable.main'
             );
-        }
-        else
-        {
-            $dbal->join(
-                'part',
-                ManufacturePartEvent::class,
-                'part_event',
-                'part_event.id = part.event AND part_event.profile = :profile'
-            );
-        }
 
-        $dbal
-            ->setParameter('profile', $profile, UserProfileUid::TYPE);
+        //        $dbal
+        //            ->addSelect('part.id')
+        //            ->addSelect('part.event')
+        //            ->from(ManufacturePart::class, 'part')
+        //            ->where('part.id = :part')
+        //            ->setParameter('part', $part, ManufacturePartUid::TYPE);
+
+
+        //        /** Партии доверенных профилей */
+        //        if($authority)
+        //        {
+        //            $dbal->leftJoin(
+        //                'part',
+        //                ProfileGroupUsers::class,
+        //                'profile_group_users',
+        //                'profile_group_users.authority = :authority'
+        //            )
+        //                ->setParameter(
+        //                    'authority',
+        //                    $authority,
+        //                    UserProfileUid::TYPE
+        //                );
+        //
+        //            $dbal->join(
+        //                'part',
+        //                ManufacturePartEvent::class,
+        //                'part_event',
+        //                'part_event.id = part.event AND (part_event.fixed = profile_group_users.profile OR part_event.fixed = :profile)'
+        //            );
+        //        }
+        //        else
+        //        {
+        //            $dbal->join(
+        //                'part',
+        //                ManufacturePartEvent::class,
+        //                'part_event',
+        //                'part_event.id = part.event AND part_event.profile = :profile'
+        //            );
+        //        }
+
+        //        $dbal
+        //            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
 
         $dbal

@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,14 @@ namespace BaksDev\Manufacture\Part\Repository\InfoManufacturePart;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Category\Entity\CategoryProduct;
 use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
-use BaksDev\Users\Profile\Group\Entity\Users\ProfileGroupUsers;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
@@ -41,7 +42,10 @@ use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 final readonly class InfoManufacturePartRepository implements InfoManufacturePartInterface
 {
 
-    public function __construct(private DBALQueryBuilder $DBALQueryBuilder) {}
+    public function __construct(
+        private DBALQueryBuilder $DBALQueryBuilder,
+        private UserProfileTokenStorageInterface $UserProfileTokenStorage
+    ) {}
 
     /**
      * Возвращает информацию о производственной партии
@@ -56,13 +60,44 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
+
+        /** ManufacturePartInvariable */
+
         $dbal
-            ->select('part.id')
-            ->addSelect('part.quantity')
-            ->addSelect('part.number')
-            ->from(ManufacturePart::class, 'part')
-            ->where('part.id = :part')
-            ->setParameter('part', $part, ManufacturePartUid::TYPE);
+            ->addSelect('invariable.number')
+            ->addSelect('invariable.quantity')
+            ->from(ManufacturePartInvariable::class, 'invariable');
+
+
+        $dbal
+            ->where('invariable.main = :part')
+            ->setParameter(
+                key: 'part',
+                value: $part,
+                type: ManufacturePartUid::TYPE
+            );
+
+        $dbal
+            ->andWhere('invariable.profile = :profile')
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE
+            );
+
+        /**
+         * ManufacturePart
+         */
+
+        $dbal
+            ->addSelect('part.id')
+            ->addSelect('part.event')
+            ->join(
+                'invariable',
+                ManufacturePart::class,
+                'part',
+                'part.id = invariable.main'
+            );
 
 
         $dbal
@@ -76,31 +111,31 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
             );
 
 
-        /** Партии других пользователей */
-        if($authority)
-        {
-
-            /** Профили доверенных пользователей */
-            $dbal->leftJoin(
-                'part',
-                ProfileGroupUsers::class,
-                'profile_group_users',
-                'profile_group_users.authority = :authority'
-            );
-
-            $dbal
-                ->andWhere('(part_event.profile = profile_group_users.profile OR part_event.profile = :profile)')
-                ->setParameter('authority', $authority, UserProfileUid::TYPE) // к партиям других пользователей
-                ->setParameter('profile', $profile, UserProfileUid::TYPE) // к своим партиям
-            ;
-        }
-        else
-        {
-            $dbal
-                ->andWhere('part_event.profile = :profile')
-                ->setParameter('profile', $profile, UserProfileUid::TYPE);
-
-        }
+        //        /** Партии других пользователей */
+        //        if($authority)
+        //        {
+        //
+        //            /** Профили доверенных пользователей */
+        //            $dbal->leftJoin(
+        //                'part',
+        //                ProfileGroupUsers::class,
+        //                'profile_group_users',
+        //                'profile_group_users.authority = :authority'
+        //            );
+        //
+        //            $dbal
+        //                ->andWhere('(part_event.profile = profile_group_users.profile OR part_event.profile = :profile)')
+        //                ->setParameter('authority', $authority, UserProfileUid::TYPE) // к партиям других пользователей
+        //                ->setParameter('profile', $profile, UserProfileUid::TYPE) // к своим партиям
+        //            ;
+        //        }
+        //        else
+        //        {
+        //            $dbal
+        //                ->andWhere('part_event.profile = :profile')
+        //                ->setParameter('profile', $profile, UserProfileUid::TYPE);
+        //
+        //        }
 
 
         //        $dbal->andWhere('part_event.profile = :profile');
@@ -115,7 +150,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'part_event',
                 UserProfile::class,
                 'users_profile',
-                'users_profile.id = part_event.profile'
+                'users_profile.id = part_event.fixed'
             );
 
         $dbal

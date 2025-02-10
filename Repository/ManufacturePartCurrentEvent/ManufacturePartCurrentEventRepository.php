@@ -56,7 +56,7 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
     /**
      * Возвращает активное событие по идентификатору ManufacturePart
      */
-    public function find(): ?ManufacturePartEvent
+    public function find(): ManufacturePartEvent|false
     {
         if(false === $this->part)
         {
@@ -79,6 +79,6 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
                 'event.id = main.event'
             );
 
-        return $orm->getOneOrNullResult();
+        return $orm->getOneOrNullResult() ?: false;
     }
 }

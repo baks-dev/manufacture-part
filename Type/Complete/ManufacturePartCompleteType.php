@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Type\Complete;
 
-use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteNothing;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
@@ -39,22 +38,7 @@ final class ManufacturePartCompleteType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ManufacturePartComplete
     {
-        //        if(!$value) {
-        //            return new ManufacturePartComplete(ManufacturePartCompleteNothing::class);
-        //        }
-
         return new ManufacturePartComplete($value);
-
-//        /** @var ManufacturePartComplete $actions */
-//        foreach(ManufacturePartComplete::cases() as $actions)
-//        {
-//            if($actions->getActionComplete()::equals($value))
-//            {
-//                return $actions;
-//            }
-//        }
-//
-//        return new ManufacturePartComplete(ManufacturePartCompleteNothing::class);
     }
 
     public function getName(): string

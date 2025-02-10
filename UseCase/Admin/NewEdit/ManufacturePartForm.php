@@ -44,21 +44,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class ManufacturePartForm extends AbstractType
 {
-
-    private UsersTableActionsChoiceInterface $usersTableActionsChoice;
-
-    private CategoryChoiceInterface $categoryChoice;
-
     public function __construct(
-        UsersTableActionsChoiceInterface $usersTableActionsChoice,
-        CategoryChoiceInterface $categoryChoice,
-    ) {
-
-        $this->usersTableActionsChoice = $usersTableActionsChoice;
-
-        $this->categoryChoice = $categoryChoice;
-
-    }
+        private readonly UsersTableActionsChoiceInterface $usersTableActionsChoice,
+        private readonly CategoryChoiceInterface $categoryChoice,
+    ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -96,9 +85,10 @@ final class ManufacturePartForm extends AbstractType
 
         $formModifier = function(FormInterface $form, ?CategoryProductUid $category = null): void {
 
-            $data = $form->getData();
+            /** @var ManufacturePartDTO $ManufacturePartDTO */
+            $ManufacturePartDTO = $form->getData();
 
-            $choice = !$category ? [] : $this->usersTableActionsChoice->getCollection($data->getFilter(), $category);
+            $choice = !$category ? [] : $this->usersTableActionsChoice->getCollection($ManufacturePartDTO->getFixed(), $category);
 
             $form
                 ->add('action', ChoiceType::class, [
@@ -111,7 +101,6 @@ final class ManufacturePartForm extends AbstractType
                         return $action->getAttr();
                     },
 
-                    'label' => false,
                     'expanded' => false,
                     'multiple' => false,
                     'required' => true,
@@ -119,32 +108,29 @@ final class ManufacturePartForm extends AbstractType
         };
 
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($formModifier): void {
-            /** @var ManufacturePartDTO $data */
-            $data = $event->getData();
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($formModifier): void {
 
-            if($data->getFilter())
+            /** @var ManufacturePartDTO $ManufacturePartDTO */
+            $ManufacturePartDTO = $event->getData();
+
+            if($ManufacturePartDTO->getFixed())
             {
                 $form = $event->getForm();
 
-                if($data->getCategory())
+                if($ManufacturePartDTO->getCategory())
                 {
-                    $formModifier($event->getForm(), $data->getCategory());
+                    $formModifier($event->getForm(), $ManufacturePartDTO->getCategory());
                 }
                 else
                 {
-
                     $form
                         ->add('action', ChoiceType::class, [
                             'choices' => [],
-                            'label' => false,
                             'expanded' => false,
                             'multiple' => false,
                             'required' => true,
                             'disabled' => true
                         ]);
-
-
                 }
 
             }
@@ -153,11 +139,12 @@ final class ManufacturePartForm extends AbstractType
 
         $builder->get('category')->addEventListener(
             FormEvents::POST_SUBMIT,
-            function (FormEvent $event) use ($formModifier): void {
+            function(FormEvent $event) use ($formModifier): void {
                 $data = $event->getData();
                 $formModifier($event->getForm()->getParent(), $data ? new CategoryProductUid($data) : null);
             }
         );
+
 
         $builder
             ->add('complete', ChoiceType::class, [
@@ -168,9 +155,7 @@ final class ManufacturePartForm extends AbstractType
                 'choice_label' => function(ManufacturePartComplete $complete) {
                     return $complete->getActionCompleteValue();
                 },
-
                 'translation_domain' => 'manufacture.complete',
-                'label' => false,
                 'expanded' => false,
                 'multiple' => false,
                 'required' => true,

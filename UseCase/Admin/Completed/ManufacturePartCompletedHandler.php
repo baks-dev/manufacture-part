@@ -27,16 +27,9 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Completed;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
-use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Wildberries\Package\Entity\Package\Event\WbPackageEvent;
-use BaksDev\Wildberries\Package\Entity\Package\WbPackage;
-use BaksDev\Wildberries\Package\Messenger\Package\WbPackageMessage;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ManufacturePartCompletedHandler extends AbstractHandler
 {
@@ -44,8 +37,9 @@ final class ManufacturePartCompletedHandler extends AbstractHandler
     /** @see ManufacturePart */
     public function handle(ManufacturePartCompletedDTO $command): string|ManufacturePart
     {
-        $this->setCommand($command);
-        $this->preEventPersistOrUpdate(ManufacturePart::class, ManufacturePartEvent::class);
+        $this
+            ->setCommand($command)
+            ->preEventPersistOrUpdate(ManufacturePart::class, ManufacturePartEvent::class);
 
         /* Валидация всех объектов */
         if($this->validatorCollection->isInvalid())
@@ -66,112 +60,4 @@ final class ManufacturePartCompletedHandler extends AbstractHandler
     }
 
 
-
-
-
-
-
-
-    /** @see ManufacturePart */
-    public function OLDhandle(
-        ManufacturePartCompletedDTO $command,
-    ): string|ManufacturePart
-    {
-        /**
-         *  Валидация
-         */
-        $errors = $this->validator->validate($command);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [self::class.':'.__LINE__]);
-
-            return $uniqid;
-        }
-
-
-        $EventRepo = $this->entityManager->getRepository(ManufacturePartEvent::class)->find(
-            $command->getEvent()
-        );
-
-        if($EventRepo === null)
-        {
-            $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Not found %s by id: %s',
-                ManufacturePartEvent::class,
-                $command->getEvent()
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
-
-            return $uniqid;
-        }
-
-        $EventRepo->setEntity($command);
-        $EventRepo->setEntityManager($this->entityManager);
-        $Event = $EventRepo->cloneEntity();
-//        $this->entityManager->clear();
-//        $this->entityManager->persist($Event);
-
-        $Main = $this->entityManager->getRepository(ManufacturePart::class)
-            ->findOneBy(['event' => $command->getEvent()]);
-
-        if(empty($Main))
-        {
-            $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Not found %s by event: %s',
-                ManufacturePart::class,
-                $command->getEvent()
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
-
-            return $uniqid;
-        }
-
-        $Main->setEvent($Event);
-
-
-        /**
-         * Валидация Event
-         */
-        $errors = $this->validator->validate($Event);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [self::class.':'.__LINE__]);
-
-            return $uniqid;
-        }
-
-
-        /**
-         * Валидация Main
-         */
-        $errors = $this->validator->validate($Main);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [self::class.':'.__LINE__]);
-
-            return $uniqid;
-        }
-
-        $this->entityManager->flush();
-
-        /* Отправляем сообщение в шину */
-        $this->messageDispatch->dispatch(
-            message: new ManufacturePartMessage($Main->getId(), $Main->getEvent(), $command->getEvent()),
-            transport: 'manufacture-part'
-        );
-
-        // 'manufacture-part_high'
-        return $Main;
-    }
 }

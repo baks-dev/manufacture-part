@@ -6,18 +6,19 @@
 
 
 
-    {{ form_row(form.action, {
-        label: 'Производственный процесс'|trans,
-        placeholder: form.category.vars.data ? 'Выберите производственный процесс'|trans : 'Выберите категорию ...',
-        disabled: form.category.vars.data ? false : true,
-        attr: { 'data-select' : 'select2' }
-    }) }}
+{{ form_row(form.action, {
+    label: 'Производственный процесс'|trans,
+    placeholder: form.category.vars.data ? 'Выберите производственный процесс'|trans : 'Выберите категорию ...',
+    disabled: form.category.vars.data ? false : true,
+    attr: { 'data-select' : 'select2' }
+}) }}
 
 
 
 {{ form_row(form.complete, {
     label: 'Выполнить действие после завершения производства'|trans,
-    attr: { 'data-select' : 'select2' }
+    placeholder : 'Выберите завершающий этап...',
+    attr: { 'data-select' : 'select2',  }
 }) }}
 
 

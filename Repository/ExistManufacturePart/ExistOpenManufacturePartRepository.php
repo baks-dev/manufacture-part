@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,20 +30,51 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
+use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use InvalidArgumentException;
 
 
 final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePartInterface
 {
+    private UserProfileUid|false $profile = false;
 
     public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
 
+    public function forProfile(UserProfile|UserProfileUid|string $profile): self
+    {
+
+        if(empty($profile))
+        {
+            throw new InvalidArgumentException('Invalid Argument UserProfile');
+        }
+
+        if(is_string($profile))
+        {
+            $profile = new UserProfileUid($profile);
+        }
+
+        if($profile instanceof UserProfile)
+        {
+            $profile = $profile->getId();
+        }
+
+
+        $this->profile = $profile;
+
+        return $this;
+    }
 
     /**
      * Метод проверяет, имеется ли открытая поставка у профиля
      */
-    public function isExistByProfile(UserProfileUid $profile): bool
+    public function isExistByProfile(): bool
     {
+        if(false === ($this->profile instanceof UserProfileUid))
+        {
+            throw new InvalidArgumentException('Invalid Argument UserProfile');
+        }
+
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
 
         $qb->from(ManufacturePart::class, 'part');
@@ -54,12 +85,20 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
             'part_event',
             '
                 part_event.id = part.event AND 
-                part_event.profile = :profile AND
+                part_event.fixed = :fixed AND
                 part_event.status = :status
             '
         )
-            ->setParameter('status', ManufacturePartStatusOpen::class, ManufacturePartStatus::TYPE)
-            ->setParameter('profile', $profile, UserProfileUid::TYPE);
+            ->setParameter(
+                key: 'status',
+                value: ManufacturePartStatusOpen::class,
+                type: ManufacturePartStatus::TYPE
+            )
+            ->setParameter(
+                key: 'fixed',
+                value: $this->profile,
+                type: UserProfileUid::TYPE
+            );
 
         return $qb->fetchExist();
     }

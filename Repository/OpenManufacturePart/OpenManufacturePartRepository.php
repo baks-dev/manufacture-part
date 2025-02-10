@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,8 +27,10 @@ namespace BaksDev\Manufacture\Part\Repository\OpenManufacturePart;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
 use BaksDev\Products\Category\Entity\CategoryProduct;
 use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
@@ -49,38 +51,78 @@ use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use BaksDev\Users\User\Type\Id\UserUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
+use InvalidArgumentException;
 
 //use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
 
 final class OpenManufacturePartRepository implements OpenManufacturePartInterface
 {
-    private DBALQueryBuilder $DBALQueryBuilder;
+
+    private UserProfileUid|false $profile = false;
 
     public function __construct(
-        DBALQueryBuilder $DBALQueryBuilder,
-    )
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
+    ) {}
+
+    public function forFixed(UserProfile|UserProfileUid|string $profile): self
     {
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
+
+        if(empty($profile))
+        {
+            throw new InvalidArgumentException('Invalid Argument UserProfile');
+        }
+
+        if($profile instanceof UserProfile)
+        {
+            $profile = $profile->getId();
+        }
+
+        $this->profile = $profile;
+
+        return $this;
     }
+
 
     /**
      * Метод возвращает список открытых партий пользователя
      */
-    public function fetchOpenManufacturePartAssociative(
-        UserProfileUid $profile,
-        //UserProfileUid $current
-    ): bool|array
+    public function fetchOpenManufacturePartAssociative(): bool|array
     {
+
+
         $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class)->bindLocal();
 
+
+        /** ManufacturePartInvariable */
+
         $dbal
-            ->select('part.id')
-            ->addSelect('part.number')
-            ->addSelect('part.quantity')
-            ->from(ManufacturePart::class, 'part');
+            ->addSelect('invariable.number')
+            ->addSelect('invariable.quantity')
+            ->from(ManufacturePartInvariable::class, 'invariable');
+
+        $dbal
+            ->andWhere('invariable.profile = :profile')
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE
+            );
+
+        $dbal
+            ->addSelect('part.id')
+            ->addSelect('part.event')
+            ->join(
+                'invariable',
+                ManufacturePart::class,
+                'part',
+                'part.id = invariable.main'
+            );
 
 
         $dbal
@@ -90,15 +132,19 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part',
                 ManufacturePartEvent::class,
                 'part_event',
-                'part_event.id = part.event AND part_event.status = :status'
+                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status'
+            )
+            ->setParameter(
+                'status',
+                ManufacturePartStatusOpen::class,
+                ManufacturePartStatus::TYPE
+
+            )
+            ->setParameter(
+                'fixed',
+                $this->profile,
+                UserProfileUid::TYPE
             );
-
-        $dbal->setParameter('status',
-            ManufacturePartStatusOpen::STATUS);
-
-        $dbal
-            ->andWhere('part_event.profile = :profile')
-            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
         /** Ответственное лицо (Профиль пользователя) */
 
@@ -108,10 +154,11 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UserProfile::class,
                 'users_profile',
-                'users_profile.id = part_event.profile'
+                'users_profile.id = part_event.fixed'
             );
 
-        $dbal->addSelect('users_profile_personal.username AS users_profile_username')
+        $dbal
+            ->addSelect('users_profile_personal.username AS users_profile_username')
             ->leftJoin(
                 'users_profile',
                 UserProfilePersonal::class,

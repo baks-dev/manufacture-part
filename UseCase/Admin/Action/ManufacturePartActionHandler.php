@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
- *
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,36 +27,18 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Action;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
-use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use Doctrine\ORM\EntityManagerInterface;
-use DomainException;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ManufacturePartActionHandler extends AbstractHandler
 {
-
     /** @see ManufacturePart */
-    public function handle(ManufacturePartActionDTO $command,): string|ManufacturePart
+    public function handle(ManufacturePartActionDTO $command): string|ManufacturePart
     {
-
-        /* Валидация DTO  */
-        $this->validatorCollection->add($command);
-
-        $this->main = new ManufacturePart();
-        $this->event = new ManufacturePartEvent();
-
-        try
-        {
-            $command->getEvent() ? $this->preUpdate($command, true) : $this->prePersist($command);
-        }
-        catch(DomainException $errorUniqid)
-        {
-            return $errorUniqid->getMessage();
-        }
+        $this
+            ->setCommand($command)
+            ->preEventPersistOrUpdate(ManufacturePart::class, ManufacturePartEvent::class);
 
         /* Валидация всех объектов */
         if($this->validatorCollection->isInvalid())
@@ -64,8 +46,7 @@ final class ManufacturePartActionHandler extends AbstractHandler
             return $this->validatorCollection->getErrorUniqid();
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->clear();
+        $this->flush();
 
         /* Отправляем сообщение в шину */
         $this->messageDispatch->dispatch(
@@ -74,8 +55,6 @@ final class ManufacturePartActionHandler extends AbstractHandler
         );
 
         return $this->main;
-
-
     }
 
 }

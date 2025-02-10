@@ -27,6 +27,7 @@ use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
@@ -78,7 +79,9 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         ?ManufacturePartComplete $complete = null
     ): PaginatorInterface {
 
-        $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class)->bindLocal();
+        $dbal = $this->DBALQueryBuilder
+            ->createQueryBuilder(self::class)
+            ->bindLocal();
 
         $dbal
             ->select('product.id')
@@ -361,11 +364,10 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
 
         if($complete)
         {
-
             /** Только товары, которых нет в производстве */
 
             $dbalExist = $this->DBALQueryBuilder->createQueryBuilder(self::class);
-            $dbalExist->select('exist_part.number AS number');
+            $dbalExist->select('exist_part_invariable.number AS number');
 
             $dbalExist->from(ManufacturePartProduct::class, 'exist_product');
 
@@ -378,12 +380,20 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             '
             );
 
+            $dbalExist->leftJoin(
+                'exist_part',
+                ManufacturePartInvariable::class,
+                'exist_part_invariable',
+                'exist_part_invariable.main = exist_part.id'
+            );
+
             $dbalExist->join(
                 'exist_part',
                 ManufacturePartEvent::class,
                 'exist_product_event',
                 '
-                exist_product_event.id = exist_part.event AND exist_product_event.complete = :complete
+                exist_product_event.id = exist_part.event AND 
+                exist_product_event.complete = :complete
             '
             );
 
