@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartActionEvent\ManufacturePartActionEventInterface;
@@ -157,14 +158,24 @@ final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManuf
             'part_working.event = part_event.id'
         );
 
-        $qb->addSelect('part.number AS part_number');
-        $qb->addSelect('part.quantity AS part_quantity');
+        //$qb->addSelect('part.number AS part_number');
+        //$qb->addSelect('part.quantity AS part_quantity');
         $qb->leftJoin(
             'part_event',
             ManufacturePart::class,
             'part',
             'part.id = part_event.main'
         );
+
+        $qb
+            ->addSelect('invariable.number AS part_number')
+            ->addSelect('invariable.quantity AS part_quantity')
+            ->leftJoin(
+                'part',
+                ManufacturePartInvariable::class,
+                'invariable',
+                'invariable.main = part.id'
+            );
 
 
         /** Исполнитель действия (Профиль пользователя) */

@@ -105,7 +105,7 @@ final class ActionController extends AbstractController
             $all = $activeWorkingManufacturePart->fetchCompleteWorkingByManufacturePartAssociative($ManufacturePartEvent->getMain());
 
             return $this->render([
-                'part' => $ManufacturePartEvent->getMain(),
+                'part' => $ManufacturePartEvent,
                 'current' => $working,
                 'all' => $all,
                 'qrcode' => $this->renderQRCode($data),
