@@ -88,7 +88,9 @@ final class ManufacturePartForm extends AbstractType
             /** @var ManufacturePartDTO $ManufacturePartDTO */
             $ManufacturePartDTO = $form->getData();
 
-            $choice = !$category ? [] : $this->usersTableActionsChoice->getCollection($ManufacturePartDTO->getFixed(), $category);
+            $choice = !$category ? [] : $this->usersTableActionsChoice
+                ->forCategory($category)
+                ->getCollection();
 
             $form
                 ->add('action', ChoiceType::class, [

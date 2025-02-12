@@ -1,8 +1,8 @@
 <div class="{{ app.request.headers.get('X-Requested-With') is not null ? 'd-none' }} d-print-block p-0 w-100">
     <div class="text-center" style="width: 320px; height: 320px;">
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" fill="currentColor"
-             viewBox="0 10 30 30">
+        <svg xmlns="http://www.w3.org/2000/svg" width="230" height="230" fill="currentColor"
+             viewBox="10 10 30 30">
             {{ qrcode|striptags('<path>')|raw }}
         </svg>
 
