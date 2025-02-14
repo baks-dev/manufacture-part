@@ -34,7 +34,7 @@
                   title='QR производственной партии'
             >
                 <a
-                        href="{{ path('manufacture-part:admin.qrcode', { id : opens.id }) }}"
+                        href="{{ path('manufacture-part:admin.qrcode', { id : opens.id, print: true }) }}"
                         class="btn-link btn p-0 modal-link disabled icon"
                         data-bs-toggle="modal"
                         data-bs-target="#modal"
