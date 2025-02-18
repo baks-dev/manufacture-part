@@ -56,9 +56,10 @@ class PackageOrdersByPartCompletedTest extends KernelTestCase
         /** @var PackageOrdersByPartCompleted $PackageOrdersByPartCompleted */
         $PackageOrdersByPartCompleted = self::getContainer()->get(PackageOrdersByPartCompleted::class);
 
+
         $ManufacturePartMessage = new ManufacturePartMessage(
-            new ManufacturePartUid('0194e9e3-c9b4-76ca-ae31-41e710faa30e'),
-            new ManufacturePartEventUid('0194e9e5-b5a0-7146-aaf5-c0bd326f0f89')
+            new ManufacturePartUid('01951617-5dcb-7634-bcc0-f574233f73e4'),
+            new ManufacturePartEventUid('01951618-7d4c-70ef-8dcd-8551151816c5')
         );
 
         $dispatch = $PackageOrdersByPartCompleted($ManufacturePartMessage);

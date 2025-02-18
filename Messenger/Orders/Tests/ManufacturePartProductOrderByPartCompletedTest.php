@@ -61,9 +61,10 @@ class ManufacturePartProductOrderByPartCompletedTest extends KernelTestCase
         // php bin/console baks:cache:clear --module=deduplicator-manufacture-part
 
 
+
         $ManufacturePartMessage = new ManufacturePartMessage(
-            new ManufacturePartUid('0194ed38-aa83-7312-bcee-41aa38b5a3ae'),
-            new ManufacturePartEventUid('0194ed39-4b6f-7f30-bbae-347df14439fe')
+            new ManufacturePartUid('019515f0-b668-708e-8c5d-d4f45eb52dda'),
+            new ManufacturePartEventUid('01951610-9554-7e03-a5a1-35f91e442ca7')
         );
 
         $dispatch = $ManufacturePartProductOrderByPartCompleted($ManufacturePartMessage);

@@ -37,35 +37,18 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePa
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
-use BaksDev\Orders\Order\Repository\UpdateAccessOrderProduct\UpdateAccessOrderProductInterface;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusNew;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
-use BaksDev\Orders\Order\UseCase\Admin\Access\Products\AccessOrderProductDTO;
-use BaksDev\Orders\Order\UseCase\Admin\Package\PackageOrderDTO;
-use BaksDev\Orders\Order\UseCase\Admin\Package\Products\PackageOrderProductDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusHandler;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductDTO;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
-use BaksDev\Products\Product\Type\Event\ProductEventUid;
-use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
-use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
-use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
-use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\ProductStockOrderDTO;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockHandler;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\ProductStockDTO;
-use BaksDev\Users\Profile\UserProfile\Repository\UserByUserProfile\UserByUserProfileInterface;
 use BaksDev\Wildberries\Manufacture\Type\ManufacturePartComplete\ManufacturePartCompleteWildberriesFbs;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
-use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: -10)]
+#[AsMessageHandler(priority: 8)]
 final readonly class PackageOrdersByPartCompleted
 {
     public function __construct(
@@ -73,6 +56,7 @@ final readonly class PackageOrdersByPartCompleted
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private OrderStatusHandler $OrderStatusHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
+        private RelevantNewOrderByProductInterface $RelevantNewOrderByProduct,
         private DeduplicatorInterface $deduplicator,
     )
     {
@@ -115,16 +99,6 @@ final readonly class PackageOrdersByPartCompleted
             return true;
         }
 
-        //        /** Получаем всю продукцию в производственной партии */
-        //
-        //        $ProductsManufacture = $this->ProductsByManufacturePart
-        //            ->forPart($message->getId())
-        //            ->findAll();
-
-        $ManufacturePartDTO = new ManufacturePartDTO();
-        $ManufacturePartEvent->getDto($ManufacturePartDTO);
-
-
         /**
          * Определяем тип производства для заказов
          * доступно только для заказов типа FBS (DBS перемещаются в ручную)
@@ -138,21 +112,33 @@ final readonly class PackageOrdersByPartCompleted
             default => false,
         };
 
+        /** Завершаем, если завершающий этап не связан с обработкой заказов */
         if(false === $orderType)
         {
             return false;
         }
 
 
+        $DeliveryUid = new DeliveryUid($orderType);
+
+        $ManufacturePartDTO = new ManufacturePartDTO();
+        $ManufacturePartEvent->getDto($ManufacturePartDTO);
+
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
+            if($ManufacturePartProductsDTO->getOrd()->isEmpty())
+            {
+                continue;
+            }
 
             /** @var ManufacturePartProductOrderDTO $ManufacturePartProductOrderDTO */
             foreach($ManufacturePartProductsDTO->getOrd() as $ManufacturePartProductOrderDTO)
             {
                 $OrderUid = $ManufacturePartProductOrderDTO->getOrd();
-                $OrderEvent = $this->CurrentOrderEvent->forOrder($OrderUid)->find();
+                $OrderEvent = $this->CurrentOrderEvent
+                    ->forOrder($OrderUid)
+                    ->find();
 
                 if(false === $OrderEvent)
                 {
@@ -165,13 +151,13 @@ final readonly class PackageOrdersByPartCompleted
                     continue;
                 }
 
-                $DeduplicatorOrder = $this->deduplicator
-                    ->deduplication([$OrderUid, self::class]);
-
-                if($DeduplicatorOrder->isExecuted())
-                {
-                    continue;
-                }
+                //                $DeduplicatorOrder = $this->deduplicator
+                //                    ->deduplication([$OrderUid, self::class]);
+                //
+                //                if($DeduplicatorOrder->isExecuted())
+                //                {
+                //                    continue;
+                //                }
 
                 /**
                  * Проверяем что вся продукция в заказе готова к сборке
@@ -222,7 +208,7 @@ final readonly class PackageOrdersByPartCompleted
                         );
                     }
 
-                    $DeduplicatorOrder->save();
+                    //$DeduplicatorOrder->save();
                 }
             }
         }

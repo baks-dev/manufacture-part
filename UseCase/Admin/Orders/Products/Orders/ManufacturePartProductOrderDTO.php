@@ -23,70 +23,33 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\Entity\Products\Orders;
+namespace BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders;
 
-use BaksDev\Core\Entity\EntityEvent;
-use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Entity\Products\Orders\ManufacturePartProductOrderInterface;
 use BaksDev\Orders\Order\Type\Id\OrderUid;
-use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/* Перевод ManufacturePartProductOrder */
-
-#[ORM\Entity]
-#[ORM\Table(name: 'manufacture_part_product_order')]
-class ManufacturePartProductOrder extends EntityEvent
+/** @see ManufacturePartProductOrder */
+final class ManufacturePartProductOrderDTO implements ManufacturePartProductOrderInterface
 {
-    /** Связь на продукт */
-    #[Assert\NotBlank]
-    #[Assert\Uuid]
-    #[ORM\Id]
-    #[ORM\ManyToOne(targetEntity: ManufacturePartProduct::class, inversedBy: "ord")]
-    #[ORM\JoinColumn(name: 'event', referencedColumnName: "id")]
-    private ManufacturePartProduct $product;
-
     /**
      * Идентификатор заказа, закрепленного за упаковкой продукта производства
      */
     #[Assert\Uuid]
-    #[ORM\Id]
-    #[ORM\Column(type: OrderUid::TYPE)]
+    #[Assert\NotBlank]
     private OrderUid $ord;
 
-    public function __construct(ManufacturePartProduct $product)
-    {
-        $this->product = $product;
-    }
-
-    public function getOrder(): OrderUid
+    /**
+     * Ord
+     */
+    public function getOrd(): OrderUid
     {
         return $this->ord;
     }
 
-    public function __toString(): string
+    public function setOrd(OrderUid $ord): self
     {
-        return (string) $this->product;
-    }
-
-    public function getDto($dto): mixed
-    {
-        if($dto instanceof ManufacturePartProductOrderInterface)
-        {
-            return parent::getDto($dto);
-        }
-
-        throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
-    }
-
-    public function setEntity($dto): mixed
-    {
-
-        if($dto instanceof ManufacturePartProductOrderInterface)
-        {
-            return parent::setEntity($dto);
-        }
-
-        throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
+        $this->ord = $ord;
+        return $this;
     }
 }

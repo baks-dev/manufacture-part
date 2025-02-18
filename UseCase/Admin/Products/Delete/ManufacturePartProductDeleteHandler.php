@@ -97,8 +97,8 @@ final readonly class ManufacturePartProductDeleteHandler
             $qb->join('event', ManufacturePart::class, 'part', 'part.id = event.main AND part.event = event.id');
             $qb->where('event.id = :event')
                 ->setParameter('event', $Product->getEvent()->getId(), ManufacturePartEventUid::TYPE);
-            $qb->andWhere('event.profile = :profile')
-                ->setParameter('profile', $profile, UserProfileUid::TYPE);
+            //            $qb->andWhere('event.profile = :profile')
+            //                ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
             if(!$qb->fetchExist())
             {

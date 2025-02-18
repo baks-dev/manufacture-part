@@ -52,7 +52,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 0)]
+#[AsMessageHandler(priority: 10)]
 final class PackageProductStockByPartCompleted
 {
 
@@ -70,7 +70,7 @@ final class PackageProductStockByPartCompleted
     }
 
     /**
-     * Метод создает складскую заявку на заказы, которые к упаковке после присваивания
+     * Метод создает складскую заявку на заказы, готовых к упаковке после присваивания
      * @see ManufacturePartProductOrderByPartCompleted
      */
     public function __invoke(ManufacturePartMessage $message): bool

@@ -23,10 +23,10 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products;
+namespace BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products;
 
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProductInterface;
-use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePartProductOrderDTO;
+use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders\ManufacturePartProductOrderDTO;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
@@ -82,20 +82,6 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     {
         $this->ord = new ArrayCollection();
     }
-
-    //    /**
-    //     * Id
-    //     */
-    //    public function getId(): ManufacturePartProductUid
-    //    {
-    //        return $this->id = null;
-    //    }
-
-
-    //    public function getManufacturePartProduct(): ManufacturePartProductUid
-    //    {
-    //        return $this->id;
-    //    }
 
 
     /**
