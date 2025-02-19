@@ -26,129 +26,116 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\UseCase\Admin\Defect;
 
 
+use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
+use BaksDev\Manufacture\Part\UseCase\Admin\Defect\Event\ManufacturePartProductsDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final readonly class ManufacturePartProductDefectHandler
+final class ManufacturePartProductDefectHandler extends AbstractHandler
 {
-    public function __construct(
-        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private EntityManagerInterface $entityManager,
-        private ValidatorInterface $validator,
-        private MessageDispatchInterface $messageDispatch
-    ) {}
+    //    public function __construct(
+    //        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+    //        private EntityManagerInterface $entityManager,
+    //        private ValidatorInterface $validator,
+    //        private MessageDispatchInterface $messageDispatch
+    //    ) {}
 
     /** @see ManufacturePart */
     public function handle(ManufacturePartProductDefectDTO $command): string|ManufacturePart
     {
+
+
         /**
-         *  Валидация ManufacturePartProductDefectDTO
+         * Продукция, которой допущен дефект
+         * @var ManufacturePartProduct $ManufacturePartProduct
          */
-        $errors = $this->validator->validate($command);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [__LINE__ => __FILE__]);
-
-            return $uniqid;
-        }
-
-
-        /** Продукция, которой допущен дефект */
-        $Product = $this->entityManager->getRepository(ManufacturePartProduct::class)
+        $ManufacturePartProduct = $this
+            ->getRepository(ManufacturePartProduct::class)
             ->find($command->getId());
 
-        if($Product === null)
-        {
-            $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Not found %s by id: %s',
-                ManufacturePartProduct::class,
-                $command->getId()
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
 
-            return $uniqid;
-        }
-
-        $Main = $this->entityManager->getRepository(ManufacturePart::class)
-            ->find($Product->getEvent()->getMain());
-
-        /** Получаем активное событие партии */
-        $this->entityManager->clear();
-        $EventRepo = $this->entityManager->getRepository(ManufacturePartEvent::class)
-            ->find($Main->getEvent());
+        /** @var ManufacturePart $ManufacturePart */
+        $ManufacturePart = $this
+            ->getRepository(ManufacturePart::class)
+            ->find($ManufacturePartProduct->getEvent()->getMain());
 
 
-        if($EventRepo === null)
-        {
-            $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Not found %s by id: %s',
-                ManufacturePartEvent::class,
-                $Product->getEvent()->getId()
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
+        $this->clear();
 
-            return $uniqid;
-        }
+        /**
+         * Получаем активное событие партии
+         * @var ManufacturePartEvent $ManufacturePartEvent
+         */
+        $ManufacturePartEvent = $this
+            ->getRepository(ManufacturePartEvent::class)
+            ->find($ManufacturePart->getEvent());
 
         $ManufacturePartDTO = new Event\ManufacturePartDTO();
-        $EventRepo->getDto($ManufacturePartDTO);
+        $ManufacturePartEvent->getDto($ManufacturePartDTO);
+
+
 
         /**
          * Если передан идентификатор события - значит брак производственный по вине пользователя
          */
+
         if($command->getEvent())
         {
-
-            $this->entityManager->clear();
-            $DefectProfile = $this->entityManager->getRepository(ManufacturePartEvent::class)
+            /**
+             * @var ManufacturePartEvent $ManufacturePartEvent
+             */
+            $ManufacturePartEvent = $this
+                ->getRepository(ManufacturePartEvent::class)
                 ->find($command->getEvent());
 
             $DefectManufacturePartDTO = new Event\ManufacturePartDTO();
-            $DefectProfile->getDto($DefectManufacturePartDTO);
+            $ManufacturePartEvent->getDto($DefectManufacturePartDTO);
 
             /** присваиваем Working */
-            $ManufacturePartDTO->getWorking()
+            $ManufacturePartDTO
+                ->getWorking()
                 ->setProfile($DefectManufacturePartDTO->getWorking()->getProfile())
                 ->setWorking($DefectManufacturePartDTO->getWorking()->getWorking());
 
         }
 
-        /** Если брак производственного сырья - сбрасываем идентификатор профиля и рабочее состояние -  */
+        /**
+         * Если брак производственного сырья - сбрасываем идентификатор профиля и рабочее состояние -
+         */
+
         else
         {
             $ManufacturePartDTO->resetWorking();
         }
 
 
-        /** Ищем продукт из партии, которому необходимо применить дефект */
-        $FilterProduct = new Event\ManufacturePartProductsDTO();
-        $Product->getDto($FilterProduct);
+        /**
+         * Ищем продукт из партии, которому необходимо применить дефект
+         */
+
+
+        $FilterProduct = new ManufacturePartProductsDTO();
+        $ManufacturePartProduct->getDto($FilterProduct);
         $ProductDefect = $ManufacturePartDTO->getCurrentProduct($FilterProduct);
+
+        if(false === ($ProductDefect instanceof ManufacturePartProductsDTO))
+        {
+            return 'Продукт не найден';
+        }
+
 
         /** Если количество дефектов меньше чем продукции */
         if($ProductDefect->getTotal() < $command->getTotal())
         {
             $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Product %s < Defect %s',
-                $ProductDefect->getTotal(),
-                $command->getTotal()
-            );
-
-            $this->logger->error($uniqid.': '.$errorsString);
-            return $uniqid;
+            return sprintf('manufacture-part: Ошибка %s при дефектовке! Дефект превышает количество в партии', $uniqid);
         }
 
 
@@ -160,71 +147,29 @@ final readonly class ManufacturePartProductDefectHandler
             $ManufacturePartDTO->removeProduct($ProductDefect);
         }
 
-        $Event = $EventRepo->cloneEntity();
-        $Event->setEntity($ManufacturePartDTO);
 
+        $this->clear();
 
-        $this->entityManager->clear();
+        $this
+            ->setCommand($ManufacturePartDTO)
+            ->preEventPersistOrUpdate(ManufacturePart::class, ManufacturePartEvent::class);
 
-        $Main = $this->entityManager->getRepository(ManufacturePart::class)->find($Event->getMain());
-
-        if(empty($Main))
+        /* Валидация всех объектов */
+        if($this->validatorCollection->isInvalid())
         {
-            $uniqid = uniqid('', false);
-            $errorsString = sprintf(
-                'Not found %s by event: %s',
-                ManufacturePart::class,
-                $command->getEvent()
-            );
-            $this->logger->error($uniqid.': '.$errorsString);
-
-            return $uniqid;
+            return $this->validatorCollection->getErrorUniqid();
         }
 
-
-        /**
-         * Валидация Event
-         */
-        $errors = $this->validator->validate($Event);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [__LINE__ => __FILE__]);
-
-            return $uniqid;
-        }
-
-
-        /**
-         * Валидация Main
-         */
-        $errors = $this->validator->validate($Main);
-
-        if(count($errors) > 0)
-        {
-            /** Ошибка валидации */
-            $uniqid = uniqid('', false);
-            $this->logger->error(sprintf('%s: %s', $uniqid, $errors), [__LINE__ => __FILE__]);
-
-            return $uniqid;
-        }
-
-        $this->entityManager->persist($Event);
-
-        /* присваиваем событие корню */
-        $Main->setEvent($Event);
-
-        $this->entityManager->flush();
+        $this->flush();
 
         /* Отправляем сообщение в шину */
-        $this->messageDispatch->dispatch(
-            message: new ManufacturePartMessage($Main->getId(), $Main->getEvent(), total: $command->getTotal()),
+        $this->messageDispatch
+            ->addClearCacheOther('wildberries-package')
+            ->dispatch(
+                message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), total: $command->getTotal()),
             transport: 'manufacture-part'
         );
 
-        // 'manufacture-part_high'
-        return $Main;
+        return $this->main;
     }
 }

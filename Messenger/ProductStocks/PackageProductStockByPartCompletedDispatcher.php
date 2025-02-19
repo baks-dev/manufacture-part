@@ -52,8 +52,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 10)]
-final class PackageProductStockByPartCompleted
+/**
+ * На добавленные в производственную партию заказы - создает складскую заявку, готовые к упаковке (total === access)
+ * @see ManufacturePartProductOrderByPartCompletedDispatcher
+ */
+#[AsMessageHandler(priority: 40)]
+final class PackageProductStockByPartCompletedDispatcher
 {
 
     public function __construct(
@@ -70,8 +74,7 @@ final class PackageProductStockByPartCompleted
     }
 
     /**
-     * Метод создает складскую заявку на заказы, готовых к упаковке после присваивания
-     * @see ManufacturePartProductOrderByPartCompleted
+     * @see ManufacturePartProductOrderByPartCompletedDispatch
      */
     public function __invoke(ManufacturePartMessage $message): bool
     {
@@ -258,7 +261,7 @@ final class PackageProductStockByPartCompleted
 
         /**
          * Приступаем к обновлению заказов
-         * @see PackageOrdersByPartCompleted
+         * @see PackageOrdersByPartCompletedDispatcher
          */
 
         $DeduplicatorExecuted->save();

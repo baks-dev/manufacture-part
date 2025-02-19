@@ -44,8 +44,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 100)]
-final readonly class ProductStocksByPartCompleted
+
+/**
+ * Обновляет складские остатки продукции после завершающего этапа производства
+ */
+#[AsMessageHandler(priority: 70)]
+final readonly class ProductStocksByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
@@ -58,9 +62,7 @@ final readonly class ProductStocksByPartCompleted
         $this->deduplicator->namespace('wildberries-package');
     }
 
-    /**
-     * Метод обновляет складские остатки продукции после завершающего этапа производства
-     */
+
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $DeduplicatorExecuted = $this

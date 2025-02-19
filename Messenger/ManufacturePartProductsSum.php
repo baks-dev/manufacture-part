@@ -32,7 +32,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 99)]
+/**
+ * Делает пересчет всей продукции в заявке на производство (для обновления информации)
+ */
+#[AsMessageHandler(priority: 0)]
 final readonly class ManufacturePartProductsSum
 {
     public function __construct(
@@ -41,9 +44,6 @@ final readonly class ManufacturePartProductsSum
         private ManufacturePartSumProductsInterface $manufacturePartSumProducts,
     ) {}
 
-    /**
-     * Метод делает пересчет всей продукции в заявке на производство
-     */
     public function __invoke(ManufacturePartMessage $message): void
     {
         $this->entityManager->clear();

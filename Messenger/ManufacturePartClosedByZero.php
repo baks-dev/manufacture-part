@@ -36,7 +36,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 0)]
+/**
+ * Закрываем заявку, если в рабочей партии отсутствуют товары
+ */
+#[AsMessageHandler(priority: 100)]
 final readonly class ManufacturePartClosedByZero
 {
     public function __construct(
@@ -45,9 +48,7 @@ final readonly class ManufacturePartClosedByZero
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent
     ) {}
 
-    /**
-     * Закрываем заявку, если в рабочей партии отсутствуют товары
-     */
+
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $ManufacturePartEvent = $this->ManufacturePartCurrentEvent

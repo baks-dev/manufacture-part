@@ -28,30 +28,38 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders;
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Delivery\Type\Id\DeliveryUid;
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
-use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartDTO;
-use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartHandler;
-use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\ManufacturePartProductsDTO;
-use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders\ManufacturePartProductOrderDTO;
+use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
+use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
+use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePartProductOrderDTO;
+use BaksDev\Orders\Order\Entity\Order;
+use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
+use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusNew;
+use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
+use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusDTO;
+use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusHandler;
 use BaksDev\Wildberries\Manufacture\Type\ManufacturePartComplete\ManufacturePartCompleteWildberriesFbs;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 15)]
-final readonly class ManufacturePartProductOrderByPartCompleted
+/**
+ * На добавленные в производственную партию заказы - отправляет на упаковку заказы со статусом «NEW»
+ * @see ManufacturePartProductOrderByPartCompletedDispatcher
+ */
+#[AsMessageHandler(priority: 30)]
+final readonly class PackageOrdersByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private RelevantNewOrderByProductInterface $RelevantNewOrderByProduct,
-        private OrdersManufacturePartHandler $OrdersManufacturePartHandler,
+        private OrderStatusHandler $OrderStatusHandler,
+        private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
     )
     {
@@ -59,13 +67,15 @@ final readonly class ManufacturePartProductOrderByPartCompleted
     }
 
     /**
-     * Обновляем продукцию в производственной партии идентификаторами заказов, готовых к сборке
+     *
+     * @note В первую очередь создается складская заявка
+     * @see PackageProductStockByPartComplete
      */
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->deduplication([(string) $message->getId(), self::class]);
+            ->deduplication([(string) $message->getEvent(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
         {
@@ -104,51 +114,56 @@ final readonly class ManufacturePartProductOrderByPartCompleted
             default => false,
         };
 
+        /** Завершаем, если завершающий этап не связан с обработкой заказов */
         if(false === $orderType)
         {
             return false;
         }
 
-        $DeduplicatorExecuted->save();
-
-        $ManufacturePartDTO = new OrdersManufacturePartDTO();
-        $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
         $DeliveryUid = new DeliveryUid($orderType);
 
+        $ManufacturePartDTO = new ManufacturePartDTO();
+        $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
-
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
-            /**
-             * Получаем все релевантные заказы, готовые к упаковке из расчета, что в заказе только 1 ед. продукции
-             */
-
-            $orders = $this->RelevantNewOrderByProduct
-                ->forDelivery($DeliveryUid)
-                ->forProductEvent($ManufacturePartProductsDTO->getProduct())
-                ->forOffer($ManufacturePartProductsDTO->getOffer())
-                ->forVariation($ManufacturePartProductsDTO->getVariation())
-                ->forModification($ManufacturePartProductsDTO->getModification())
-                ->onlyNewStatus() // только новые
-                ->filterProductNotAccess() // только готовые к упаковке
-                ->findAll();
-
-            if(false === $orders)
+            if($ManufacturePartProductsDTO->getOrd()->isEmpty())
             {
                 continue;
             }
 
-            $total = $ManufacturePartProductsDTO->getTotal();
-
-            foreach($orders as $OrderEvent)
+            /** @var ManufacturePartProductOrderDTO $ManufacturePartProductOrderDTO */
+            foreach($ManufacturePartProductsDTO->getOrd() as $ManufacturePartProductOrderDTO)
             {
-                /** Если количество заказов в упаковке равное произведенной продукции - завершаем цикл*/
-                if($ManufacturePartProductsDTO->getOrd()->count() === $total)
+                $OrderUid = $ManufacturePartProductOrderDTO->getOrd();
+                $OrderEvent = $this->CurrentOrderEvent
+                    ->forOrder($OrderUid)
+                    ->find();
+
+                if(false === $OrderEvent)
                 {
-                    break;
+                    continue;
                 }
+
+                /** Только заказы в статусе NEW «Новый» */
+                if(false === $OrderEvent->isStatusEquals(OrderStatusNew::class))
+                {
+                    continue;
+                }
+
+                //                $DeduplicatorOrder = $this->deduplicator
+                //                    ->deduplication([$OrderUid, self::class]);
+                //
+                //                if($DeduplicatorOrder->isExecuted())
+                //                {
+                //                    continue;
+                //                }
+
+                /**
+                 * Проверяем что вся продукция в заказе готова к сборке
+                 */
 
                 $AccessOrderDTO = new AccessOrderDTO();
                 $OrderEvent->getDto($AccessOrderDTO);
@@ -159,7 +174,6 @@ final readonly class ManufacturePartProductOrderByPartCompleted
                 {
                     $AccessOrderPriceDTO = $AccessOrderProductDTO->getPrice();
 
-                    // Пропускаем, если есть продукция в заказе НЕ ГОТОВАЯ к сборке
                     if(false === $AccessOrderPriceDTO->isAccess())
                     {
                         $isPackage = false;
@@ -167,45 +181,41 @@ final readonly class ManufacturePartProductOrderByPartCompleted
                     }
                 }
 
-                if(false === $isPackage)
+                /**
+                 * Обновляем статус заказа и присваиваем профиль склада упаковки.
+                 */
+
+                if(true === $isPackage)
                 {
-                    continue;
+
+                    $this->logger->critical(
+                        sprintf('%s: Отправляем заказ  на упаковку', $OrderEvent->getOrderNumber()),
+                        [self::class.':'.__LINE__]
+                    );
+
+                    $OrderStatusDTO = new OrderStatusDTO(
+                        OrderStatusPackage::class,
+                        $OrderEvent->getId(),
+                        $ManufacturePartEvent->getProfile()
+                    );
+
+                    /** @var OrderStatusHandler $statusHandler */
+                    $OrderStatusHandler = $this->OrderStatusHandler->handle($OrderStatusDTO);
+
+                    if(false === ($OrderStatusHandler instanceof Order))
+                    {
+                        $this->logger->critical(
+                            'manufacture-part: Ошибка при обновлении заказа со статусом «Упаковка»',
+                            [self::class.':'.__LINE__]
+                        );
+                    }
+
+                    //$DeduplicatorOrder->save();
                 }
-
-                $this->logger->critical(
-                    'Добавляем заказ к производственной партии',
-                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
-                );
-
-                /** Присваиваем заказ продукции в производственной партии */
-                $ManufacturePartProductOrderDTO = new ManufacturePartProductOrderDTO()->setOrd($OrderEvent->getMain());
-                $ManufacturePartProductsDTO->addOrd($ManufacturePartProductOrderDTO);
             }
-
-            /** Сохраняем производственную партию */
-
-            $this->logger->critical(
-                'Сохраняем производственную партию с указанными заказами к продукции',
-                [self::class.':'.__LINE__]
-            );
-
         }
 
-        $ManufacturePart = $this->OrdersManufacturePartHandler->handle($ManufacturePartDTO);
-
-        if(false === ($ManufacturePart instanceof ManufacturePart))
-        {
-            $this->logger->critical(
-                sprintf('manufacture-part: Ошибка %s при обновлении производственной партии', $ManufacturePart),
-                [$message, self::class.':'.__LINE__]
-            );
-        }
-
-        /**
-         * Приступаем к упаковке заказов
-         * @see PackageOrdersByPartCompleted
-         */
-
+        $DeduplicatorExecuted->save();
 
         return true;
     }

@@ -46,8 +46,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 20)]
-final readonly class AccessOrderProductByPartCompleted
+/**
+ * Обновляет произведенную продукцию в заказах со статусом «NEW» как готовую к упаковке (+ access)
+ */
+#[AsMessageHandler(priority: 60)]
+final readonly class AccessOrderProductByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
@@ -60,9 +63,7 @@ final readonly class AccessOrderProductByPartCompleted
         $this->deduplicator->namespace('wildberries-package');
     }
 
-    /**
-     * Обновляем произведенную продукцию в заказах как готовую к упаковке
-     */
+
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $DeduplicatorExecuted = $this
@@ -141,7 +142,7 @@ final readonly class AccessOrderProductByPartCompleted
                     ->forVariation($ManufacturePartProductsDTO->getVariation())
                     ->forModification($ManufacturePartProductsDTO->getModification())
                     ->onlyNewStatus() // только в статусе НОВЫЕ
-                    ->filterProductAccess() // только требующие производства
+                    ->filterProductAccess() // только требующие производства (access != total)
                     ->find();
 
                 /**
@@ -279,7 +280,7 @@ final readonly class AccessOrderProductByPartCompleted
 
         /**
          * Приступаем к обновлению продукцию в производственной партии идентификаторами заказов, готовых к сборке
-         * @see ManufacturePartProductOrderByPartCompleted
+         * @see ManufacturePartProductOrderByPartCompletedDispatch
          */
 
 

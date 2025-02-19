@@ -163,6 +163,14 @@ class ManufacturePartEvent extends EntityEvent
         return $this->id;
     }
 
+    /**
+     * Product
+     */
+    public function getProduct(): Collection
+    {
+        return $this->product;
+    }
+
 
     public function getWorking(): ?ManufacturePartWorking
     {

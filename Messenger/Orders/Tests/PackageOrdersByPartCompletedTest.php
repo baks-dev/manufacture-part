@@ -27,7 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders\Tests;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Messenger\Orders\PackageOrdersByPartCompleted;
+use BaksDev\Manufacture\Part\Messenger\Orders\PackageOrdersByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,8 +53,8 @@ class PackageOrdersByPartCompletedTest extends KernelTestCase
         $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
         $dispatcher->dispatch($event, 'console.command');
 
-        /** @var PackageOrdersByPartCompleted $PackageOrdersByPartCompleted */
-        $PackageOrdersByPartCompleted = self::getContainer()->get(PackageOrdersByPartCompleted::class);
+        /** @var PackageOrdersByPartCompletedDispatcher $PackageOrdersByPartCompleted */
+        $PackageOrdersByPartCompleted = self::getContainer()->get(PackageOrdersByPartCompletedDispatcher::class);
 
 
         $ManufacturePartMessage = new ManufacturePartMessage(

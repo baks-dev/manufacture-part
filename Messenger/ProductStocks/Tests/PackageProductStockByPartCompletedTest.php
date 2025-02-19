@@ -27,7 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger\ProductStocks\Tests;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPartCompleted;
+use BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,8 +55,8 @@ class PackageProductStockByPartCompletedTest extends KernelTestCase
         $dispatcher->dispatch($event, 'console.command');
 
 
-        /** @var PackageProductStockByPartCompleted $PackageProductStockByPartCompleted */
-        $PackageProductStockByPartCompleted = self::getContainer()->get(PackageProductStockByPartCompleted::class);
+        /** @var PackageProductStockByPartCompletedDispatcher $PackageProductStockByPartCompleted */
+        $PackageProductStockByPartCompleted = self::getContainer()->get(PackageProductStockByPartCompletedDispatcher::class);
 
         $ManufacturePartMessage = new ManufacturePartMessage(
             new ManufacturePartUid('0194ebe5-94ed-7c76-b028-9c8192b5dd92'),

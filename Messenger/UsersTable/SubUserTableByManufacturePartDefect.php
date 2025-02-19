@@ -32,7 +32,6 @@ use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
-use BaksDev\Manufacture\Part\UseCase\Admin\Working\WorkingManufacturePartDTO;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Table\UsersTable;
 use BaksDev\Users\UsersTable\UseCase\Admin\Table\NewEdit\UsersTableDTO;
@@ -41,6 +40,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Штрафуем сотрудника по причине дефекта
+ */
 #[AsMessageHandler]
 final readonly class SubUserTableByManufacturePartDefect
 {
@@ -54,9 +56,7 @@ final readonly class SubUserTableByManufacturePartDefect
         $this->deduplicator->namespace('manufacture-part');
     }
 
-    /**
-     * Штрафуем сотрудника по причине дефекта
-     */
+
     public function __invoke(ManufacturePartMessage $message): bool
     {
         if(!class_exists(UsersTable::class))

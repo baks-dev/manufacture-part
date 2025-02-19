@@ -41,7 +41,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(priority: 10)]
+/**
+ * Проверяем, имеется ли не выполненное действие, если нет - заявка выполнена (применяем статус Complete)
+ */
+#[AsMessageHandler(priority: 90)]
 final readonly class ManufacturePartCompleted
 {
     public function __construct(
@@ -53,10 +56,7 @@ final readonly class ManufacturePartCompleted
         private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
     ) {}
 
-    /**
-     * Проверяем, имеется ли не выполненное действие, если нет - заявка выполнена
-     * (применяем статус Complete)
-     */
+
     public function __invoke(ManufacturePartMessage $message): void
     {
         $ManufacturePartEvent = $this->manufacturePartCurrentEvent
