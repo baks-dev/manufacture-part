@@ -188,7 +188,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                 if(true === $isPackage)
                 {
 
-                    $this->logger->critical(
+                    $this->logger->info(
                         sprintf('%s: Отправляем заказ  на упаковку', $OrderEvent->getOrderNumber()),
                         [self::class.':'.__LINE__]
                     );

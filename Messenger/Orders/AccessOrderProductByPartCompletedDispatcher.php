@@ -162,7 +162,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                     continue;
                 }
 
-                $this->logger->critical(
+                $this->logger->info(
                     'Добавляем произведенную продукцию к заказу',
                     [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
                 );

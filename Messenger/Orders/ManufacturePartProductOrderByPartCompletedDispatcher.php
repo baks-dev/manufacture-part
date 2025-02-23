@@ -173,7 +173,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
                     continue;
                 }
 
-                $this->logger->critical(
+                $this->logger->info(
                     'Добавляем заказ к производственной партии',
                     [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
                 );

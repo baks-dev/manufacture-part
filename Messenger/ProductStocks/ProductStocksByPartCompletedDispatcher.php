@@ -127,7 +127,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
                 continue;
             }
 
-            $this->logger->critical(
+            $this->logger->info(
                 'Обновляем продукцию после производства',
                 [$product, self::class.':'.__LINE__]
             );

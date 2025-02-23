@@ -183,7 +183,7 @@ final class PackageProductStockByPartCompletedDispatcher
                 if(true === $isPackage)
                 {
 
-                    $this->logger->critical(
+                    $this->logger->info(
                         sprintf('%s: Создаем складскую заявку на упаковку', $OrderEvent->getOrderNumber()),
                         [self::class.':'.__LINE__]
                     );
