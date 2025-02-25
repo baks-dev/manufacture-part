@@ -283,7 +283,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
          * @see ManufacturePartProductOrderByPartCompletedDispatch
          */
 
-
         return true;
     }
 }
