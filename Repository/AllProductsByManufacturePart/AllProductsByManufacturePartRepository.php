@@ -447,7 +447,7 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
 
         }
 
-        $dbal->orderBy('part_product.id', 'DESC');
+        $dbal->orderBy('part_product.id');
 
         return $this->paginator
             ->fetchAllAssociative($dbal->enableCache('manufacture-part', 3600));
