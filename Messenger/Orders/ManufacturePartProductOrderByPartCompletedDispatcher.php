@@ -185,7 +185,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
             /** Сохраняем производственную партию */
 
-            $this->logger->critical(
+            $this->logger->info(
                 'Сохраняем производственную партию с указанными заказами к продукции',
                 [self::class.':'.__LINE__]
             );

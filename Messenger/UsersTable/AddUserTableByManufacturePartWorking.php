@@ -51,11 +51,7 @@ final readonly class AddUserTableByManufacturePartWorking
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private UsersTableHandler $usersTableHandler,
         private DeduplicatorInterface $deduplicator
-    )
-    {
-        $this->deduplicator->namespace('manufacture-part');
-    }
-
+    ) {}
 
     public function __invoke(ManufacturePartMessage $message): bool
     {
@@ -65,7 +61,7 @@ final readonly class AddUserTableByManufacturePartWorking
         }
 
         $DeduplicatorExecuted = $this->deduplicator
-            ->namespace('module-name')
+            ->namespace('manufacture-part')
             ->deduplication([$message, self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -73,7 +69,9 @@ final readonly class AddUserTableByManufacturePartWorking
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent->fromPart($message->getId())->find();
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
+            ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
