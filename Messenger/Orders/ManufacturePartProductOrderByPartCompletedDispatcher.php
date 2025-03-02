@@ -57,15 +57,13 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         private RelevantNewOrderByProductInterface $RelevantNewOrderByProduct,
         private OrdersManufacturePartHandler $OrdersManufacturePartHandler,
         private DeduplicatorInterface $deduplicator,
-    )
-    {
-        $this->deduplicator->namespace('wildberries-package');
-    }
+    ) {}
 
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
+            ->namespace('wildberries-package')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())

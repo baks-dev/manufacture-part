@@ -36,7 +36,6 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProdu
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePartProductOrderDTO;
 use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
-use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusNew;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
@@ -61,10 +60,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         private OrderStatusHandler $OrderStatusHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
-    )
-    {
-        $this->deduplicator->namespace('wildberries-package');
-    }
+    ) {}
 
     /**
      *
@@ -75,6 +71,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
+            ->namespace('wildberries-package')
             ->deduplication([(string) $message->getEvent(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())

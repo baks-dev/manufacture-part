@@ -67,11 +67,7 @@ final class PackageProductStockByPartCompletedDispatcher
         private PackageProductStockHandler $PackageProductStockHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
-
-    )
-    {
-        $this->deduplicator->namespace('wildberries-package');
-    }
+    ) {}
 
     /**
      * @see ManufacturePartProductOrderByPartCompletedDispatch
@@ -80,6 +76,7 @@ final class PackageProductStockByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
+            ->namespace('wildberries-package')
             ->deduplication([(string) $message->getEvent(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
