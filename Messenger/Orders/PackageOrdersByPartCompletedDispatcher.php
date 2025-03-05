@@ -194,8 +194,9 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                     $OrderStatusDTO = new OrderStatusDTO(
                         OrderStatusPackage::class,
                         $OrderEvent->getId(),
-                        $ManufacturePartEvent->getProfile()
-                    );
+
+                    )
+                        ->setProfile($ManufacturePartEvent->getProfile());
 
                     /** @var OrderStatusHandler $statusHandler */
                     $OrderStatusHandler = $this->OrderStatusHandler->handle($OrderStatusDTO);
