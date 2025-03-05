@@ -35,7 +35,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Делает пересчет всей продукции в заявке на производство (для обновления информации)
  */
-#[AsMessageHandler(priority: 0)]
+#[AsMessageHandler(priority: 100)]
 final readonly class ManufacturePartProductsSum
 {
     public function __construct(

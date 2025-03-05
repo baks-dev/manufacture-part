@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger\ProductStocks;
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
@@ -88,7 +89,7 @@ final class PackageProductStockByPartCompletedDispatcher
             ->fromPart($message->getId())
             ->find();
 
-        if(false === $ManufacturePartEvent)
+        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             $this->logger->critical(
                 'manufacture-part: ManufacturePartEvent не определено',
