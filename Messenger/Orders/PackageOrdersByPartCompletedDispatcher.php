@@ -187,7 +187,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                 {
 
                     $this->logger->info(
-                        sprintf('%s: Отправляем заказ  на упаковку', $OrderEvent->getOrderNumber()),
+                        sprintf('%s: Отправляем заказ на упаковку', $OrderEvent->getOrderNumber()),
                         [self::class.':'.__LINE__]
                     );
 
@@ -205,7 +205,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                     {
                         $this->logger->critical(
                             'manufacture-part: Ошибка при обновлении заказа со статусом «Упаковка»',
-                            [self::class.':'.__LINE__]
+                            [$OrderStatusHandler, self::class.':'.__LINE__]
                         );
                     }
 

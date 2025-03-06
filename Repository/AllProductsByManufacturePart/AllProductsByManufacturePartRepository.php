@@ -49,7 +49,6 @@ use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModific
 use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
 use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
-use BaksDev\Users\Profile\Group\Entity\Users\ProfileGroupUsers;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
@@ -101,7 +100,6 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 value: $this->UserProfileTokenStorage->getProfile(),
                 type: UserProfileUid::TYPE
             );
-
 
 
         $dbal
@@ -444,10 +442,11 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 ->addSearchLike('product_modification.article')
                 ->addSearchLike('product_modification.article')
                 ->addSearchLike('product_variation.article');
-
         }
 
-        $dbal->orderBy('part_product.id');
+        $dbal
+            ->orderBy('part_product.sort')
+            ->addOrderBy('part_product.id');
 
         return $this->paginator
             ->fetchAllAssociative($dbal->enableCache('manufacture-part', 3600));

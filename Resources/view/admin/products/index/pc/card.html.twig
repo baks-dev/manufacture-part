@@ -90,7 +90,7 @@
                     </div>
 
                     {# Деффектовка #}
-                    {% if  is_granted('ROLE_ADMIN') or (is_granted('ROLE_MANUFACTURE_PART_DEFECT') and info.status != 'open') %}
+                    {% if  is_granted('ROLE_ADMIN') or (is_granted('ROLE_MANUFACTURE_PART_DEFECT') and (info.status != 'open' and info.status != 'complete')) %}
                         <span
                                 role="tooltip"
                                 data-bs-toggle="tooltip"

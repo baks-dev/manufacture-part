@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
+use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see ManufacturePartProduct */
@@ -42,8 +43,6 @@ final class ManufacturePartProductEditDTO implements ManufacturePartProductInter
     #[Assert\NotBlank]
     #[Assert\Uuid]
     private readonly ManufacturePartProductUid $id;
-
-
 
     /**
      * Идентификатор События!!! продукта
@@ -77,6 +76,10 @@ final class ManufacturePartProductEditDTO implements ManufacturePartProductInter
     #[Assert\NotBlank]
     #[Assert\Range(min: 1)]
     private int $total = 1;
+
+    /** Порядок сортировки */
+    #[Assert\NotBlank]
+    private readonly int $sort;
 
 
 //    public function __construct(ManufacturePartProductUid $id)
@@ -135,5 +138,25 @@ final class ManufacturePartProductEditDTO implements ManufacturePartProductInter
     public function getModification(): ?ProductModificationUid
     {
         return $this->modification;
+    }
+
+    /**
+     * Sort
+     */
+    public function getSort(): int
+    {
+        $this->sort ?: $this->sort = time();
+
+        return $this->sort;
+    }
+
+    public function setSort(?int $sort): self
+    {
+        if($sort && false === (new ReflectionProperty(self::class, 'sort')->isInitialized($this)))
+        {
+            $this->sort = $sort;
+        }
+
+        return $this;
     }
 }

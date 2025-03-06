@@ -445,7 +445,8 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         }
 
 
-        $dbal->orderBy('product.event', 'DESC');
+        $dbal
+            ->orderBy('product.event', 'DESC');
 
         return $this->paginator->fetchAllAssociative($dbal);
 

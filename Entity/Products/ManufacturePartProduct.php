@@ -63,6 +63,10 @@ class ManufacturePartProduct extends EntityEvent
     #[ORM\JoinColumn(name: 'event', referencedColumnName: "id")]
     private ManufacturePartEvent $event;
 
+    /** Порядок сортировки */
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private int $sort;
+
     /**
      * Идентификатор События!!! продукта
      */
