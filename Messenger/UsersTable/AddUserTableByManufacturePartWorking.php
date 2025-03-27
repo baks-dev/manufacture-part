@@ -119,7 +119,7 @@ final readonly class AddUserTableByManufacturePartWorking
         {
             $this->logger->critical(
                 sprintf('manufacture-part: Ошибка %s при сохранении табеля сотрудника', $UsersTableHandler),
-                [$message, self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__]
             );
 
             return false;
