@@ -39,8 +39,8 @@ use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusNew;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\PackageOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\Products\PackageOrderProductDTO;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductDTO;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\ProductStockOrderDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
@@ -220,23 +220,23 @@ final class PackageProductStockByPartCompletedDispatcher
 
                         /** Получаем идентификаторы продукции по событию заказа */
 
-                        $CurrentProductDTO = $this->CurrentProductIdentifier
+                        $CurrentProductIdentifier = $this->CurrentProductIdentifier
                             ->forEvent($PackageOrderProductDTO->getProduct())
                             ->forOffer($PackageOrderProductDTO->getOffer())
                             ->forVariation($PackageOrderProductDTO->getVariation())
                             ->forModification($PackageOrderProductDTO->getModification())
                             ->find();
 
-                        if(false === ($CurrentProductDTO || $CurrentProductDTO instanceof CurrentProductDTO))
+                        if(false === ($CurrentProductIdentifier instanceof CurrentProductIdentifierResult))
                         {
                             continue;
                         }
 
                         $ProductStockDTO
-                            ->setProduct($CurrentProductDTO->getProduct())
-                            ->setOffer($CurrentProductDTO->getOfferConst())
-                            ->setVariation($CurrentProductDTO->getVariationConst())
-                            ->setModification($CurrentProductDTO->getModificationConst())
+                            ->setProduct($CurrentProductIdentifier->getProduct())
+                            ->setOffer($CurrentProductIdentifier->getOfferConst())
+                            ->setVariation($CurrentProductIdentifier->getVariationConst())
+                            ->setModification($CurrentProductIdentifier->getModificationConst())
                             ->setTotal($PackageOrderProductDTO->getPrice()->getTotal());
 
                         $PackageProductStockDTO->addProduct($ProductStockDTO);
