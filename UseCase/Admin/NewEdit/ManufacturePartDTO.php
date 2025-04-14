@@ -63,7 +63,6 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
     /**
      * Завершающий этап
      */
-    #[Assert\NotBlank]
     private ?DeliveryUid $complete = null;
 
 

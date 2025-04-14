@@ -34,6 +34,7 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use BaksDev\Users\User\Type\Id\UserUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -92,20 +93,27 @@ class ManufacturePartNewHandlerTest extends KernelTestCase
         $ManufacturePartDTO->setComment('comment');
         self::assertSame('comment', $ManufacturePartDTO->getComment());
 
-        $ManufacturePartDTO->setAction($UsersTableActionsEventUid = clone (new UsersTableActionsEventUid()));
+        $ManufacturePartDTO->setAction($UsersTableActionsEventUid = clone new UsersTableActionsEventUid());
         self::assertSame($UsersTableActionsEventUid, $ManufacturePartDTO->getAction());
 
 
-        $ManufacturePartDTO->setCategory($CategoryProductUid = clone (new CategoryProductUid()));
+        $ManufacturePartDTO->setCategory($CategoryProductUid = clone new CategoryProductUid());
         self::assertSame($CategoryProductUid, $ManufacturePartDTO->getCategory());
 
-        $ManufacturePartDTO->setFixed($UserProfileUid = clone(new UserProfileUid()));
+        $ManufacturePartDTO->setFixed($UserProfileUid = new UserProfileUid());
         self::assertSame($UserProfileUid, $ManufacturePartDTO->getFixed());
+        /** */
 
+        $ManufacturePartInvariableDTO = $ManufacturePartDTO->getInvariable();
 
-        //        $ManufacturePartDTO->setProfile($UserProfileUid = clone (new UserProfileUid()));
-        //        self::assertSame($UserProfileUid, $ManufacturePartDTO->getProfile());
+        $ManufacturePartInvariableDTO->setUsr($UserUid = new UserUid(UserUid::TEST));
+        self::assertSame($UserUid, $ManufacturePartInvariableDTO->getUsr());
 
+        $ManufacturePartInvariableDTO->setProfile($UserProfileUid = new UserProfileUid(UserProfileUid::TEST));
+        self::assertSame($UserProfileUid, $ManufacturePartInvariableDTO->getProfile());
+
+        $ManufacturePartInvariableDTO->setNumber('174.456.053.366');
+        self::assertSame('174.456.053.366', $ManufacturePartInvariableDTO->getNumber());
 
         /** @var ManufacturePartHandler $ManufacturePartHandler */
         $ManufacturePartHandler = self::getContainer()->get(ManufacturePartHandler::class);

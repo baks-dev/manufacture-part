@@ -51,7 +51,6 @@ class ManufacturePartEditHandlerTest extends KernelTestCase
 {
     public function testUseCase(): void
     {
-
         /**
          * Инициируем статус для итератора тегов
          * @var ManufacturePartStatusCollection $ManufacturePartStatus
