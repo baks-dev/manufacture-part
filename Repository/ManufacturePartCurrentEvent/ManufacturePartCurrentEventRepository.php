@@ -63,7 +63,6 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
             throw new InvalidArgumentException('Invalid Argument Part');
         }
 
-
         $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
 
         $orm

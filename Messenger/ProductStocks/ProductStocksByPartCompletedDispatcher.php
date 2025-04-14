@@ -29,8 +29,9 @@ namespace BaksDev\Manufacture\Part\Messenger\ProductStocks;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
+use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\ProductStocks\ManufactureProductStockDTO;
@@ -55,11 +56,10 @@ final readonly class ProductStocksByPartCompletedDispatcher
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ProductsByManufacturePartInterface $ProductsByManufacturePart,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufactureProductStockHandler $ManufactureProductStockHandler,
         private DeduplicatorInterface $deduplicator,
     ) {}
-
 
     public function __invoke(ManufacturePartMessage $message): bool
     {
@@ -73,8 +73,8 @@ final readonly class ProductStocksByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getEvent())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -87,6 +87,9 @@ final readonly class ProductStocksByPartCompletedDispatcher
             return false;
         }
 
+        /**
+         * Если статус производства не Completed «Укомплектована»
+         */
         if(false === $ManufacturePartEvent->equalsManufacturePartStatus(ManufacturePartStatusCompleted::class))
         {
             return true;
@@ -98,7 +101,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
             ->forPart($message->getId())
             ->findAll();
 
-        if(empty($ProductsManufacture))
+        if(false === $ProductsManufacture || false === $ProductsManufacture->valid())
         {
             return false;
         }
@@ -110,11 +113,12 @@ final readonly class ProductStocksByPartCompletedDispatcher
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
-
         $this->logger->warning(
             'Обновляем остатки склада после производства',
             [$ManufacturePartEvent, self::class.':'.__LINE__]
         );
+
+        /** @var ProductsByManufacturePartResult $product */
 
         foreach($ProductsManufacture as $product)
         {
@@ -131,17 +135,12 @@ final readonly class ProductStocksByPartCompletedDispatcher
                 [$product, self::class.':'.__LINE__]
             );
 
-            $ProductUid = new ProductUid($product['product_id']);
-            $ProductOfferConst = !empty($product['product_offer_const']) ? new ProductOfferConst($product['product_offer_const']) : null;
-            $ProductVariationConst = !empty($product['product_variation_const']) ? new ProductVariationConst($product['product_variation_const']) : null;
-            $ProductModificationConst = !empty($product['product_modification_const']) ? new ProductModificationConst($product['product_modification_const']) : null;
-
             $ProductStockDTO = new ProductStockDTO()
-                ->setProduct($ProductUid)
-                ->setOffer($ProductOfferConst)
-                ->setVariation($ProductVariationConst)
-                ->setModification($ProductModificationConst)
-                ->setTotal($product['product_total']);
+                ->setProduct($product->getProductId())
+                ->setOfferConst($product->getProductOfferConst())
+                ->setVariationConst($product->getProductVariationConst())
+                ->setModificationConst($product->getProductModificationConst())
+                ->setTotal($product->getTotal());
 
             $ManufactureProductStockDTO = new ManufactureProductStockDTO()
                 ->addProduct($ProductStockDTO);

@@ -28,10 +28,27 @@ use BaksDev\Core\Services\Paginator\PaginatorInterface;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use Generator;
 
 interface ProductsByManufacturePartInterface
 {
     public function forPart(ManufacturePart|ManufacturePartUid|string $part): self;
+
+    public function onlyProductOrder(): self;
+
+    public function onlyEmptyOrder(): self;
+
+    /**
+     * Метод возвращает список продукции в производственной партии
+     *
+     * @twig:
+     *
+     * <code>
+     *     {# @var ProductsByManufacturePartResult \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}
+     *     {{ ProductsByManufacturePartResult.getTotal }}
+     * </code>
+     */
+    public function findAll(): Generator|false;
 
     /**
      * Метод возвращает список продукции в производственной партии
@@ -56,5 +73,5 @@ interface ProductsByManufacturePartInterface
      *  }
      *
      */
-    public function findAll(): ?array;
+    public function findAllAssociative(): ?array;
 }

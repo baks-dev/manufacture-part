@@ -25,8 +25,8 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit;
 
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEventInterface;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Invariable\ManufacturePartInvariableDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
@@ -60,12 +60,12 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
     #[Assert\Uuid]
     private UserProfileUid $fixed;
 
-
     /**
      * Завершающий этап
      */
     #[Assert\NotBlank]
-    private ?ManufacturePartComplete $complete = null;
+    private ?DeliveryUid $complete = null;
+
 
     #[Assert\Valid]
     private ManufacturePartInvariableDTO $invariable;
@@ -125,12 +125,12 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
     /**
      * Complete
      */
-    public function getComplete(): ?ManufacturePartComplete
+    public function getComplete(): ?DeliveryUid
     {
         return $this->complete;
     }
 
-    public function setComplete(?ManufacturePartComplete $complete): self
+    public function setComplete(?DeliveryUid $complete): self
     {
         if($complete)
         {
@@ -139,7 +139,6 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
 
         return $this;
     }
-
 
     /**
      * Comment

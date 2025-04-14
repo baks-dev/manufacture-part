@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit;
 
 
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
+use BaksDev\Delivery\Forms\Delivery\DeliveryForm;
 use BaksDev\Products\Category\Repository\CategoryChoice\CategoryChoiceInterface;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\UsersTable\Repository\Actions\UsersTableActionsChoice\UsersTableActionsChoiceInterface;
@@ -147,22 +147,7 @@ final class ManufacturePartForm extends AbstractType
             }
         );
 
-
-        $builder
-            ->add('complete', ChoiceType::class, [
-                'choices' => ManufacturePartComplete::cases(),
-                'choice_value' => function(?ManufacturePartComplete $complete) {
-                    return $complete?->getActionCompleteValue();
-                },
-                'choice_label' => function(ManufacturePartComplete $complete) {
-                    return $complete->getActionCompleteValue();
-                },
-                'translation_domain' => 'manufacture.complete',
-                'expanded' => false,
-                'multiple' => false,
-                'required' => true,
-            ]);
-
+        $builder->add('complete', DeliveryForm::class);
 
         $builder->add('comment', TextareaType::class, ['required' => false]);
 

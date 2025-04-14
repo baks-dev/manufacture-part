@@ -1,22 +1,23 @@
 {% trans_default_domain('admin.manufacture.part') %}
 
 
+{# @var opens \BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartResult #}
+
 <section class="card card-flush alert alert-warning p-0 w-100 "
          style="background-image: var(--bs-gradient);">
 
     <div class="px-3 pt-3 d-flex gap-3">
         <div class="w-50 d-flex align-items-center gap-3">
 
-            <strong>{{ opens.actions_name }}</strong> &nbsp;
+            <strong>{{ opens.actionsName }}</strong> &nbsp;
 
-            <span class="badge text-bg-danger">{{ opens.complete|trans({}, 'manufacture.complete') }}</span>
+            {# Тип заказов (завершающий этап) #}
+            <span class="badge text-bg-danger">{{ opens.completeName ?: 'Ничего не делать' }}</span>
 
-                 {#{{ opens.marketplace|trans({}, 'manufacture.marketplace') }}#}
-            {#<div><small class="opacity-50">Категория:</small> &nbsp; <strong>{{ opens.category_name }}</strong></div>#}
         </div>
 
         <div class="w-100">
-            <strong>{{ opens.category_name }}: </strong> &nbsp;
+            <strong>{{ opens.categoryName }}: </strong> &nbsp;
             <small class="opacity-50">
                 последний добавленный продукт</small>
         </div>
@@ -34,7 +35,7 @@
                   title='QR производственной партии'
             >
                 <a
-                        href="{{ path('manufacture-part:admin.qrcode', { id : opens.id, print: true }) }}"
+                        href="{{ path('manufacture-part:admin.qrcode', { id : opens.manufacturePartId, print: true }) }}"
                         class="btn-link btn p-0 modal-link disabled icon prnt"
                         data-bs-toggle="modal"
                         data-bs-target="#modal"
@@ -54,16 +55,16 @@
             <div>
                 <div><small class="opacity-50">Номер:</small> &nbsp;
 
-                        <a href="{{ path('manufacture-part:admin.products.index', { id: opens.id}) }}"
+                    <a href="{{ path('manufacture-part:admin.products.index', { id: opens.manufacturePartId }) }}"
                         class="fw-bolder text-decoration-none">
                             {{ opens.number }}
                         </a>
                 </div>
                 <div><small class="opacity-50">Отвественный:</small> &nbsp;
-                    <strong>{{ opens.users_profile_username }}</strong></div>
+                    <strong>{{ opens.usersProfileUsername }}</strong></div>
                 <div>
                     <small class="opacity-50">Всего продукции:</small> &nbsp;
-                    <strong id="total-{{ opens.event }}">{{ opens.quantity }}</strong> шт.
+                    <strong id="total-{{ opens.manufacturePartEvent }}">{{ opens.quantity }}</strong> шт.
                 </div>
 
 
@@ -75,9 +76,9 @@
         </div>
 
         {# Последний добавленный продукт #}
-        <div id="product-{{ opens.event }}" class="w-100 d-flex gap-3 align-items-center">
+        <div id="product-{{ opens.manufacturePartEvent }}" class="w-100 d-flex gap-3 align-items-center">
 
-            {% if opens.product_event %}
+            {% if opens.productEvent %}
                 {{ include('@manufacture-part/admin/products/add/pc/product.html.twig', { product : opens }) }}
             {% else %}
                 <small>В партии отстутвует продукция</small>
@@ -85,7 +86,8 @@
         </div>
 
         <div class="text-end">
-            <a href="{{ path('manufacture-part:admin.package', { id: opens.id }) }}" id="close_supply_btn"
+            <a href="{{ path('manufacture-part:admin.package', { id: opens.manufacturePartId }) }}"
+               id="close_supply_btn"
                class="btn modal-btn btn-danger modal-link disabled text-nowrap"
                data-bs-toggle="modal" data-bs-target="#modal"
                title="Отпарвить партию на производственную линию"

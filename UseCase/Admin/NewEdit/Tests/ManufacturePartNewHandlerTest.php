@@ -28,8 +28,6 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteStocks;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusCollection;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
@@ -100,11 +98,6 @@ class ManufacturePartNewHandlerTest extends KernelTestCase
 
         $ManufacturePartDTO->setCategory($CategoryProductUid = clone (new CategoryProductUid()));
         self::assertSame($CategoryProductUid, $ManufacturePartDTO->getCategory());
-
-
-        $ManufacturePartDTO->setComplete($ManufacturePartComplete = new ManufacturePartComplete(ManufacturePartCompleteStocks::class));
-        self::assertSame($ManufacturePartComplete, $ManufacturePartDTO->getComplete());
-
 
         $ManufacturePartDTO->setFixed($UserProfileUid = clone(new UserProfileUid()));
         self::assertSame($UserProfileUid, $ManufacturePartDTO->getFixed());

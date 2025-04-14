@@ -33,5 +33,8 @@ interface OpenManufacturePartInterface
     /**
      * Метод возвращает список открытых партий пользователя
      */
+    public function find(): OpenManufacturePartResult|false;
+
+
     public function fetchOpenManufacturePartAssociative(): bool|array;
 }

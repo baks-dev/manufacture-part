@@ -26,12 +26,12 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Entity\Event;
 
 use BaksDev\Core\Entity\EntityEvent;
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Modify\ManufacturePartModify;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
@@ -98,14 +98,12 @@ class ManufacturePartEvent extends EntityEvent
     #[ORM\Column(type: ManufacturePartStatus::TYPE)]
     private ManufacturePartStatus $status;
 
-
     /**
      * Завершающий этап
+     * ManufacturePartComplete
      */
-    #[Assert\NotBlank]
-    #[ORM\Column(type: ManufacturePartComplete::TYPE)]
-    private ManufacturePartComplete $complete;
-
+    #[ORM\Column(type: DeliveryUid::TYPE, nullable: true)]
+    private ?DeliveryUid $complete;
 
     /**
      * Коллекция продукции
@@ -127,7 +125,6 @@ class ManufacturePartEvent extends EntityEvent
     #[Assert\Valid]
     #[ORM\OneToOne(targetEntity: ManufacturePartModify::class, mappedBy: 'event', cascade: ['all'])]
     private ManufacturePartModify $modify;
-
 
     /**
      * Комментарий
@@ -199,9 +196,13 @@ class ManufacturePartEvent extends EntityEvent
 
     public function equalsManufacturePartComplete(mixed $complete): bool
     {
-        return $this->complete->equals($complete);
-    }
+        if(is_string($complete) && class_exists($complete))
+        {
+            $complete = new DeliveryUid($complete);
+        }
 
+        return (is_null($this->complete) && is_null($complete)) || $this->complete->equals($complete);
+    }
 
     /**
      * Action

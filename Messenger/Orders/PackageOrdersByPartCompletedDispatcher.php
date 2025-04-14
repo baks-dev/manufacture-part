@@ -42,7 +42,7 @@ use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusHandler;
-use BaksDev\Wildberries\Manufacture\Type\ManufacturePartComplete\ManufacturePartCompleteWildberriesFbs;
+use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -101,14 +101,16 @@ final readonly class PackageOrdersByPartCompletedDispatcher
 
         /**
          * Определяем тип производства для заказов
-         * доступно только для заказов типа FBS (DBS перемещаются в ручную)
+         * доступно только для заказов типа FBS и FBO (DBS перемещаются в ручную)
          *
-         * TODO: Переделать завершающие этапы на типы доставки
          */
 
         $orderType = match (true)
         {
-            $ManufacturePartEvent->equalsManufacturePartComplete(ManufacturePartCompleteWildberriesFbs::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBS Wb */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBO Wb*/
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
             default => false,
         };
 
@@ -117,9 +119,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         {
             return false;
         }
-
-
-        $DeliveryUid = new DeliveryUid($orderType);
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

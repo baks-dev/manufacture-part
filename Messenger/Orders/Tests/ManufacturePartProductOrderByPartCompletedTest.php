@@ -28,6 +28,7 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders\Tests;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Messenger\Orders\ManufacturePartProductOrderByPartCompletedDispatch;
+use BaksDev\Manufacture\Part\Messenger\Orders\ManufacturePartProductOrderByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,12 +55,8 @@ class ManufacturePartProductOrderByPartCompletedTest extends KernelTestCase
         $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
         $dispatcher->dispatch($event, 'console.command');
 
-        /** @var ManufacturePartProductOrderByPartCompletedDispatch $ManufacturePartProductOrderByPartCompleted */
-        $ManufacturePartProductOrderByPartCompleted = self::getContainer()->get(ManufacturePartProductOrderByPartCompletedDispatch::class);
-
-
-        // php bin/console baks:cache:clear --module=deduplicator-manufacture-part
-
+        /** @var ManufacturePartProductOrderByPartCompletedDispatcher $ManufacturePartProductOrderByPartCompleted */
+        $ManufacturePartProductOrderByPartCompleted = self::getContainer()->get(ManufacturePartProductOrderByPartCompletedDispatcher::class);
 
 
         $ManufacturePartMessage = new ManufacturePartMessage(

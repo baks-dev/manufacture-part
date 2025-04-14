@@ -24,8 +24,6 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use BaksDev\Manufacture\Part\BaksDevManufacturePartBundle;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartCompleteType;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventType;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartType;
@@ -34,11 +32,7 @@ use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductType;
 use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatusType;
-use BaksDev\Products\Product\Type\Id\ProductUid;
 use Symfony\Config\DoctrineConfig;
-
-//use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
-//use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplaceType;
 
 return static function (ContainerConfigurator $container, DoctrineConfig $doctrine) {
 
@@ -47,8 +41,6 @@ return static function (ContainerConfigurator $container, DoctrineConfig $doctri
 
     $doctrine->dbal()->type(ManufacturePartStatus::TYPE)->class(ManufacturePartStatusType::class);
     $doctrine->dbal()->type(ManufacturePartProductUid::TYPE)->class(ManufacturePartProductType::class);
-
-    $doctrine->dbal()->type(ManufacturePartComplete::TYPE)->class(ManufacturePartCompleteType::class);
 
     $emDefault = $doctrine->orm()->entityManager('default')->autoMapping(true);
 
@@ -61,7 +53,6 @@ return static function (ContainerConfigurator $container, DoctrineConfig $doctri
     /** Value Resolver */
 
     $services->set(ManufacturePartUid::class)->class(ManufacturePartUid::class);
-
 
     $emDefault->mapping('manufacture-part')
         ->type('attribute')

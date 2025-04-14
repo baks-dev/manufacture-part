@@ -113,10 +113,11 @@ final class AddProductsController extends AbstractController
 
                 $CentrifugoPublish
                     // HTML продукта
-                    ->addData(['product' => $this->render(['card' => $details],
-                        file: 'centrifugo.html.twig')->getContent()]) // шаблон
+                    ->addData(['product' => $this->render(
+                        parameters: ['card' => $details],
+                        file: 'centrifugo.html.twig'
+                    )->getContent()]) // шаблон
                     ->addData(['total' => $ManufacturePartProductDTO->getTotal()]) // количество для суммы всех товаров
-                    //->addData(['identifier' => $ManufacturePartProductDTO->getIdentifier()]) // ID продукта
                     ->send((string) $handle->getEvent());
 
                 /* Скрываем у всех продукт */

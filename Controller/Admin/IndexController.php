@@ -32,7 +32,7 @@ use BaksDev\Core\Form\Search\SearchForm;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Repository\AllProducts\AllManufactureProductsInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartInterface;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
+use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartResult;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterForm;
@@ -75,19 +75,28 @@ final class IndexController extends AbstractController
          */
         $opens = $openManufacturePart
             ->forFixed($this->getCurrentProfileUid())
-            ->fetchOpenManufacturePartAssociative();
+            ->find();
+
 
         /**
          * Фильтр продукции
          */
         $filter = new ProductFilterDTO();
 
-        if($opens)
+        if($opens instanceof OpenManufacturePartResult)
         {
             /* Если открыт производственный процесс - жестко указываем категорию и скрываем выбор */
-            $filter->setCategory(new CategoryProductUid($opens['category_id'], $opens['category_name']));
-            $filter->categoryInvisible();
+
+            $CategoryProductUid = new CategoryProductUid(
+                $opens->getCategoryId(), // $opens['category_id'],
+                $opens->getCategoryName(), // $opens['category_name']
+            );
+
+            $filter
+                ->setCategory($CategoryProductUid)
+                ->categoryInvisible();
         }
+
 
         $filterForm = $this
             ->createForm(
@@ -101,12 +110,10 @@ final class IndexController extends AbstractController
          * Список продукции
          */
         $query = $allManufactureProducts
-            ->getAllManufactureProducts(
-                $search,
-                $this->getProfileUid(),
-                $filter,
-                $opens ? new ManufacturePartComplete($opens['complete']) : null
-            );
+            ->search($search)
+            ->filter($filter)
+            ->forDeliveryType($opens ? $opens->getComplete() : false)
+            ->findPaginator();
 
 
         return $this->render(

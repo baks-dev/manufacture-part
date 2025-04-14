@@ -46,7 +46,7 @@ use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\ProductStockOrderDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockHandler;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\ProductStockDTO;
-use BaksDev\Wildberries\Manufacture\Type\ManufacturePartComplete\ManufacturePartCompleteWildberriesFbs;
+use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
@@ -114,9 +114,13 @@ final class PackageProductStockByPartCompletedDispatcher
          * TODO: Переделать завершающие этапы на типы доставки
          */
 
+
         $orderType = match (true)
         {
-            $ManufacturePartEvent->equalsManufacturePartComplete(ManufacturePartCompleteWildberriesFbs::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBS Wb */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBO Wb*/
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
             default => false,
         };
 

@@ -25,22 +25,22 @@ namespace BaksDev\Manufacture\Part\Repository\AllProductsByManufacturePart;
 
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
+use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 interface AllProductsByManufacturePartInterface
 {
+    public function search(SearchDTO $search): self;
+
+    public function filter(PartProductFilterInterface $filter): self;
+
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self;
+
     /**
      * Возвращает всю продукцию, добавленную в производственную партию
      */
-    public function findPaginator(
-        SearchDTO $search,
-        PartProductFilterInterface $filter,
-        ManufacturePartUid $part,
-        UserProfileUid $profile,
-        ?UserProfileUid $authority,
-        bool $other
-    ): PaginatorInterface;
+    public function findPaginator(): PaginatorInterface;
 
 }

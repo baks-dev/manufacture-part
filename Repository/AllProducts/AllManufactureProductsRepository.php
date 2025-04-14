@@ -26,11 +26,12 @@ namespace BaksDev\Manufacture\Part\Repository\AllProducts;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
+use BaksDev\Delivery\Entity\Delivery;
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusClosed;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Products\Category\Entity\CategoryProduct;
@@ -50,34 +51,68 @@ use BaksDev\Products\Product\Entity\Photo\ProductPhoto;
 use BaksDev\Products\Product\Entity\Product;
 use BaksDev\Products\Product\Entity\Property\ProductProperty;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
+use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\Property\ProductFilterPropertyDTO;
-use BaksDev\Products\Product\Forms\ProductFilter\ProductFilterInterface;
 use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 final class AllManufactureProductsRepository implements AllManufactureProductsInterface
 {
-    private PaginatorInterface $paginator;
-    private DBALQueryBuilder $DBALQueryBuilder;
+    private ?SearchDTO $search = null;
+
+    private ?ProductFilterDTO $filter = null;
+
+    private DeliveryUid|false $delivery = false;
 
     public function __construct(
-        DBALQueryBuilder $DBALQueryBuilder,
-        PaginatorInterface $paginator,
-    ) {
-        $this->paginator = $paginator;
-        $this->DBALQueryBuilder = $DBALQueryBuilder;
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly PaginatorInterface $paginator,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
+    ) {}
+
+    public function search(SearchDTO $search): self
+    {
+        $this->search = $search;
+        return $this;
     }
+
+    public function filter(ProductFilterDTO $filter): self
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+
+    public function forDeliveryType(Delivery|DeliveryUid|string|false $delivery): self
+    {
+        if(empty($delivery))
+        {
+            $this->delivery = false;
+            return $this;
+        }
+
+        if(is_string($delivery))
+        {
+            $delivery = new DeliveryUid($delivery);
+        }
+
+        if($delivery instanceof Delivery)
+        {
+            $delivery = $delivery->getId();
+        }
+
+        $this->delivery = $delivery;
+
+        return $this;
+    }
+
 
     /**
      * Метод возвращает все товары, которые не участвуют в производстве
      */
-    public function getAllManufactureProducts(
-        SearchDTO $search,
-        ?UserProfileUid $profile,
-        ProductFilterInterface $filter,
-        ?ManufacturePartComplete $complete = null
-    ): PaginatorInterface {
+    public function findPaginator(): PaginatorInterface
+    {
 
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
@@ -101,30 +136,19 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
 
         /* ProductInfo */
 
-        if($profile)
-        {
-            $dbal
-                ->addSelect('product_info.url')
-                ->join(
-                    'product',
-                    ProductInfo::class,
-                    'product_info',
-                    'product_info.product = product.id AND (product_info.profile IS NULL OR product_info.profile = :profile)'
-                );
-
-            $dbal->setParameter('profile', $profile, UserProfileUid::TYPE);
-        }
-        else
-        {
-            $dbal
-                ->addSelect('product_info.url')
-                ->leftJoin(
-                    'product',
-                    ProductInfo::class,
-                    'product_info',
-                    'product_info.product = product.id'
-                );
-        }
+        $dbal
+            ->addSelect('product_info.url')
+            ->join(
+                'product',
+                ProductInfo::class,
+                'product_info',
+                'product_info.product = product.id AND (product_info.profile IS NULL OR product_info.profile = :profile)'
+            )
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE
+            );
 
 
         /** Ответственное лицо (Профиль пользователя) */
@@ -158,10 +182,10 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
                 'product_offer.event = product.event'
             );
 
-        if($filter->getOffer())
+        if($this->filter?->getOffer())
         {
             $dbal->andWhere('product_offer.value = :offer');
-            $dbal->setParameter('offer', $filter->getOffer());
+            $dbal->setParameter('offer', $this->filter->getOffer());
         }
 
 
@@ -190,11 +214,11 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             );
 
 
-        if($filter->getVariation())
+        if($this->filter?->getVariation())
         {
             $dbal
                 ->andWhere('product_variation.value = :variation')
-                ->setParameter('variation', $filter->getVariation());
+                ->setParameter('variation', $this->filter->getVariation());
         }
 
 
@@ -315,10 +339,15 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             'product_event_category.event = product.event AND product_event_category.root = true'
         );
 
-        if($filter->getCategory())
+        if($this->filter->getCategory())
         {
-            $dbal->andWhere('product_event_category.category = :category');
-            $dbal->setParameter('category', $filter->getCategory(), CategoryProductUid::TYPE);
+            $dbal
+                ->andWhere('product_event_category.category = :category')
+                ->setParameter(
+                    key: 'category',
+                    value: $this->filter->getCategory(),
+                    type: CategoryProductUid::TYPE
+                );
         }
 
         $dbal->join(
@@ -328,22 +357,22 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             'category.id = product_event_category.category'
         );
 
-        $dbal->addSelect('category_trans.name AS category_name');
+        $dbal
+            ->addSelect('category_trans.name AS category_name')
+            ->leftJoin(
+                'category',
+                CategoryProductTrans::class,
+                'category_trans',
+                'category_trans.event = category.event AND category_trans.local = :local'
+            );
 
-        $dbal->leftJoin(
-            'category',
-            CategoryProductTrans::class,
-            'category_trans',
-            'category_trans.event = category.event AND category_trans.local = :local'
-        );
 
-
-        if($filter->getProperty())
+        if($this->filter->getProperty())
         {
             $filterProperty = null;
 
             /** @var ProductFilterPropertyDTO $property */
-            foreach($filter->getProperty() as $property)
+            foreach($this->filter->getProperty() as $property)
             {
                 if($property->getValue())
                 {
@@ -362,14 +391,15 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         }
 
 
-        if($complete)
+        if($this->delivery)
         {
             /** Только товары, которых нет в производстве */
 
             $dbalExist = $this->DBALQueryBuilder->createQueryBuilder(self::class);
-            $dbalExist->select('exist_part_invariable.number AS number');
 
-            $dbalExist->from(ManufacturePartProduct::class, 'exist_product');
+            $dbalExist
+                ->select('exist_part_invariable.number AS number')
+                ->from(ManufacturePartProduct::class, 'exist_product');
 
             $dbalExist->join(
                 'exist_product',
@@ -401,7 +431,7 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
             $dbalExist->andWhere('exist_product_event.status != :status_completed');
 
             /** Только продукция на указанный завершающий этап */
-            $dbal->setParameter('complete', $complete, ManufacturePartComplete::TYPE);
+            $dbal->setParameter('complete', $this->delivery, DeliveryUid::TYPE);
 
             /** Только продукция в процессе производства */
             $dbal->setParameter('status_closed', ManufacturePartStatusClosed::STATUS);
@@ -427,10 +457,10 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         }
 
 
-        if($search->getQuery())
+        if($this->search?->getQuery())
         {
             $dbal
-                ->createSearchQueryBuilder($search)
+                ->createSearchQueryBuilder($this->search)
                 ->addSearchEqualUid('product.id')
                 ->addSearchEqualUid('product.event')
                 ->addSearchEqualUid('product_variation.id')

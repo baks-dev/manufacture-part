@@ -93,14 +93,10 @@ final class IndexController extends AbstractController
 
         // Получаем список продукции в партии
         $ProductsManufacturePart = $productsByManufacturePart
-            ->findPaginator(
-                $search,
-                $filter,
-                $ManufacturePart->getId(),
-                $this->getCurrentProfileUid(),
-                $this->getProfileUid(),
-                $this->isGranted('ROLE_MANUFACTURE_PART_OTHER')
-            );
+            ->search($search)
+            ->filter($filter)
+            ->forPart($ManufacturePart)
+            ->findPaginator();
 
         return $this->render(
             [

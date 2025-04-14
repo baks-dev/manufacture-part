@@ -91,9 +91,9 @@ final class ManufactureProductStockDTO implements ProductStockEventInterface
     {
         $filter = $this->product->filter(function(Products\ProductStockDTO $element) use ($product) {
             return $element->getProduct()->equals($product->getProduct()) &&
-                $element->getOffer()?->equals($product->getOffer()) &&
-                $element->getVariation()?->equals($product->getVariation()) &&
-                $element->getModification()?->equals($product->getModification());
+                $element->getOfferConst()?->equals($product->getOfferConst()) &&
+                $element->getVariationConst()?->equals($product->getVariationConst()) &&
+                $element->getModificationConst()?->equals($product->getModificationConst());
         });
 
         if($filter->isEmpty())

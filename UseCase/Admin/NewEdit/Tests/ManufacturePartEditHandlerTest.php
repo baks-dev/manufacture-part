@@ -29,8 +29,6 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
-use BaksDev\Manufacture\Part\Type\Complete\Collection\ManufacturePartCompleteStocks;
-use BaksDev\Manufacture\Part\Type\Complete\ManufacturePartComplete;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusCollection;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
@@ -84,15 +82,7 @@ class ManufacturePartEditHandlerTest extends KernelTestCase
         self::assertFalse($ManufacturePartDTO->getAction()->equals(UsersTableActionsEventUid::TEST));
         $ManufacturePartDTO->setAction(new UsersTableActionsEventUid());
 
-        self::assertTrue($ManufacturePartDTO->getComplete()->equals(ManufacturePartCompleteStocks::class));
-        $ManufacturePartDTO->setComplete(new ManufacturePartComplete(ManufacturePartCompleteStocks::class));
-
-        self::assertFalse($ManufacturePartDTO->getProfile()->equals(UserProfileUid::TEST));
-        $ManufacturePartDTO->setProfile(new UserProfileUid());
-
-
         $ManufacturePartDTO->setCategory(new CategoryProductUid());
-        $ManufacturePartDTO->setFilter(new UserProfileUid());
 
 
         /** @var ManufacturePartHandler $ManufacturePartHandler */
@@ -119,7 +109,5 @@ class ManufacturePartEditHandlerTest extends KernelTestCase
 
         self::assertSame('edit_comment', $ManufacturePartDTO->getComment());
         self::assertTrue($ManufacturePartDTO->getAction()->equals(UsersTableActionsEventUid::TEST));
-        self::assertTrue($ManufacturePartDTO->getComplete()->equals(ManufacturePartCompleteStocks::class));
-        self::assertTrue($ManufacturePartDTO->getProfile()->equals(UserProfileUid::TEST));
     }
 }

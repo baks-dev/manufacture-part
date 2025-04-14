@@ -53,29 +53,70 @@ use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use InvalidArgumentException;
 
-final readonly class AllProductsByManufacturePartRepository implements AllProductsByManufacturePartInterface
+final  class AllProductsByManufacturePartRepository implements AllProductsByManufacturePartInterface
 {
+    private ?SearchDTO $search = null;
+
+    private ?PartProductFilterInterface $filter = null;
+
+    private ManufacturePartUid|false $part = false;
+
     public function __construct(
-        private DBALQueryBuilder $DBALQueryBuilder,
-        private PaginatorInterface $paginator,
-        private UserProfileTokenStorageInterface $UserProfileTokenStorage
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly PaginatorInterface $paginator,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
     ) {}
 
-    /** Метод возвращает пагинатор ManufacturePart */
-    public function findPaginator(
-        SearchDTO $search,
-        PartProductFilterInterface $filter,
-        ManufacturePartUid $part,
-        UserProfileUid $profile,
-        ?UserProfileUid $authority,
-        $other
-    ): PaginatorInterface
+
+    public function search(SearchDTO $search): self
     {
+        $this->search = $search;
+        return $this;
+    }
+
+    public function filter(PartProductFilterInterface $filter): self
+    {
+        $this->filter = $filter;
+        return $this;
+    }
+
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self
+    {
+
+        if(empty($part))
+        {
+            $this->part = false;
+            return $this;
+        }
+
+        if(is_string($part))
+        {
+            $part = new ManufacturePartUid($part);
+        }
+
+        if($part instanceof ManufacturePart)
+        {
+            $part = $part->getId();
+        }
+
+        $this->part = $part;
+
+        return $this;
+    }
+
+    /** Метод возвращает пагинатор ManufacturePart */
+    public function findPaginator(): PaginatorInterface
+    {
+        if(false === ($this->part instanceof ManufacturePartUid))
+        {
+            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
+        }
+
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
-
 
         /** ManufacturePartInvariable */
 
@@ -89,7 +130,7 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
             ->where('invariable.main = :part')
             ->setParameter(
                 key: 'part',
-                value: $part,
+                value: $this->part,
                 type: ManufacturePartUid::TYPE
             );
 
@@ -111,49 +152,6 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 'part',
                 'part.id = invariable.main'
             );
-
-        //        $dbal
-        //            ->addSelect('part.id')
-        //            ->addSelect('part.event')
-        //            ->from(ManufacturePart::class, 'part')
-        //            ->where('part.id = :part')
-        //            ->setParameter('part', $part, ManufacturePartUid::TYPE);
-
-
-        //        /** Партии доверенных профилей */
-        //        if($authority)
-        //        {
-        //            $dbal->leftJoin(
-        //                'part',
-        //                ProfileGroupUsers::class,
-        //                'profile_group_users',
-        //                'profile_group_users.authority = :authority'
-        //            )
-        //                ->setParameter(
-        //                    'authority',
-        //                    $authority,
-        //                    UserProfileUid::TYPE
-        //                );
-        //
-        //            $dbal->join(
-        //                'part',
-        //                ManufacturePartEvent::class,
-        //                'part_event',
-        //                'part_event.id = part.event AND (part_event.fixed = profile_group_users.profile OR part_event.fixed = :profile)'
-        //            );
-        //        }
-        //        else
-        //        {
-        //            $dbal->join(
-        //                'part',
-        //                ManufacturePartEvent::class,
-        //                'part_event',
-        //                'part_event.id = part.event AND part_event.profile = :profile'
-        //            );
-        //        }
-
-        //        $dbal
-        //            ->setParameter('profile', $profile, UserProfileUid::TYPE);
 
 
         $dbal
@@ -226,10 +224,10 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 'product_offer.id = part_product.offer OR product_offer.id IS NULL'
             );
 
-        if($filter->getOffer())
+        if($this->filter->getOffer())
         {
             $dbal->andWhere('product_offer.value = :offer');
-            $dbal->setParameter('offer', $filter->getOffer());
+            $dbal->setParameter('offer', $this->filter->getOffer());
         }
 
 
@@ -259,13 +257,11 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 'product_variation.id = part_product.variation OR product_variation.id IS NULL'
             );
 
-
-        if($filter->getVariation())
+        if($this->filter->getVariation())
         {
             $dbal->andWhere('product_variation.value = :variation');
-            $dbal->setParameter('variation', $filter->getVariation());
+            $dbal->setParameter('variation', $this->filter->getVariation());
         }
-
 
         /* Тип множественного варианта торгового предложения */
         $dbal
@@ -293,10 +289,10 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
                 'product_modification.id = part_product.modification OR product_modification.id IS NULL'
             );
 
-        if($filter->getModification())
+        if($this->filter->getModification())
         {
             $dbal->andWhere('product_modification.value = :modification');
-            $dbal->setParameter('modification', $filter->getModification());
+            $dbal->setParameter('modification', $this->filter->getModification());
         }
 
 
@@ -426,11 +422,11 @@ final readonly class AllProductsByManufacturePartRepository implements AllProduc
             );
 
 
-        if($search->getQuery())
+        if($this->search?->getQuery())
         {
 
             $dbal
-                ->createSearchQueryBuilder($search)
+                ->createSearchQueryBuilder($this->search)
                 ->addSearchEqualUid('product.id')
                 ->addSearchEqualUid('product.event')
                 ->addSearchEqualUid('product_variation.id')

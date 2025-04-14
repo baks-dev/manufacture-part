@@ -41,12 +41,12 @@ use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use Doctrine\DBAL\ArrayParameterType;
 
-final class ActiveWorkingManufacturePartRepository implements ActiveWorkingManufacturePartInterface
+final readonly class ActiveWorkingManufacturePartRepository implements ActiveWorkingManufacturePartInterface
 {
 
     public function __construct(
-        private readonly DBALQueryBuilder $DBALQueryBuilder,
-        private readonly ManufacturePartActionEventInterface $manufacturePartActionEvent,
+        private DBALQueryBuilder $DBALQueryBuilder,
+        private ManufacturePartActionEventInterface $manufacturePartActionEvent,
     ) {}
 
     /**

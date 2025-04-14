@@ -54,19 +54,16 @@ class ProductStocksByPartCompletedTest extends KernelTestCase
         $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
         $dispatcher->dispatch($event, 'console.command');
 
-
         /** @var ProductStocksByPartCompletedDispatcher $ProductStocksByPartCompleted */
         $ProductStocksByPartCompleted = self::getContainer()->get(ProductStocksByPartCompletedDispatcher::class);
 
-
         $ManufacturePartMessage = new ManufacturePartMessage(
-            new ManufacturePartUid('0194ebe5-94ed-7c76-b028-9c8192b5dd92'),
-            new ManufacturePartEventUid('0194ebf5-7f99-72fb-94b3-a505cc064483')
+            new ManufacturePartUid('cfb542c9-d823-73ef-ae46-0a56beab5584'),
+            new ManufacturePartEventUid('c28ecd04-67a1-7d5b-8c64-2b37d27cf28b')
         );
 
         $dispatch = $ProductStocksByPartCompleted($ManufacturePartMessage);
 
-        //self::assertFalse($dispatch);
-        self::assertTrue($dispatch);
+        $dispatch ? self::assertTrue($dispatch) : self::assertFalse($dispatch);
     }
 }

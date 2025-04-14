@@ -71,12 +71,12 @@ final class ProductStockDTO implements ProductStockProductInterface
     }
 
     /** Торговое предложение */
-    public function getOffer(): ?ProductOfferConst
+    public function getOfferConst(): ?ProductOfferConst
     {
         return $this->offer;
     }
 
-    public function setOffer(ProductOfferConst|null|false $offer): self
+    public function setOfferConst(ProductOfferConst|null|false $offer): self
     {
         $this->offer = empty($offer) ? null : $offer;
 
@@ -84,12 +84,12 @@ final class ProductStockDTO implements ProductStockProductInterface
     }
 
     /** Множественный вариант */
-    public function getVariation(): ?ProductVariationConst
+    public function getVariationConst(): ?ProductVariationConst
     {
         return $this->variation;
     }
 
-    public function setVariation(ProductVariationConst|null|false $variation): self
+    public function setVariationConst(ProductVariationConst|null|false $variation): self
     {
         $this->variation = empty($variation) ? null : $variation;
 
@@ -97,12 +97,12 @@ final class ProductStockDTO implements ProductStockProductInterface
     }
 
     /** Модификация множественного варианта */
-    public function getModification(): ?ProductModificationConst
+    public function getModificationConst(): ?ProductModificationConst
     {
         return $this->modification;
     }
 
-    public function setModification(ProductModificationConst|null|false $modification): self
+    public function setModificationConst(ProductModificationConst|null|false $modification): self
     {
         $this->modification = empty($modification) ? null : $modification;
 

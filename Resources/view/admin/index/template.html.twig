@@ -60,6 +60,8 @@
 
 /** Сокеты */
 
+{# @var opens \BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartResult #}
+
 let jGGXNNcBC = 100;
 
 setTimeout(function vwZSPXkyxD() {
@@ -74,12 +76,12 @@ setTimeout(function vwZSPXkyxD() {
 
     {% if opens %}
 
-          centrifuge.newSubscription('{{ opens.event }}').on('publication', function (ctx)
+          centrifuge.newSubscription('{{ opens.manufacturePartEvent }}').on("publication", function (ctx)
           {
-            document.getElementById('product-{{ opens.event }}').innerHTML = ctx.data.product;
+            document.getElementById('product-{{ opens.manufacturePartEvent }}').innerHTML = ctx.data.product;
 
-            $total = parseInt(document.getElementById('total-{{ opens.event }}').textContent);
-            document.getElementById('total-{{ opens.event }}').textContent = $total + ctx.data.total
+            $total = parseInt(document.getElementById('total-{{ opens.manufacturePartEvent }}').textContent);
+            document.getElementById('total-{{ opens.manufacturePartEvent }}').textContent = $total + ctx.data.total;
 
           }).subscribe();
 

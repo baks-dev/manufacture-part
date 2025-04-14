@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,12 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 interface AllManufacturePartInterface
 {
+    public function search(SearchDTO $search): self;
+
+    public function filter(ManufactureFilterInterface $filter): self;
+
     /**
      * Метод возвращает пагинатор ManufacturePart
      */
-    public function fetchAllManufacturePartAssociative(
-        SearchDTO $search,
-        ManufactureFilterInterface $filter,
-        UserProfileUid $profile,
-        ?UserProfileUid $authority,
-        bool $other
-    ): PaginatorInterface;
+    public function findPaginator(): PaginatorInterface;
 }

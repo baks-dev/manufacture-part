@@ -31,6 +31,7 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
+use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
@@ -105,25 +106,16 @@ final readonly class ManufacturePartCompleted
             ->forPart($message->getId())
             ->findAll();
 
+        /** @var ProductsByManufacturePartResult $complete */
         foreach($ProductsManufacture as $complete)
         {
-            $identifier = $complete['product_event'];
+            $identifier = $complete->getProductEvent();
 
-            if($complete['product_offer_id'])
-            {
-                $identifier = $complete['product_offer_id'];
-            }
-            if($complete['product_variation_id'])
-            {
-                $identifier = $complete['product_variation_id'];
-            }
+            false === $complete->getProductOfferId() ?: $identifier = $complete->getProductOfferId();
+            false === $complete->getProductVariationId() ?: $identifier = $complete->getProductVariationId();
+            false === $complete->getProductModificationId() ?: $identifier = $complete->getProductModificationId();
 
-            if($complete['product_modification_id'])
-            {
-                $identifier = $complete['product_modification_id'];
-            }
-
-            /** Отправляем сокет сокет с идентификатором */
+            /** Отправляем сокет с идентификатором */
             $this->CentrifugoPublish
                 ->addData(['identifier' => $identifier]) // ID упаковки
                 ->send('remove');

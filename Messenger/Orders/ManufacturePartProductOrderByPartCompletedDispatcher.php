@@ -39,7 +39,7 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\ManufacturePartProduc
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders\ManufacturePartProductOrderDTO;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
-use BaksDev\Wildberries\Manufacture\Type\ManufacturePartComplete\ManufacturePartCompleteWildberriesFbs;
+use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -93,14 +93,15 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
         /**
          * Определяем тип производства для заказов
-         * доступно только для заказов типа FBS (DBS перемещаются в ручную)
-         *
-         * TODO: Переделать завершающие этапы на типы доставки
+         * доступно только для заказов типа FBS и FBO (DBS перемещаются в ручную)
          */
 
         $orderType = match (true)
         {
-            $ManufacturePartEvent->equalsManufacturePartComplete(ManufacturePartCompleteWildberriesFbs::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBS Wb */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
+            /* FBO Wb*/
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
             default => false,
         };
 

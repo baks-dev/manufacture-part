@@ -41,15 +41,18 @@ use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use BaksDev\Users\User\Type\Id\UserUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\UsersTableActionsWorking;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 
 final class AllManufacturePartRepository implements AllManufacturePartInterface
 {
+    private ?SearchDTO $search = null;
+
+    private ?ManufactureFilterInterface $filter = null;
 
     public function __construct(
         private readonly DBALQueryBuilder $DBALQueryBuilder,
@@ -57,16 +60,20 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
     ) {}
 
+    public function search(SearchDTO $search): self
+    {
+        $this->search = $search;
+        return $this;
+    }
+
+    public function filter(ManufactureFilterInterface $filter): self
+    {
+        $this->filter = $filter;
+        return $this;
+    }
 
     /** Метод возвращает пагинатор ManufacturePart */
-    public function fetchAllManufacturePartAssociative(
-        SearchDTO $search,
-        ManufactureFilterInterface $filter,
-        UserProfileUid $profile,
-        ?UserProfileUid $authority,
-        bool $other
-
-    ): PaginatorInterface
+    public function findPaginator(): PaginatorInterface
     {
 
         $dbal = $this->DBALQueryBuilder
@@ -106,14 +113,16 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         $dbal
             ->addSelect('event.status')
             ->addSelect('event.complete')
-            ->join('part',
+            ->join(
+                'part',
                 ManufacturePartEvent::class,
                 'event',
-                'event.id = part.event'.(!$search->getQuery() && $filter->getStatus() ? ' AND event.status = :status' : '')
+                'event.id = part.event'.
+                (!$this->search?->getQuery() && $this->filter?->getStatus() ? ' AND event.status = :status' : '')
             )
             ->setParameter(
                 'status',
-                $filter->getStatus(),
+                $this->filter?->getStatus(),
                 ManufacturePartStatus::TYPE
             );
 
@@ -146,20 +155,15 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             );
 
 
-        if(!$search->getQuery() && $filter->getDate())
+        if(!$this->search?->getQuery() && $this->filter->getDate())
         {
-            $date = $filter->getDate() ?: new DateTimeImmutable();
+            $date = $this->filter->getDate() ?: new DateTimeImmutable();
 
-            // Начало дня
-            $startOfDay = $date->setTime(0, 0, 0);
-            // Конец дня
-            $endOfDay = $date->setTime(23, 59, 59);
+            $dbal
+                ->andWhere('DATE(part_modify.mod_date) BETWEEN :start AND :end')
+                ->setParameter('start', $date, Types::DATE_IMMUTABLE)
+                ->setParameter('end', $date, Types::DATE_IMMUTABLE);
 
-            //($date ? ' AND part_modify.mod_date = :date' : '')
-            $dbal->andWhere('part_modify.mod_date BETWEEN :start AND :end');
-
-            $dbal->setParameter('start', $startOfDay->format("Y-m-d H:i:s"));
-            $dbal->setParameter('end', $endOfDay->format("Y-m-d H:i:s"));
         }
 
 
@@ -236,14 +240,13 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             ->bindLocal();
 
 
-        if($search->getQuery())
+        if($this->search?->getQuery())
         {
             $dbal
-                ->createSearchQueryBuilder($search)
+                ->createSearchQueryBuilder($this->search)
                 ->addSearchEqualUid('part.id')
                 ->addSearchLike('invariable.number');
         }
-
 
         $dbal->orderBy('part_modify.mod_date', 'DESC');
 

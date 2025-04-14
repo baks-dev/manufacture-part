@@ -94,13 +94,9 @@ final class ManufactureController extends AbstractController
 
         // Получаем список партий
         $ManufacturePart = $allManufacturePart
-            ->fetchAllManufacturePartAssociative(
-                $search,
-                $filter,
-                $this->getCurrentProfileUid(),
-                $this->getProfileUid(),
-                $this->isGranted('ROLE_MANUFACTURE_PART_OTHER')
-            );
+            ->search($search)
+            ->filter($filter)
+            ->findPaginator();
 
         return $this->render(
             [
