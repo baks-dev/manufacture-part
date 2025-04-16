@@ -136,7 +136,7 @@
 
                         <div>
                             <small class="opacity-50">Завершающий этап:</small> &nbsp;
-                            <strong>{{ info.complete|trans({}, 'manufacture.complete') }}</strong>
+                            <strong>{{ info.complete ? info.complete|trans({}, 'manufacture.complete') : 'Ничего не делать' }}</strong>
                         </div>
 
 

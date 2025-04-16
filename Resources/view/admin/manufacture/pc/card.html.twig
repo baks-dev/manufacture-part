@@ -11,9 +11,6 @@
 
     <td class="text-center">
 
-
-
-
         <span
                 role="tooltip"
                 data-bs-toggle="tooltip"
@@ -57,7 +54,7 @@
     </td>
 
     <td class="text-center">
-        {{ item.complete|trans({}, 'manufacture.complete') }}
+        {{ item.complete ? item.complete|trans({}, 'manufacture.complete') : 'Ничего не делать' }}
     </td>
     <td class="text-center">
         {{ manufacture_status(item.status) }}

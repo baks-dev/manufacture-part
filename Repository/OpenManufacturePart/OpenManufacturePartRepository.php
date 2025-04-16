@@ -95,7 +95,8 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
 
     public function find(): OpenManufacturePartResult|false
     {
-        $dbal = $this->DBALQueryBuilder->createQueryBuilder(self::class)
+        $dbal = $this->DBALQueryBuilder
+            ->createQueryBuilder(self::class)
             ->bindLocal();
 
         /** ManufacturePartInvariable */
@@ -106,10 +107,10 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             ->from(ManufacturePartInvariable::class, 'invariable');
 
         $dbal
-            ->andWhere('invariable.profile = :profile')
+            ->where('invariable.profile = :profile')
             ->setParameter(
                 key: 'profile',
-                value: $this->profile ?: $this->UserProfileTokenStorage->getProfile(),
+                value: $this->UserProfileTokenStorage->getProfile(),
                 type: UserProfileUid::TYPE
             );
 
@@ -140,7 +141,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             )
             ->setParameter(
                 'fixed',
-                $this->profile,
+                $this->profile ?: $this->UserProfileTokenStorage->getProfileCurrent(),
                 UserProfileUid::TYPE
             );
 
