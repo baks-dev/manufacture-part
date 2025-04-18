@@ -32,6 +32,7 @@ use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorki
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
@@ -80,7 +81,8 @@ final readonly class ManufacturePartCompleted
         if(
             false === (
                 $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
+                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class) ||
+                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class)
             )
         )
         {

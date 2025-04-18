@@ -27,6 +27,10 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders;
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Type\Gps\GpsLatitude;
+use BaksDev\Core\Type\Gps\GpsLongitude;
+use BaksDev\Delivery\Repository\CurrentDeliveryEvent\CurrentDeliveryEventInterface;
+use BaksDev\Delivery\Type\Event\DeliveryEventUid;
 use BaksDev\Delivery\Type\Id\Choice\Collection\TypeDeliveryInterface;
 use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
@@ -62,7 +66,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Создает заказ со статусом NEW на производство FBO
  */
-#[AsMessageHandler(priority: 70)]
+#[AsMessageHandler(priority: 90)]
 final readonly class NewOrderFboByPartCompletedDispatcher
 {
     public function __construct(
@@ -72,7 +76,9 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         private CurrentProductIdentifierInterface $CurrentProductIdentifier,
         private NewOrderHandler $NewOrderHandler,
         private DeduplicatorInterface $deduplicator,
+        private CurrentDeliveryEventInterface $CurrentDeliveryEvent,
     ) {}
+
 
     public function __invoke(ManufacturePartMessage $message): void
     {
@@ -104,6 +110,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         {
             return;
         }
+
 
         /**
          * Определяем тип производства для заказов
@@ -139,7 +146,26 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             return;
         }
 
-        $DeduplicatorExecuted->save();
+        /** Способ доставки FBO */
+        $Delivery = new DeliveryUid($orderType);
+        $DeliveryEventUid = $this->CurrentDeliveryEvent
+            ->forDelivery($Delivery)
+            ->getId();
+
+        if(false === ($DeliveryEventUid instanceof DeliveryEventUid))
+        {
+            $this->logger->critical(
+                'manufacture-part: DeliveryEventUid не определено',
+                [
+                    'message' => $message,
+                    'delivery' => $orderType,
+                    self::class.':'.__LINE__
+                ]
+            );
+
+            return;
+        }
+
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
@@ -183,9 +209,11 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         $Profile = new TypeProfileUid($profileType);
         $OrderProfileDTO?->setType($Profile);
 
-        /** Способ доставки FBO */
-        $Delivery = new DeliveryUid($orderType);
+        /** Тип доставки FBO */
         $OrderDeliveryDTO->setDelivery($Delivery);
+        $OrderDeliveryDTO->setEvent($DeliveryEventUid);
+        $OrderDeliveryDTO->setLatitude(new GpsLatitude(55.755892));
+        $OrderDeliveryDTO->setLongitude(new GpsLongitude(37.617188));
 
         /** Способ оплаты FBO */
         $Payment = new PaymentUid($paymentType);
@@ -193,7 +221,6 @@ final readonly class NewOrderFboByPartCompletedDispatcher
 
 
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
-
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
             /** @var CurrentProductIdentifierResult $CurrentProductIdentifierResult */
@@ -241,6 +268,10 @@ final readonly class NewOrderFboByPartCompletedDispatcher
                 sprintf('wildberries-package: Ошибка %s при добавлении заказа DBS при выполненном производстве', $Order),
                 [$message, self::class.':'.__LINE__]
             );
+
+            return;
         }
+
+        $DeduplicatorExecuted->save();
     }
 }
