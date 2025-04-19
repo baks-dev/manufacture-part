@@ -38,7 +38,7 @@ final class ManufacturePartInvariableDTO implements ManufacturePartInvariableInt
      */
     #[Assert\NotBlank]
     #[Assert\Uuid]
-    private UserUid $usr;
+    private ?UserUid $usr = null;
 
     /**
      * Профиль
