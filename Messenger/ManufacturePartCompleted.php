@@ -55,13 +55,13 @@ final readonly class ManufacturePartCompleted
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private CentrifugoPublishInterface $CentrifugoPublish,
-        private ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent
+        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent
     ) {}
 
 
     public function __invoke(ManufacturePartMessage $message): void
     {
-        $ManufacturePartEvent = $this->manufacturePartCurrentEvent
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
             ->fromPart($message->getId())
             ->find();
 

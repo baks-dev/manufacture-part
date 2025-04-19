@@ -29,7 +29,7 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -48,7 +48,7 @@ final readonly class AddUserTableByManufacturePartWorking
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private UsersTableHandler $usersTableHandler,
         private DeduplicatorInterface $deduplicator
     ) {}
@@ -62,15 +62,16 @@ final readonly class AddUserTableByManufacturePartWorking
 
         $DeduplicatorExecuted = $this->deduplicator
             ->namespace('manufacture-part')
-            ->deduplication([$message, self::class]);
+            ->deduplication([(string) $message->getEvent(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
         {
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        /** Получаем событие (без учета текущего состояния) */
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getId())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))

@@ -29,7 +29,7 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -48,7 +48,7 @@ final readonly class SubUserTableByManufacturePartDefect
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private UsersTableHandler $usersTableHandler,
         private DeduplicatorInterface $deduplicator
     ) {}
@@ -70,7 +70,10 @@ final readonly class SubUserTableByManufacturePartDefect
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent->fromPart($message->getId())->find();
+        $ManufacturePartEvent = $this
+            ->ManufacturePartEventRepository
+            ->forEvent($message->getEvent())
+            ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
@@ -82,7 +85,6 @@ final readonly class SubUserTableByManufacturePartDefect
         {
             return false;
         }
-
 
         /** Если отсутствует рабочий процесс - Дефект производственного сырья */
         if(false === ($ManufacturePartEvent->getWorking() instanceof ManufacturePartWorking))

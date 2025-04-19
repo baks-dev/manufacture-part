@@ -78,7 +78,7 @@ final class PackageProductStockByPartCompletedDispatcher
         $DeduplicatorExecuted = $this
             ->deduplicator
             ->namespace('wildberries-package')
-            ->deduplication([(string) $message->getEvent(), self::class]);
+            ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
         {
