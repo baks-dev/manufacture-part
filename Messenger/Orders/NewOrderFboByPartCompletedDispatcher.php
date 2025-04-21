@@ -36,6 +36,7 @@ use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
@@ -64,15 +65,16 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Создает заказ со статусом NEW на производство FBO
+ * Создает заказ со статусом NEW на производство FBO при завершающем этапе
  */
-#[AsMessageHandler(priority: 90)]
+#[AsMessageHandler(priority: 100)]
 final readonly class NewOrderFboByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private CurrentUserProfileEventByIdInterfaceInterface $CurrentUserProfileEvent,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
+        private CurrentUserProfileEventByIdInterfaceInterface $CurrentUserProfileEvent,
         private CurrentProductIdentifierInterface $CurrentProductIdentifier,
         private NewOrderHandler $NewOrderHandler,
         private DeduplicatorInterface $deduplicator,
@@ -92,8 +94,12 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             return;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
+
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getEvent())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))

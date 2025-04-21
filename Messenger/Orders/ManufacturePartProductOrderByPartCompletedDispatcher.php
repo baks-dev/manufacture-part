@@ -32,6 +32,7 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartHandler;
@@ -54,6 +55,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private RelevantNewOrderByProductInterface $RelevantNewOrderByProduct,
         private OrdersManufacturePartHandler $OrdersManufacturePartHandler,
@@ -72,8 +74,12 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
+
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getId())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))

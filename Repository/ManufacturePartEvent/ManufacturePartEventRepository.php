@@ -82,6 +82,8 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
                 type: ManufacturePartEventUid::TYPE
             );
 
-        return $orm->getOneOrNullResult() ?: false;
+        return $orm
+            ->enableCache('manufacture-part')
+            ->getOneOrNullResult() ?: false;
     }
 }

@@ -30,6 +30,7 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
@@ -63,6 +64,7 @@ final class PackageProductStockByPartCompletedDispatcher
 
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private CurrentProductIdentifierInterface $CurrentProductIdentifier,
         private PackageProductStockHandler $PackageProductStockHandler,
@@ -85,8 +87,12 @@ final class PackageProductStockByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
+
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getId())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -109,11 +115,8 @@ final class PackageProductStockByPartCompletedDispatcher
 
         /**
          * Определяем тип производства для заказов
-         * доступно только для заказов типа FBS (DBS перемещаются в ручную)
-         *
-         * TODO: Переделать завершающие этапы на типы доставки
+         * доступно только для заказов типа FBS + FBO (DBS перемещаются в ручную)
          */
-
 
         $orderType = match (true)
         {
@@ -205,6 +208,7 @@ final class PackageProductStockByPartCompletedDispatcher
 
                     $PackageProductStockDTO->setProduct(new ArrayCollection());
                     $PackageProductStockDTO->setOrd($ProductStockOrderDTO);
+
 
                     $PackageOrderInvariableDTO = $PackageProductStockDTO->getInvariable();
                     $PackageOrderInvariableDTO

@@ -61,7 +61,7 @@ final class ManufacturePartInvariableDTO implements ManufacturePartInvariableInt
     /**
      * Usr
      */
-    public function getUsr(): UserUid
+    public function getUsr(): ?UserUid
     {
         return $this->usr;
     }

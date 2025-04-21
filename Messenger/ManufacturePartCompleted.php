@@ -26,13 +26,14 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
+use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
-use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
@@ -51,18 +52,34 @@ final readonly class ManufacturePartCompleted
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
+        private ManufacturePartEventInterface $ManufacturePartEventRepository,
+        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private CentrifugoPublishInterface $CentrifugoPublish,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent
+        private DeduplicatorInterface $deduplicator,
     ) {}
 
 
     public function __invoke(ManufacturePartMessage $message): void
     {
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
+        $DeduplicatorExecuted = $this
+            ->deduplicator
+            ->namespace('wildberries-package')
+            ->deduplication([(string) $message->getId(), self::class]);
+
+        if($DeduplicatorExecuted->isExecuted())
+        {
+            return;
+        }
+
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
+
+        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+            ->forEvent($message->getEvent())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -78,11 +95,11 @@ final readonly class ManufacturePartCompleted
         /**
          * Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве»
          */
+
         if(
             false === (
                 $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class) ||
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class)
+                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
             )
         )
         {
@@ -93,7 +110,7 @@ final readonly class ManufacturePartCompleted
         $working = $this->activeWorkingManufacturePart
             ->findNextWorkingByManufacturePart($message->getId());
 
-        /** Если имеется этап производства */
+        /** Если имеется этап производства - партия еще на стадии производства */
         if($working instanceof UsersTableActionsWorkingUid)
         {
             return;
@@ -129,6 +146,8 @@ final readonly class ManufacturePartCompleted
         }
 
         $this->logger->info('Производственная партия выполнена');
+
+        $DeduplicatorExecuted->save();
 
     }
 }

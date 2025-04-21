@@ -53,7 +53,6 @@ final readonly class SubUserTableByManufacturePartDefect
         private DeduplicatorInterface $deduplicator
     ) {}
 
-
     public function __invoke(ManufacturePartMessage $message): bool
     {
         if(!class_exists(UsersTable::class))
