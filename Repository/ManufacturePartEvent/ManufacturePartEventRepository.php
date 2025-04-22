@@ -83,7 +83,7 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
             );
 
         return $orm
-            ->enableCache('manufacture-part')
+            ->enableCache('manufacture-part', '1 day')
             ->getOneOrNullResult() ?: false;
     }
 }

@@ -155,7 +155,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
             if(false === ($ProductStock instanceof ProductStock))
             {
                 $this->logger->critical(
-                    'manufacture-part: Ошибка при обновлении складских остатков после производства',
+                    sprintf('manufacture-part: Ошибка %s при обновлении складских остатков после производства', $ProductStock),
                     [$message, $product, self::class.':'.__LINE__]
                 );
             }

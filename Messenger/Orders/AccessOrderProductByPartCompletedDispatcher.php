@@ -81,7 +81,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         //            ->find();
 
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
-            ->forEvent($message->getId())
+            ->forEvent($message->getEvent())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -120,7 +120,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         }
 
         $DeduplicatorExecuted->save();
-
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

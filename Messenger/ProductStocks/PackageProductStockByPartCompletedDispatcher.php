@@ -92,7 +92,7 @@ final class PackageProductStockByPartCompletedDispatcher
         //            ->find();
 
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
-            ->forEvent($message->getId())
+            ->forEvent($message->getEvent())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))

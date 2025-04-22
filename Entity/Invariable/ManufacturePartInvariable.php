@@ -137,7 +137,7 @@ class ManufacturePartInvariable extends EntityReadonly
     /**
      * Profile
      */
-    public function getProfile(): UserProfileUid
+    public function getProfile(): ?UserProfileUid
     {
         return $this->profile;
     }

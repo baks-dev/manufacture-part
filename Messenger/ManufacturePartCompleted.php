@@ -47,7 +47,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Проверяем, имеется ли не выполненное действие, если нет - заявка выполнена (применяем статус Complete)
  */
-#[AsMessageHandler(priority: 90)]
+#[AsMessageHandler(priority: -999)]
 final readonly class ManufacturePartCompleted
 {
     public function __construct(

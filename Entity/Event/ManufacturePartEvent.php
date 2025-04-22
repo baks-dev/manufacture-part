@@ -72,7 +72,7 @@ class ManufacturePartEvent extends EntityEvent
     /**
      * Постоянные неизменяемые свойства
      */
-    #[ORM\OneToOne(targetEntity: ManufacturePartInvariable::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: ManufacturePartInvariable::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private ?ManufacturePartInvariable $invariable = null;
 
     /**
@@ -215,9 +215,9 @@ class ManufacturePartEvent extends EntityEvent
     /**
      * Profile
      */
-    public function getProfile(): UserProfileUid
+    public function getPartProfile(): ?UserProfileUid
     {
-        return $this->invariable->getProfile();
+        return $this->invariable?->getProfile();
     }
 
     public function getQuantity(): int
@@ -228,6 +228,11 @@ class ManufacturePartEvent extends EntityEvent
     public function getNumber(): string
     {
         return $this->invariable->getNumber();
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
     }
 
     /**
@@ -250,7 +255,12 @@ class ManufacturePartEvent extends EntityEvent
 
         if($dto instanceof ManufacturePartEventInterface)
         {
-            return parent::getDto($dto);
+            $parent = parent::getDto($dto);
+
+            // вызываем invariable для текущего события
+            $invariable = $this->invariable->getProfile();
+
+            return $parent;
         }
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
