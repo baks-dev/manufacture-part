@@ -255,12 +255,7 @@ class ManufacturePartEvent extends EntityEvent
 
         if($dto instanceof ManufacturePartEventInterface)
         {
-            $parent = parent::getDto($dto);
-
-            // вызываем invariable для текущего события
-            $invariable = $this->invariable->getProfile();
-
-            return $parent;
+            return parent::getDto($dto);
         }
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
