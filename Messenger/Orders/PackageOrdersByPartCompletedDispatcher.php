@@ -74,7 +74,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -82,13 +82,13 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             return true;
         }
 
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
-
-        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-            ->forEvent($message->getEvent())
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
             ->find();
+
+        //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+        //            ->forEvent($message->getEvent())
+        //            ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {

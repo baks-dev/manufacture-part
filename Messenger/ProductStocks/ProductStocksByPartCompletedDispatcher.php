@@ -29,6 +29,7 @@ namespace BaksDev\Manufacture\Part\Messenger\ProductStocks;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
@@ -57,6 +58,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private ManufacturePartEventInterface $ManufacturePartEventRepository,
+        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private ManufactureProductStockHandler $ManufactureProductStockHandler,
         private DeduplicatorInterface $deduplicator,
     ) {}
@@ -110,6 +112,10 @@ final readonly class ProductStocksByPartCompletedDispatcher
          * Отправляем продукцию на склад
          */
 
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
+            ->find();
+
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
@@ -123,7 +129,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
         foreach($ProductsManufacture as $product)
         {
             $DeduplicatorPack = $this->deduplicator
-                ->deduplication([(string) $message->getId(), $product, self::class]);
+                ->deduplication([(string) $message->getId(), $product, true, self::class]);
 
             if($DeduplicatorPack->isExecuted())
             {

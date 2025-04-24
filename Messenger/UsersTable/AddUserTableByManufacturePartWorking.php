@@ -62,7 +62,7 @@ final readonly class AddUserTableByManufacturePartWorking
 
         $DeduplicatorExecuted = $this->deduplicator
             ->namespace('manufacture-part')
-            ->deduplication([(string) $message->getEvent(), self::class]);
+            ->deduplication([$message, self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
         {

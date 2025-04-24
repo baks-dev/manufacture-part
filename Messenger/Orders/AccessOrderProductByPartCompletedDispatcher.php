@@ -35,6 +35,7 @@ use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEven
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
+use BaksDev\Orders\Order\Entity\Event\OrderEvent;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
 use BaksDev\Orders\Order\Repository\UpdateAccessOrderProduct\UpdateAccessOrderProductInterface;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
@@ -68,7 +69,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -154,17 +155,9 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                  * Приступаем к следующему продукту в случае отсутствия заказов
                  */
 
-                if(false === $OrderEvent)
+                if(false === ($OrderEvent instanceof OrderEvent))
                 {
                     continue 2;
-                }
-
-                $DeduplicatorOrder = $this->deduplicator
-                    ->deduplication([(string) $OrderEvent->getMain(), self::class]);
-
-                if($DeduplicatorOrder->isExecuted())
-                {
-                    continue;
                 }
 
                 $this->logger->info(
@@ -278,8 +271,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
                     $AccessOrderPriceDTO->addAccess();
                 }
-
-                $DeduplicatorOrder->save();
             }
         }
 

@@ -66,7 +66,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -115,8 +115,6 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         {
             return false;
         }
-
-        $DeduplicatorExecuted->save();
 
         $ManufacturePartDTO = new OrdersManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
@@ -213,6 +211,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
          * @see PackageOrdersByPartCompletedDispatcher
          */
 
+        $DeduplicatorExecuted->save();
 
         return true;
     }

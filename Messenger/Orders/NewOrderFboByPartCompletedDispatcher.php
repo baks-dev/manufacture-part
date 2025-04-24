@@ -87,7 +87,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())

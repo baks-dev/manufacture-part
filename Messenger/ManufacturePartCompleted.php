@@ -34,6 +34,7 @@ use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufactureP
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
@@ -66,7 +67,7 @@ final readonly class ManufacturePartCompleted
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -74,9 +75,9 @@ final readonly class ManufacturePartCompleted
             return;
         }
 
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
+        //                $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //                    ->fromPart($message->getId())
+        //                    ->find();
 
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
@@ -107,6 +108,12 @@ final readonly class ManufacturePartCompleted
         }
 
 
+        if(true === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class))
+        {
+            return;
+        }
+
+
         $working = $this->activeWorkingManufacturePart
             ->findNextWorkingByManufacturePart($message->getId());
 
@@ -115,10 +122,6 @@ final readonly class ManufacturePartCompleted
         {
             return;
         }
-
-        /** Производственная партия полностью выполнена (статус Complete) */
-        $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
-        $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
 
         /** Получаем всю продукцию в партии и снимаем блокировку */
         $ProductsManufacture = $this->ProductsByManufacturePart
@@ -140,6 +143,10 @@ final readonly class ManufacturePartCompleted
                 ->send('remove');
         }
 
+        /** Производственная партия полностью выполнена (статус Complete) */
+        $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
+        $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
+
         if(!$handle instanceof ManufacturePart)
         {
             throw new DomainException(sprintf('%s: Ошибка при полном выполнении (статус Complete) производственной партии', $handle));
@@ -148,6 +155,5 @@ final readonly class ManufacturePartCompleted
         $this->logger->info('Производственная партия выполнена');
 
         $DeduplicatorExecuted->save();
-
     }
 }

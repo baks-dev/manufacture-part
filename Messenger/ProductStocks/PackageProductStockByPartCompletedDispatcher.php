@@ -79,17 +79,13 @@ final class PackageProductStockByPartCompletedDispatcher
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
         {
             return true;
         }
-
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
 
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
@@ -110,8 +106,6 @@ final class PackageProductStockByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartDTO = new ManufacturePartDTO();
-        $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
         /**
          * Определяем тип производства для заказов
@@ -131,6 +125,13 @@ final class PackageProductStockByPartCompletedDispatcher
         {
             return false;
         }
+
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
+            ->find();
+
+        $ManufacturePartDTO = new ManufacturePartDTO();
+        $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
