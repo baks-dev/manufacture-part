@@ -79,6 +79,64 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         return $this;
     }
 
+    /**
+     * @return array{
+     *     product_id: string,
+     *     product_event: string,
+     *     product_name: string,
+     *     product_offer_id: string,
+     *     product_offer_const: string,
+     *     product_offer_value: string,
+     *     product_offer_postfix: string,
+     *     product_offer_reference: string,
+     *     product_variation_id: string,
+     *     product_variation_const: string,
+     *     product_variation_value: string,
+     *     product_variation_postfix: string,
+     *     product_variation_reference: string,
+     *      product_modification_id: string,
+     *      product_modification_const: string,
+     *      product_modification_value: string,
+     *      product_modification_postfix: string,
+     *      product_modification_reference: string,
+     *     product_total: int
+     * }
+     *
+     *
+     * Метод возвращает список продукции в производственной партии
+     *
+     * @deprecated
+     *
+     */
+    public function findAllAssociative(): ?array
+    {
+        if(false === ($this->part instanceof ManufacturePartUid))
+        {
+            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
+        }
+
+        return iterator_to_array($this->findAll());
+    }
+
+    /**
+     * Метод возвращает список продукции в производственной партии
+     *
+     * {# @var ProductsByManufacturePartResult \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}</pre>
+     * {{ ProductsByManufacturePartResult.getTotal }}
+     */
+    public function findAll(): Generator|false
+    {
+        if(false === ($this->part instanceof ManufacturePartUid))
+        {
+            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
+        }
+
+        $dbal = $this->builder();
+
+        return $dbal
+            ->enableCache('manufacture-part', '5 seconds')
+            ->fetchAllHydrate(ProductsByManufacturePartResult::class);
+    }
 
     private function builder(): DBALQueryBuilder
     {
@@ -237,66 +295,6 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
         $dbal->orderBy('part_product.id', 'DESC');
 
         return $dbal;
-    }
-
-    /**
-     * Метод возвращает список продукции в производственной партии
-     *
-     * {# @var ProductsByManufacturePartResult \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}</pre>
-     * {{ ProductsByManufacturePartResult.getTotal }}
-     */
-    public function findAll(): Generator|false
-    {
-        if(false === ($this->part instanceof ManufacturePartUid))
-        {
-            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
-        }
-
-        $dbal = $this->builder();
-
-        return $dbal
-            ->enableCache('manufacture-part', '5 seconds')
-            ->fetchAllHydrate(ProductsByManufacturePartResult::class);
-    }
-
-
-    /**
-     * @return array{
-     *     product_id: string,
-     *     product_event: string,
-     *     product_name: string,
-     *     product_offer_id: string,
-     *     product_offer_const: string,
-     *     product_offer_value: string,
-     *     product_offer_postfix: string,
-     *     product_offer_reference: string,
-     *     product_variation_id: string,
-     *     product_variation_const: string,
-     *     product_variation_value: string,
-     *     product_variation_postfix: string,
-     *     product_variation_reference: string,
-     *      product_modification_id: string,
-     *      product_modification_const: string,
-     *      product_modification_value: string,
-     *      product_modification_postfix: string,
-     *      product_modification_reference: string,
-     *     product_total: int
-     * }
-     *
-     *
-     * Метод возвращает список продукции в производственной партии
-     *
-     * @deprecated
-     *
-     */
-    public function findAllAssociative(): ?array
-    {
-        if(false === ($this->part instanceof ManufacturePartUid))
-        {
-            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
-        }
-
-        return iterator_to_array($this->findAll());
     }
 
 }

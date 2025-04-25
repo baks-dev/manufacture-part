@@ -1,2 +1,3 @@
 {{ include(_self|replace({ "centrifugo.html.twig": baks_settings.device~"/product.html.twig" })) }}
-<script nonce='{{ csp_nonce() }}' async  data-src="/assets/manufacture_part/product.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async data-src="/assets/manufacture_part/product.js?v={{ version }}"
+        class="lazy"></script>

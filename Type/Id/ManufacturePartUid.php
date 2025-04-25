@@ -27,7 +27,6 @@ namespace BaksDev\Manufacture\Part\Type\Id;
 
 use App\Kernel;
 use BaksDev\Core\Type\UidType\Uid;
-use Symfony\Component\Uid\AbstractUid;
 
 final class ManufacturePartUid extends Uid
 {

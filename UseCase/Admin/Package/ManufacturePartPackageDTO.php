@@ -51,7 +51,8 @@ final readonly class ManufacturePartPackageDTO implements ManufacturePartEventIn
     private ManufacturePartStatus $status;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->status = new ManufacturePartStatus(ManufacturePartStatusPackage::class);
     }
 

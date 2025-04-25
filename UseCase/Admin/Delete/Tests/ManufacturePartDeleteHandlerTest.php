@@ -52,47 +52,6 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When(env: 'test')]
 class ManufacturePartDeleteHandlerTest extends KernelTestCase
 {
-    public function testUseCase(): void
-    {
-        /** @var ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent */
-        $ManufacturePartCurrentEvent = self::getContainer()->get(ManufacturePartCurrentEventInterface::class);
-        $ManufacturePartEvent = $ManufacturePartCurrentEvent
-            ->fromPart(ManufacturePartUid::TEST)
-            ->find();
-        self::assertNotNull($ManufacturePartEvent);
-
-        //dump((string) $ManufacturePartEvent->getId());
-
-        /** @see ManufacturePartDeleteDTO */
-        $ManufacturePartDeleteDTO = new ManufacturePartDeleteDTO();
-        $ManufacturePartEvent->getDto($ManufacturePartDeleteDTO);
-
-
-
-        /** @var ManufacturePartHandler $ManufacturePartHandler */
-        $ManufacturePartDeleteHandler = self::getContainer()->get(ManufacturePartDeleteHandler::class);
-        $handle = $ManufacturePartDeleteHandler->handle($ManufacturePartDeleteDTO);
-
-        self::assertTrue(($handle instanceof ManufacturePart), $handle.': Ошибка ManufacturePart');
-
-    }
-
-
-    public function testComplete(): void
-    {
-        /** @var DBALQueryBuilder $dbal */
-        $dbal = self::getContainer()->get(DBALQueryBuilder::class);
-
-        $dbal->createQueryBuilder(self::class);
-
-        $dbal->from(ManufacturePart::class)
-            ->where('id = :id')
-            ->setParameter('id', ManufacturePartUid::TEST);
-
-        self::assertFalse($dbal->fetchExist());
-
-    }
-
     public static function tearDownAfterClass(): void
     {
         /** @var EntityManagerInterface $em */
@@ -117,5 +76,44 @@ class ManufacturePartDeleteHandlerTest extends KernelTestCase
 
         $em->flush();
         $em->clear();
+    }
+
+    public function testUseCase(): void
+    {
+        /** @var ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent */
+        $ManufacturePartCurrentEvent = self::getContainer()->get(ManufacturePartCurrentEventInterface::class);
+        $ManufacturePartEvent = $ManufacturePartCurrentEvent
+            ->fromPart(ManufacturePartUid::TEST)
+            ->find();
+        self::assertNotNull($ManufacturePartEvent);
+
+        //dump((string) $ManufacturePartEvent->getId());
+
+        /** @see ManufacturePartDeleteDTO */
+        $ManufacturePartDeleteDTO = new ManufacturePartDeleteDTO();
+        $ManufacturePartEvent->getDto($ManufacturePartDeleteDTO);
+
+
+        /** @var ManufacturePartHandler $ManufacturePartHandler */
+        $ManufacturePartDeleteHandler = self::getContainer()->get(ManufacturePartDeleteHandler::class);
+        $handle = $ManufacturePartDeleteHandler->handle($ManufacturePartDeleteDTO);
+
+        self::assertTrue(($handle instanceof ManufacturePart), $handle.': Ошибка ManufacturePart');
+
+    }
+
+    public function testComplete(): void
+    {
+        /** @var DBALQueryBuilder $dbal */
+        $dbal = self::getContainer()->get(DBALQueryBuilder::class);
+
+        $dbal->createQueryBuilder(self::class);
+
+        $dbal->from(ManufacturePart::class)
+            ->where('id = :id')
+            ->setParameter('id', ManufacturePartUid::TEST);
+
+        self::assertFalse($dbal->fetchExist());
+
     }
 }

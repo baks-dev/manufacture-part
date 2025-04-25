@@ -66,7 +66,7 @@ let jGGXNNcBC = 100;
 
 setTimeout(function vwZSPXkyxD() {
 
-    if(typeof centrifuge !== 'object')
+    if(typeof centrifuge !== "object")
     {
         if(jGGXNNcBC > 1000) { return; }
 
@@ -89,7 +89,7 @@ setTimeout(function vwZSPXkyxD() {
 
 
     /** Удаляем из списка у всех продукт */
-    centrifuge.newSubscription('remove').on('publication', function (ctx)
+    centrifuge.newSubscription("remove").on("publication", function (ctx)
     {
         if(ctx.data.profile === '{{ current_profile }}')
         {

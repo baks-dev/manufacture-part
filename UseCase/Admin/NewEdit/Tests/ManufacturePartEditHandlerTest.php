@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests;
 
 
-use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
@@ -34,9 +33,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\Manufa
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 

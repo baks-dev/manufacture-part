@@ -87,70 +87,6 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
         $this->sort = time();
     }
 
-
-    /**
-     * Идентификатор События!!! продукта
-     */
-    public function getProduct(): ?ProductEventUid
-    {
-        return $this->product;
-    }
-
-    public function setProduct(?ProductEventUid $product): self
-    {
-        $this->product = $product;
-        return $this;
-    }
-
-
-    /**
-     * Идентификатор торгового предложения
-     */
-
-    public function getOffer(): ?ProductOfferUid
-    {
-        return $this->offer;
-    }
-
-    public function setOffer(?ProductOfferUid $offer): self
-    {
-        $this->offer = $offer;
-        return $this;
-    }
-
-
-    /**
-     * Идентификатор множественного варианта торгового предложения
-     */
-
-    public function getVariation(): ?ProductVariationUid
-    {
-        return $this->variation;
-    }
-
-    public function setVariation(?ProductVariationUid $variation): self
-    {
-        $this->variation = $variation;
-        return $this;
-    }
-
-
-    /**
-     * Идентификатор модификации множественного варианта торгового предложения
-     */
-
-    public function getModification(): ?ProductModificationUid
-    {
-        return $this->modification;
-    }
-
-    public function setModification(?ProductModificationUid $modification): self
-    {
-        $this->modification = $modification;
-        return $this;
-    }
-
-
     /**
      * Общее количество в партии
      */
@@ -187,6 +123,65 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
         }
 
         return (string) $identifier;
+    }
+
+    /**
+     * Идентификатор События!!! продукта
+     */
+    public function getProduct(): ?ProductEventUid
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?ProductEventUid $product): self
+    {
+        $this->product = $product;
+        return $this;
+    }
+
+    /**
+     * Идентификатор торгового предложения
+     */
+
+    public function getOffer(): ?ProductOfferUid
+    {
+        return $this->offer;
+    }
+
+    public function setOffer(?ProductOfferUid $offer): self
+    {
+        $this->offer = $offer;
+        return $this;
+    }
+
+    /**
+     * Идентификатор множественного варианта торгового предложения
+     */
+
+    public function getVariation(): ?ProductVariationUid
+    {
+        return $this->variation;
+    }
+
+    public function setVariation(?ProductVariationUid $variation): self
+    {
+        $this->variation = $variation;
+        return $this;
+    }
+
+    /**
+     * Идентификатор модификации множественного варианта торгового предложения
+     */
+
+    public function getModification(): ?ProductModificationUid
+    {
+        return $this->modification;
+    }
+
+    public function setModification(?ProductModificationUid $modification): self
+    {
+        $this->modification = $modification;
+        return $this;
     }
 
     /**

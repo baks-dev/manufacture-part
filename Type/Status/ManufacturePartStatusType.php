@@ -27,7 +27,6 @@ namespace BaksDev\Manufacture\Part\Type\Status;
 
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 
 final class ManufacturePartStatusType extends Type

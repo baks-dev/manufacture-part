@@ -28,7 +28,6 @@ namespace BaksDev\Manufacture\Part\Entity;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -68,14 +67,6 @@ class ManufacturePart
     }
 
     /**
-     * Идентификатор
-     */
-    public function getId(): ManufacturePartUid
-    {
-        return $this->id;
-    }
-
-    /**
      * Идентификатор События
      */
     public function getEvent(): ManufacturePartEventUid
@@ -86,5 +77,13 @@ class ManufacturePart
     public function setEvent(ManufacturePartEventUid|ManufacturePartEvent $event): void
     {
         $this->event = $event instanceof ManufacturePartEvent ? $event->getId() : $event;
+    }
+
+    /**
+     * Идентификатор
+     */
+    public function getId(): ManufacturePartUid
+    {
+        return $this->id;
     }
 }

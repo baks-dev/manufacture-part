@@ -29,9 +29,6 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Invariable\ManufacturePartInvariableDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\ManufacturePartProductsDTO;
-use BaksDev\Products\Category\Type\Id\CategoryProductUid;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 

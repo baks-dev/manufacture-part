@@ -79,19 +79,17 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
      */
     #[Assert\Uuid]
     private ?CategoryProductUid $category = null;
+    /**
+     * Комментарий
+     */
+    #[Assert\Length(max: 255)]
+    private ?string $comment = null;
 
     public function __construct()
     {
         $this->invariable = new ManufacturePartInvariableDTO();
         $this->product = new ArrayCollection();
     }
-
-
-    /**
-     * Комментарий
-     */
-    #[Assert\Length(max: 255)]
-    private ?string $comment = null;
 
     /**
      * Идентификатор события

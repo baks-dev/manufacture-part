@@ -34,7 +34,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatusType;
 use Symfony\Config\DoctrineConfig;
 
-return static function (ContainerConfigurator $container, DoctrineConfig $doctrine) {
+return static function(ContainerConfigurator $container, DoctrineConfig $doctrine) {
 
     $doctrine->dbal()->type(ManufacturePartUid::TYPE)->class(ManufacturePartType::class);
     $doctrine->dbal()->type(ManufacturePartEventUid::TYPE)->class(ManufacturePartEventType::class);

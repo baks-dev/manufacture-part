@@ -27,16 +27,11 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Defect;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
-use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Defect\Event\ManufacturePartProductsDTO;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Target;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ManufacturePartProductDefectHandler extends AbstractHandler
 {
@@ -79,7 +74,6 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
 
         $ManufacturePartDTO = new Event\ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
-
 
 
         /**
@@ -167,8 +161,8 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), total: $command->getTotal()),
-            transport: 'manufacture-part'
-        );
+                transport: 'manufacture-part'
+            );
 
         return $this->main;
     }

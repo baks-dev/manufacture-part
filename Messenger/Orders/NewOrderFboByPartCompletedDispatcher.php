@@ -57,7 +57,6 @@ use BaksDev\Users\Profile\TypeProfile\Type\Id\Choice\Collection\TypeProfileInter
 use BaksDev\Users\Profile\TypeProfile\Type\Id\TypeProfileUid;
 use BaksDev\Users\Profile\UserProfile\Entity\Event\UserProfileEvent;
 use BaksDev\Users\Profile\UserProfile\Repository\CurrentUserProfileEventById\CurrentUserProfileEventByIdInterfaceInterface;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\PaymentType\TypePaymentFboWildberries;
 use BaksDev\Wildberries\Orders\Type\ProfileType\TypeProfileFboWildberries;
@@ -176,7 +175,6 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
         $ManufacturePartInvariableDTO = $ManufacturePartDTO->getInvariable();
-
 
         /**
          * Создаем заказ с продукцией на указанное количество

@@ -34,17 +34,17 @@
 
 
 
-            {% if  is_granted(ROLE~'_ACTION') or is_granted('ROLE_ADMIN') %}
-                <li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
-                    <a href="{{ path('manufacture-part:admin.action', { id: item.id }) }}"
-                       class="text-decoration-none text-dark w-100 modal-link disabled"
-                       data-bs-toggle="modal"
-                       data-bs-target="#modal"
-                       title="{{ item.status ==  'completed' ? 'Этапы выполнения производства' : 'Выполнить этап производства' }}">
-                       {{ item.status ==  'completed' ? 'Этапы выполнения производства' : 'Выполнить этап производства' }}
-                    </a>
-                </li>
-            {% endif %}
+        {% if  is_granted(ROLE~'_ACTION') or is_granted('ROLE_ADMIN') %}
+            <li class="list-group-item d-flex justify-content-between bg-transparent border-0 text-truncate rounded-5">
+                <a href="{{ path('manufacture-part:admin.action', { id: item.id }) }}"
+                   class="text-decoration-none text-dark w-100 modal-link disabled"
+                   data-bs-toggle="modal"
+                   data-bs-target="#modal"
+                   title="{{ item.status ==  'completed' ? 'Этапы выполнения производства' : 'Выполнить этап производства' }}">
+                    {{ item.status ==  'completed' ? 'Этапы выполнения производства' : 'Выполнить этап производства' }}
+                </a>
+            </li>
+        {% endif %}
 
 
 

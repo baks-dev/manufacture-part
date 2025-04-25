@@ -27,7 +27,6 @@ namespace BaksDev\Manufacture\Part\UseCase\ProductStocks\Invariable;
 
 use BaksDev\Products\Stocks\Entity\Stock\Invariable\ProductStocksInvariableInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use BaksDev\Users\User\Entity\User;
 use BaksDev\Users\User\Type\Id\UserUid;
 use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;

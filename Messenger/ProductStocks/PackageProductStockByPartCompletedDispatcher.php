@@ -61,7 +61,6 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(priority: 40)]
 final class PackageProductStockByPartCompletedDispatcher
 {
-
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartEventInterface $ManufacturePartEventRepository,

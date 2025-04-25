@@ -155,11 +155,6 @@ class ManufacturePartEvent extends EntityEvent
         return (string) $this->id;
     }
 
-    public function getId(): ManufacturePartEventUid
-    {
-        return $this->id;
-    }
-
     /**
      * Product
      * @return Collection{ int, ManufacturePartProduct }
@@ -168,7 +163,6 @@ class ManufacturePartEvent extends EntityEvent
     {
         return $this->product;
     }
-
 
     public function getWorking(): ?ManufacturePartWorking
     {
@@ -180,7 +174,6 @@ class ManufacturePartEvent extends EntityEvent
         $this->working = null;
     }
 
-
     /**
      * Status
      */
@@ -188,7 +181,6 @@ class ManufacturePartEvent extends EntityEvent
     {
         return $this->status;
     }
-
 
     public function equalsManufacturePartStatus(mixed $status): bool
     {
@@ -236,6 +228,11 @@ class ManufacturePartEvent extends EntityEvent
         return $this->comment;
     }
 
+    public function getMain(): ?ManufacturePartUid
+    {
+        return $this->main;
+    }
+
     /**
      * Идентификатор ManufacturePart
      */
@@ -244,10 +241,9 @@ class ManufacturePartEvent extends EntityEvent
         $this->main = $main instanceof ManufacturePart ? $main->getId() : $main;
     }
 
-
-    public function getMain(): ?ManufacturePartUid
+    public function getId(): ManufacturePartEventUid
     {
-        return $this->main;
+        return $this->id;
     }
 
     public function getDto($dto): mixed

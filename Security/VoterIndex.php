@@ -30,7 +30,6 @@ use BaksDev\Users\Profile\Group\Security\VoterInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('baks.security.voter')]
-
 final class VoterIndex implements VoterInterface
 {
     public const string VOTER = 'INDEX';

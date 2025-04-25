@@ -28,7 +28,6 @@ use BaksDev\Core\Services\Paginator\PaginatorInterface;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Forms\PartProductFilter\PartProductFilterInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 interface AllProductsByManufacturePartInterface
 {

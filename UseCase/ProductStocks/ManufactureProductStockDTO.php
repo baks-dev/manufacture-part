@@ -23,19 +23,11 @@
 
 namespace BaksDev\Manufacture\Part\UseCase\ProductStocks;
 
-use BaksDev\Contacts\Region\Type\Call\ContactsRegionCallUid;
 use BaksDev\Manufacture\Part\UseCase\ProductStocks\Invariable\ManufactureProductStocksInvariableDTO;
-use BaksDev\Products\Category\Type\Id\CategoryProductUid;
-use BaksDev\Products\Product\Type\Id\ProductUid;
-use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
-use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
-use BaksDev\Products\Product\Type\Offers\Variation\Modification\ConstId\ProductModificationConst;
 use BaksDev\Products\Stocks\Entity\Stock\Event\ProductStockEventInterface;
 use BaksDev\Products\Stocks\Type\Event\ProductStockEventUid;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus;
 use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusIncoming;
-use BaksDev\Products\Stocks\Type\Status\ProductStockStatus\ProductStockStatusPurchase;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -76,17 +68,6 @@ final class ManufactureProductStockDTO implements ProductStockEventInterface
         $this->id = $id;
     }
 
-    /** Коллекция продукции  */
-    public function getProduct(): ArrayCollection
-    {
-        return $this->product;
-    }
-
-    public function setProduct(ArrayCollection $product): void
-    {
-        $this->product = $product;
-    }
-
     public function addProduct(Products\ProductStockDTO $product): self
     {
         $filter = $this->product->filter(function(Products\ProductStockDTO $element) use ($product) {
@@ -102,6 +83,17 @@ final class ManufactureProductStockDTO implements ProductStockEventInterface
         }
 
         return $this;
+    }
+
+    /** Коллекция продукции  */
+    public function getProduct(): ArrayCollection
+    {
+        return $this->product;
+    }
+
+    public function setProduct(ArrayCollection $product): void
+    {
+        $this->product = $product;
     }
 
     public function removeProduct(Products\ProductStockDTO $product): void

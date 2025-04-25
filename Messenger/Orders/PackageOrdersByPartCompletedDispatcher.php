@@ -27,7 +27,6 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders;
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
-use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;

@@ -29,7 +29,6 @@ use BaksDev\Core\Entity\EntityEvent;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Products\Orders\ManufacturePartProductOrder;
 use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductUid;
-use BaksDev\Orders\Order\Type\Id\OrderUid;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;

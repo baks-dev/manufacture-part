@@ -120,6 +120,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         //            ->fromPart($message->getId())
         //            ->find();
 
+
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 

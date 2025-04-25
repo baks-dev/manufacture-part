@@ -43,19 +43,6 @@ class ManufacturePartStatusCompleted implements ManufacturePartStatusInterface
 
     private static string $color = '#198754';
 
-    public function __toString(): string
-    {
-        return $this->getValue();
-    }
-
-    /**
-     * Возвращает значение (value)
-     */
-    public function getValue(): string
-    {
-        return self::STATUS;
-    }
-
     /**
      * Сортировка
      */
@@ -78,6 +65,19 @@ class ManufacturePartStatusCompleted implements ManufacturePartStatusInterface
     public static function statusEquals(string $status): bool
     {
         return mb_strtolower($status) === self::STATUS;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getValue();
+    }
+
+    /**
+     * Возвращает значение (value)
+     */
+    public function getValue(): string
+    {
+        return self::STATUS;
     }
 
 

@@ -30,7 +30,6 @@ use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
-use Doctrine\DBAL\Types\Types;
 use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -116,7 +115,7 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     /**
      * Total
      */
-    
+
     public function setDefect(int $defect): self
     {
         $this->total -= $defect;

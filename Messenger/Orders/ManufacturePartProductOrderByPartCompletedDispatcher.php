@@ -121,7 +121,6 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
         $DeliveryUid = new DeliveryUid($orderType);
 
-
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
 
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)

@@ -23,11 +23,8 @@
 
 namespace BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart;
 
-use BaksDev\Core\Form\Search\SearchDTO;
-use BaksDev\Core\Services\Paginator\PaginatorInterface;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Generator;
 
 interface ProductsByManufacturePartInterface

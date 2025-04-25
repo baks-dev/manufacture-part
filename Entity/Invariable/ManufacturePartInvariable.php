@@ -105,12 +105,6 @@ class ManufacturePartInvariable extends EntityReadonly
         return (string) $this->main;
     }
 
-    public function setEvent(ManufacturePartEvent $event): self
-    {
-        $this->event = $event;
-        return $this;
-    }
-
     /**
      * Event
      */
@@ -119,9 +113,9 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this->event->getId();
     }
 
-    public function setQuantity(int $quantity): self
+    public function setEvent(ManufacturePartEvent $event): self
     {
-        $this->quantity = $quantity;
+        $this->event = $event;
         return $this;
     }
 
@@ -133,6 +127,11 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this->quantity;
     }
 
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
 
     /**
      * Profile

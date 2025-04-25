@@ -60,7 +60,7 @@ class ManufacturePartWorking extends EntityEvent
      * Состояние производственного процесса
      */
     #[Assert\Uuid]
-    #[ORM\Column(type: UsersTableActionsWorkingUid::TYPE,  nullable: true)]
+    #[ORM\Column(type: UsersTableActionsWorkingUid::TYPE, nullable: true)]
     private ?UsersTableActionsWorkingUid $working = null;
 
 

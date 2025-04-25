@@ -29,13 +29,6 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface ManufacturePartStatusInterface
 {
 
-    public function __toString(): string;
-
-    /**
-     * Возвращает значение (value)
-     */
-    public function getValue(): string;
-
     /**
      * Цвет (background)
      */
@@ -50,6 +43,13 @@ interface ManufacturePartStatusInterface
      * Проверяет, относится ли строка к данному объекту
      */
     public static function statusEquals(string $status): bool;
+
+    public function __toString(): string;
+
+    /**
+     * Возвращает значение (value)
+     */
+    public function getValue(): string;
 
     //    /**
     //     * Правило доступа

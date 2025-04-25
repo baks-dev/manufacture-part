@@ -75,7 +75,6 @@ final class ManufacturePartClosedDTO implements ManufacturePartEventInterface
     }
 
 
-
     /**
      * Рабочее состояние производственной партии
      */

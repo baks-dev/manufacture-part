@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class BaksDevManufacturePartBundle extends AbstractBundle
@@ -35,30 +33,30 @@ class BaksDevManufacturePartBundle extends AbstractBundle
 
     public const string PATH = __DIR__.DIRECTORY_SEPARATOR;
 
-//    public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
-//    {
-//        $services = $container->services()
-//            ->defaults()
-//            ->autowire()
-//            ->autoconfigure();
-//
-//        $services->load(self::NAMESPACE, self::PATH)
-//            ->exclude([
-//                self::PATH.'{Entity,Resources,Type}',
-//                self::PATH.'**/*Message.php',
-//                self::PATH.'**/*DTO.php',
-//            ]);
-//
-//
-//        $services->load(
-//            self::NAMESPACE.'Type\Status\ManufacturePartStatus\\',
-//            self::PATH.'Type/Status/ManufacturePartStatus'
-//        );
-//
-//        $services->load(
-//            self::NAMESPACE.'Type\Complete\Collection\\',
-//            self::PATH.'Type/Complete/Collection'
-//        );
-//
-//    }
+    //    public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
+    //    {
+    //        $services = $container->services()
+    //            ->defaults()
+    //            ->autowire()
+    //            ->autoconfigure();
+    //
+    //        $services->load(self::NAMESPACE, self::PATH)
+    //            ->exclude([
+    //                self::PATH.'{Entity,Resources,Type}',
+    //                self::PATH.'**/*Message.php',
+    //                self::PATH.'**/*DTO.php',
+    //            ]);
+    //
+    //
+    //        $services->load(
+    //            self::NAMESPACE.'Type\Status\ManufacturePartStatus\\',
+    //            self::PATH.'Type/Status/ManufacturePartStatus'
+    //        );
+    //
+    //        $services->load(
+    //            self::NAMESPACE.'Type\Complete\Collection\\',
+    //            self::PATH.'Type/Complete/Collection'
+    //        );
+    //
+    //    }
 }

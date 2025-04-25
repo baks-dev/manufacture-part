@@ -74,7 +74,7 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
      */
     public function getEvent(): ManufacturePartEventUid
     {
-       return $this->id;
+        return $this->id;
     }
 
     /**
@@ -90,15 +90,6 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
     {
         $this->working->setProfile(null);
         $this->working->setWorking(null);
-    }
-
-
-    /**
-     * Коллекция продукции
-     */
-    public function getProduct(): ArrayCollection
-    {
-        return $this->product;
     }
 
     /**
@@ -130,6 +121,13 @@ final class ManufacturePartDTO implements ManufacturePartEventInterface
         return $filter->current();
     }
 
+    /**
+     * Коллекция продукции
+     */
+    public function getProduct(): ArrayCollection
+    {
+        return $this->product;
+    }
 
     public function addProduct(ManufacturePartProductsDTO $product): void
     {
