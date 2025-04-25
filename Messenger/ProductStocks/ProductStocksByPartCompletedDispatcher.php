@@ -56,9 +56,9 @@ final readonly class ProductStocksByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
+        private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private ManufactureProductStockHandler $ManufactureProductStockHandler,
         private DeduplicatorInterface $deduplicator,
     ) {}
@@ -112,9 +112,9 @@ final readonly class ProductStocksByPartCompletedDispatcher
          * Отправляем продукцию на склад
          */
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-            ->fromPart($message->getId())
-            ->find();
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
@@ -128,13 +128,13 @@ final readonly class ProductStocksByPartCompletedDispatcher
 
         foreach($ProductsManufacture as $product)
         {
-            $DeduplicatorPack = $this->deduplicator
-                ->deduplication([(string) $message->getId(), $product, true, self::class]);
-
-            if($DeduplicatorPack->isExecuted())
-            {
-                continue;
-            }
+            //            $DeduplicatorPack = $this->deduplicator
+            //                ->deduplication([(string) $message->getId(), $product, true, self::class]);
+            //
+            //            if($DeduplicatorPack->isExecuted())
+            //            {
+            //                continue;
+            //            }
 
             $this->logger->info(
                 'Обновляем продукцию после производства',
@@ -166,7 +166,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
                 );
             }
 
-            $DeduplicatorPack->save();
+            //$DeduplicatorPack->save();
         }
 
         $DeduplicatorExecuted->save();

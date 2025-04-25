@@ -108,7 +108,7 @@ class ManufacturePartProduct extends EntityEvent
      * Коллекция заказов, закрепленных за продуктом
      */
     #[Assert\Valid]
-    #[ORM\OneToMany(targetEntity: ManufacturePartProductOrder::class, mappedBy: 'product', cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: ManufacturePartProductOrder::class, mappedBy: 'product', cascade: ['all'], fetch: 'EAGER')]
     private Collection $ord;
 
 
@@ -148,6 +148,41 @@ class ManufacturePartProduct extends EntityEvent
     public function getEvent(): ManufacturePartEvent
     {
         return $this->event;
+    }
+
+    public function getProduct(): ProductEventUid
+    {
+        return $this->product;
+    }
+
+    public function getSort(): int
+    {
+        return $this->sort;
+    }
+
+    public function getOffer(): ?ProductOfferUid
+    {
+        return $this->offer;
+    }
+
+    public function getVariation(): ?ProductVariationUid
+    {
+        return $this->variation;
+    }
+
+    public function getModification(): ?ProductModificationUid
+    {
+        return $this->modification;
+    }
+
+    public function getTotal(): int
+    {
+        return $this->total;
+    }
+
+    public function getOrd(): Collection
+    {
+        return $this->ord;
     }
 
     public function getDto($dto): mixed

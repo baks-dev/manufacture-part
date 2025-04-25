@@ -58,7 +58,7 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
      */
     public function find(): ManufacturePartEvent|false
     {
-        if(false === $this->part)
+        if(false === ($this->part instanceof ManufacturePartUid))
         {
             throw new InvalidArgumentException('Invalid Argument Part');
         }
@@ -68,7 +68,11 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
         $orm
             ->from(ManufacturePart::class, 'main')
             ->where('main.id = :main')
-            ->setParameter('main', $this->part, ManufacturePartUid::TYPE);
+            ->setParameter(
+                key: 'main',
+                value: $this->part,
+                type: ManufacturePartUid::TYPE
+            );
 
         $orm
             ->select('event')

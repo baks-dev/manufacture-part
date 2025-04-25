@@ -109,21 +109,21 @@ class ManufacturePartEvent extends EntityEvent
      * Коллекция продукции
      */
     #[Assert\Valid]
-    #[ORM\OneToMany(targetEntity: ManufacturePartProduct::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: ManufacturePartProduct::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private Collection $product;
 
     /**
      * Рабочее состояние партии
      */
     #[Assert\Valid]
-    #[ORM\OneToOne(targetEntity: ManufacturePartWorking::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: ManufacturePartWorking::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private ?ManufacturePartWorking $working = null;
 
     /**
      * Модификатор
      */
     #[Assert\Valid]
-    #[ORM\OneToOne(targetEntity: ManufacturePartModify::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: ManufacturePartModify::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private ManufacturePartModify $modify;
 
     /**
@@ -162,6 +162,7 @@ class ManufacturePartEvent extends EntityEvent
 
     /**
      * Product
+     * @return Collection{ int, ManufacturePartProduct }
      */
     public function getProduct(): Collection
     {

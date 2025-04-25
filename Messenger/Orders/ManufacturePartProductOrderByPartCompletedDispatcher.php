@@ -74,10 +74,6 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
             return true;
         }
 
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
-
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
             ->find();
@@ -115,6 +111,10 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         {
             return false;
         }
+
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
 
         $ManufacturePartDTO = new OrdersManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

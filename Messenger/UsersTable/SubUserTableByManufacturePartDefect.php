@@ -76,6 +76,11 @@ final readonly class SubUserTableByManufacturePartDefect
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
+            $this->logger->critical(
+                'manufacture-part: ManufacturePartEvent не определено',
+                [$message, self::class.':'.__LINE__]
+            );
+
             return false;
         }
 

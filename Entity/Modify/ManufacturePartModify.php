@@ -51,7 +51,7 @@ class ManufacturePartModify extends EntityEvent
     #[Assert\NotBlank]
     #[Assert\Uuid]
     #[ORM\Id]
-    #[ORM\OneToOne(inversedBy: 'modify', targetEntity: ManufacturePartEvent::class)]
+    #[ORM\OneToOne(targetEntity: ManufacturePartEvent::class, inversedBy: 'modify')]
     #[ORM\JoinColumn(name: 'event', referencedColumnName: 'id')]
     private ManufacturePartEvent $event;
 

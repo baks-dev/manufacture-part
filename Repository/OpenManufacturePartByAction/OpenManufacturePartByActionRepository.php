@@ -102,7 +102,6 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
             'part.event = event.id'
         );
 
-
         return $qb->getOneOrNullResult() ?: false;
     }
 }

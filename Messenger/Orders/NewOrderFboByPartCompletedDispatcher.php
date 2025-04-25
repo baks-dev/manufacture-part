@@ -95,10 +95,6 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             return;
         }
 
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
-
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
             ->find();
@@ -173,6 +169,9 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             return;
         }
 
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

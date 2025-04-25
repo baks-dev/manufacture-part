@@ -54,7 +54,8 @@ return static function (ContainerConfigurator $container, DoctrineConfig $doctri
 
     $services->set(ManufacturePartUid::class)->class(ManufacturePartUid::class);
 
-    $emDefault->mapping('manufacture-part')
+    $emDefault
+        ->mapping('manufacture-part')
         ->type('attribute')
         ->dir(BaksDevManufacturePartBundle::PATH.'Entity')
         ->isBundle(false)

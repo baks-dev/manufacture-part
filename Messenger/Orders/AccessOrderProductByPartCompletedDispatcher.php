@@ -77,10 +77,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
             return true;
         }
 
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
-
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
             ->find();
@@ -120,7 +116,9 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
             return false;
         }
 
-        $DeduplicatorExecuted->save();
+        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        //            ->fromPart($message->getId())
+        //            ->find();
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
@@ -278,6 +276,8 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
          * Приступаем к обновлению продукцию в производственной партии идентификаторами заказов, готовых к сборке
          * @see ManufacturePartProductOrderByPartCompletedDispatch
          */
+
+        $DeduplicatorExecuted->save();
 
         return true;
     }

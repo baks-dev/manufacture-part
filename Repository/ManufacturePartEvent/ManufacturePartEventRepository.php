@@ -61,7 +61,7 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
     }
 
     /**
-     * Метод возвращает событие партии по идентификатору
+     * Метод возвращает кешируемое событие партии по идентификатору
      */
     public function find(): ManufacturePartEvent|false
     {

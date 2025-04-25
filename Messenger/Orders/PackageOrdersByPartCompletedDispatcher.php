@@ -86,10 +86,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             ->fromPart($message->getId())
             ->find();
 
-        //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-        //            ->forEvent($message->getEvent())
-        //            ->find();
-
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
             $this->logger->critical(
@@ -126,6 +122,10 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             return false;
         }
 
+        //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
+        //            ->forEvent($message->getEvent())
+        //            ->find();
+
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
@@ -155,14 +155,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                 {
                     continue;
                 }
-
-                //                $DeduplicatorOrder = $this->deduplicator
-                //                    ->deduplication([$OrderUid, self::class]);
-                //
-                //                if($DeduplicatorOrder->isExecuted())
-                //                {
-                //                    continue;
-                //                }
 
                 /**
                  * Проверяем что вся продукция в заказе готова к сборке
@@ -213,8 +205,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                             [$OrderStatusHandler, self::class.':'.__LINE__]
                         );
                     }
-
-                    //$DeduplicatorOrder->save();
                 }
             }
         }

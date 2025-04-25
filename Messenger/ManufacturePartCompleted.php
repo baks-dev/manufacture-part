@@ -29,11 +29,10 @@ use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
@@ -57,7 +56,6 @@ final readonly class ManufacturePartCompleted
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
-        private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private CentrifugoPublishInterface $CentrifugoPublish,
         private DeduplicatorInterface $deduplicator,
     ) {}
@@ -75,9 +73,7 @@ final readonly class ManufacturePartCompleted
             return;
         }
 
-        //                $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //                    ->fromPart($message->getId())
-        //                    ->find();
+        $DeduplicatorExecuted->save();
 
         $ManufacturePartEvent = $this->ManufacturePartEventRepository
             ->forEvent($message->getEvent())
@@ -107,7 +103,6 @@ final readonly class ManufacturePartCompleted
             return;
         }
 
-
         if(true === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class))
         {
             return;
@@ -123,25 +118,23 @@ final readonly class ManufacturePartCompleted
             return;
         }
 
-        /** Получаем всю продукцию в партии и снимаем блокировку */
-        $ProductsManufacture = $this->ProductsByManufacturePart
-            ->forPart($message->getId())
-            ->findAll();
+        $products = $ManufacturePartEvent->getProduct();
 
-        /** @var ProductsByManufacturePartResult $complete */
-        foreach($ProductsManufacture as $complete)
+        /** @var ManufacturePartProduct $product */
+
+        foreach($products as $product)
         {
-            $identifier = $complete->getProductEvent();
-
-            false === $complete->getProductOfferId() ?: $identifier = $complete->getProductOfferId();
-            false === $complete->getProductVariationId() ?: $identifier = $complete->getProductVariationId();
-            false === $complete->getProductModificationId() ?: $identifier = $complete->getProductModificationId();
+            $identifier = $product->getProduct();
+            false === $product->getOffer() ?: $identifier = $product->getOffer();
+            false === $product->getVariation() ?: $identifier = $product->getVariation();
+            false === $product->getModification() ?: $identifier = $product->getModification();
 
             /** Отправляем сокет с идентификатором */
             $this->CentrifugoPublish
                 ->addData(['identifier' => $identifier]) // ID упаковки
                 ->send('remove');
         }
+
 
         /** Производственная партия полностью выполнена (статус Complete) */
         $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
@@ -154,6 +147,6 @@ final readonly class ManufacturePartCompleted
 
         $this->logger->info('Производственная партия выполнена');
 
-        $DeduplicatorExecuted->save();
+
     }
 }
