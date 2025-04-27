@@ -29,7 +29,6 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Orders;
 use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 
 final class OrdersManufacturePartHandler extends AbstractHandler
 {
@@ -50,14 +49,13 @@ final class OrdersManufacturePartHandler extends AbstractHandler
 
         $this->flush();
 
-        /* НЕ Отправляем сообщение в шину */
+        /**
+         * @note ВАЖНО!!! НЕ Отправляем сообщение в шину, вызывает рекурсию
+         */
+
         $this->messageDispatch
             ->addClearCacheOther('wildberries-manufacture')
-            ->addClearCacheOther('manufacture-part')
-            ->dispatch(
-                message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-                transport: 'manufacture-part'
-            );
+            ->addClearCacheOther('manufacture-part');
 
         return $this->main;
     }

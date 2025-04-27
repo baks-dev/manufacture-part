@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Action;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
@@ -51,7 +52,8 @@ final class ManufacturePartActionHandler extends AbstractHandler
         /* Отправляем сообщение в шину */
         $this->messageDispatch->dispatch(
             message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-            transport: 'manufacture-part'
+            stamps: [new MessageDelay('1 seconds')],
+            transport: 'manufacture-part',
         );
 
         return $this->main;

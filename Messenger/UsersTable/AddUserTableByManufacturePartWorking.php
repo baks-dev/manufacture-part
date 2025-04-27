@@ -43,7 +43,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Добавляем в табель сотрудника действие
  */
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 100)]
 final readonly class AddUserTableByManufacturePartWorking
 {
     public function __construct(

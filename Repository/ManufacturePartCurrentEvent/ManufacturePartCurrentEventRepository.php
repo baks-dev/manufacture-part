@@ -83,6 +83,8 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
                 'event.id = main.event'
             );
 
-        return $orm->getOneOrNullResult() ?: false;
+        return $orm
+            ->enableCache('manufacture-part')
+            ->getOneOrNullResult() ?: false;
     }
 }

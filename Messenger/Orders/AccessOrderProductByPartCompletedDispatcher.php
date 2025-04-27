@@ -26,12 +26,12 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger\Orders;
 
 
+use BaksDev\Core\Cache\AppCacheInterface;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
@@ -57,7 +57,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private RelevantNewOrderByProductInterface $RelevantNewOrderByProduct,
         private UpdateAccessOrderProductInterface $UpdateAccessOrderProduct,
@@ -77,8 +76,8 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-            ->forEvent($message->getEvent())
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -115,10 +114,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         {
             return false;
         }
-
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
 
 
         $ManufacturePartDTO = new ManufacturePartDTO();

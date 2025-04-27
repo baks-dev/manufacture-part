@@ -43,7 +43,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Штрафуем сотрудника по причине дефекта
  */
-#[AsMessageHandler]
+#[AsMessageHandler(priority: 100)]
 final readonly class SubUserTableByManufacturePartDefect
 {
     public function __construct(
