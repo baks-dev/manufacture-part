@@ -79,7 +79,6 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         private CurrentDeliveryEventInterface $CurrentDeliveryEvent,
     ) {}
 
-
     public function __invoke(ManufacturePartMessage $message): void
     {
         $DeduplicatorExecuted = $this
@@ -100,7 +99,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         {
             $this->logger->critical(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [$message, self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__]
             );
 
             return;

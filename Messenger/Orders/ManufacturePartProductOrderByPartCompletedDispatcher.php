@@ -80,7 +80,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         {
             $this->logger->critical(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [$message, self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__]
             );
 
             return false;
