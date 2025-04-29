@@ -34,8 +34,6 @@ use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorki
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
-use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDefect;
-use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedHandler;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
@@ -47,7 +45,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Проверяем, имеется ли не выполненное действие, если нет - заявка выполнена (применяем статус Complete)
  */
-#[AsMessageHandler(priority: -999)]
+#[AsMessageHandler(priority: 999)]
 final readonly class ManufacturePartCompleted
 {
     public function __construct(
@@ -70,13 +68,11 @@ final readonly class ManufacturePartCompleted
 
         if($DeduplicatorExecuted->isExecuted())
         {
-            return;
+            // return;
         }
 
-        $DeduplicatorExecuted->save();
-
-        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-            ->forEvent($message->getEvent())
+        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+            ->fromPart($message->getId())
             ->find();
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
@@ -86,28 +82,13 @@ final readonly class ManufacturePartCompleted
 
         $this->logger->info(
             'Проверяем, что производственная партия не выполнена',
-            [$message, self::class.':'.__LINE__]
+            [var_export($message, true), self::class.':'.__LINE__]
         );
-
-        /**
-         * Проверяем, что статус заявки - PACKAGE «На сборке (упаковке)» || DEFECT «Дефект при производстве»
-         */
-
-        if(
-            false === (
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusPackage::class) ||
-                $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusDefect::class)
-            )
-        )
-        {
-            return;
-        }
 
         if(true === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class))
         {
             return;
         }
-
 
         $working = $this->activeWorkingManufacturePart
             ->findNextWorkingByManufacturePart($message->getId());
@@ -147,6 +128,7 @@ final readonly class ManufacturePartCompleted
 
         $this->logger->info('Производственная партия выполнена');
 
+        $DeduplicatorExecuted->save();
 
     }
 }

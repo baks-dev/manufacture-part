@@ -27,14 +27,11 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Completed;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
-use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 
 final class ManufacturePartCompletedHandler extends AbstractHandler
 {
-
     /** @see ManufacturePart */
     public function handle(ManufacturePartCompletedDTO $command): string|ManufacturePart
     {
@@ -50,12 +47,8 @@ final class ManufacturePartCompletedHandler extends AbstractHandler
 
         $this->flush();
 
-        /* Отправляем сообщение в шину */
-        $this->messageDispatch->dispatch(
-            message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-            stamps: [new MessageDelay('1 seconds')],
-            transport: 'manufacture-part',
-        );
+        /** @note Важно!!! Не отправляем сообщение в шину */
+        $this->messageDispatch->addClearCacheOther('manufacture-part');
 
         return $this->main;
 

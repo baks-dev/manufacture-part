@@ -129,7 +129,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
         $qb->orderBy('action_working.sort', 'ASC');
         $qb->setMaxResults(1);
 
-        $result = $qb->enableCache('manufacture-part', 86400)->fetchAssociative();
+        $result = $qb->fetchAssociative();
 
         return $result ? new UsersTableActionsWorkingUid($result['id'], $result['name']) : null;
 
@@ -141,7 +141,6 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
      */
     public function fetchCompleteWorkingByManufacturePartAssociative(ManufacturePartUid $part): ?array
     {
-
         $qb = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
@@ -228,9 +227,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
         $qb->orderBy('action_working.sort');
 
         /* Кешируем результат DBAL */
-        return $qb
-            ->enableCache('manufacture-part', 86400)
-            ->fetchAllAssociative();
+        return $qb->fetchAllAssociative();
 
     }
 }

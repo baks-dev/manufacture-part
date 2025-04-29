@@ -31,12 +31,14 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
+use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\ProductStocks\ManufactureProductStockDTO;
 use BaksDev\Manufacture\Part\UseCase\ProductStocks\ManufactureProductStockHandler;
 use BaksDev\Manufacture\Part\UseCase\ProductStocks\Products\ProductStockDTO;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -55,6 +57,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
         private ProductsByManufacturePartInterface $ProductsByManufacturePart,
         private ManufactureProductStockHandler $ManufactureProductStockHandler,
         private DeduplicatorInterface $deduplicator,
+        private CurrentProductIdentifierInterface $CurrentProductIdentifier
     ) {}
 
     public function __invoke(ManufacturePartMessage $message): bool
@@ -91,17 +94,6 @@ final readonly class ProductStocksByPartCompletedDispatcher
             return true;
         }
 
-        /** Получаем всю продукцию в производственной партии */
-
-        $ProductsManufacture = $this->ProductsByManufacturePart
-            ->forPart($message->getId())
-            ->findAll();
-
-        if(false === $ProductsManufacture || false === $ProductsManufacture->valid())
-        {
-            return false;
-        }
-
         /**
          * Отправляем продукцию на склад
          */
@@ -109,40 +101,34 @@ final readonly class ProductStocksByPartCompletedDispatcher
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
-        $this->logger->warning(
-            'Обновляем остатки склада после производства',
-            [$ManufacturePartEvent, self::class.':'.__LINE__]
-        );
-
-        /** @var ProductsByManufacturePartResult $product */
-
-        foreach($ProductsManufacture as $product)
+        /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
+        foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
-            //            $DeduplicatorPack = $this->deduplicator
-            //                ->deduplication([(string) $message->getId(), $product, true, self::class]);
-            //
-            //            if($DeduplicatorPack->isExecuted())
-            //            {
-            //                continue;
-            //            }
+            /** Поиск идентификаторов продукции по событию */
+            $CurrentProductIdentifierResult = $this->CurrentProductIdentifier
+                ->forEvent($ManufacturePartProductsDTO->getProduct())
+                ->forOffer($ManufacturePartProductsDTO->getOffer())
+                ->forVariation($ManufacturePartProductsDTO->getVariation())
+                ->forModification($ManufacturePartProductsDTO->getModification())
+                ->find();
 
-            $this->logger->info(
-                'Обновляем продукцию после производства',
-                [$product, self::class.':'.__LINE__]
-            );
+            if(false === ($CurrentProductIdentifierResult instanceof CurrentProductIdentifierResult))
+            {
+                continue;
+            }
 
             $ProductStockDTO = new ProductStockDTO()
-                ->setProduct($product->getProductId())
-                ->setOfferConst($product->getProductOfferConst())
-                ->setVariationConst($product->getProductVariationConst())
-                ->setModificationConst($product->getProductModificationConst())
-                ->setTotal($product->getTotal());
+                ->setProduct($CurrentProductIdentifierResult->getProduct())
+                ->setOfferConst($CurrentProductIdentifierResult->getOfferConst())
+                ->setVariationConst($CurrentProductIdentifierResult->getVariationConst())
+                ->setModificationConst($CurrentProductIdentifierResult->getModificationConst())
+                ->setTotal($ManufacturePartProductsDTO->getTotal());
 
             $ManufactureProductStockDTO = new ManufactureProductStockDTO()
                 ->addProduct($ProductStockDTO);
 
-            $ManufactureProductStocksInvariableDTO = $ManufactureProductStockDTO->getInvariable();
-            $ManufactureProductStocksInvariableDTO
+            $ManufactureProductStockDTO
+                ->getInvariable()
                 ->setUsr($ManufacturePartDTO->getInvariable()->getUsr())
                 ->setProfile($ManufacturePartDTO->getInvariable()->getProfile());
 
@@ -152,12 +138,18 @@ final readonly class ProductStocksByPartCompletedDispatcher
             {
                 $this->logger->critical(
                     sprintf('manufacture-part: Ошибка %s при обновлении складских остатков после производства', $ProductStock),
-                    [$message, $product, self::class.':'.__LINE__]
+                    [var_export($message, true), self::class.':'.__LINE__]
                 );
+
+                continue;
             }
 
-            //$DeduplicatorPack->save();
+            $this->logger->warning(
+                'Обновили остатки склада после производства',
+                [var_export($CurrentProductIdentifierResult, true), self::class.':'.__LINE__]
+            );
         }
+
 
         $DeduplicatorExecuted->save();
 
