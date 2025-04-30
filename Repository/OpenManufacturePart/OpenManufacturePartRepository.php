@@ -95,6 +95,11 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
 
     public function find(): OpenManufacturePartResult|false
     {
+        if(false === $this->UserProfileTokenStorage->isUser())
+        {
+            return false;
+        }
+
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();

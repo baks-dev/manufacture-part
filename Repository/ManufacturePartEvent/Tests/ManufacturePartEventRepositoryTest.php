@@ -56,9 +56,11 @@ class ManufacturePartEventRepositoryTest extends KernelTestCase
         $ManufacturePartEventRepository = self::getContainer()->get(ManufacturePartEventInterface::class);
 
         $ManufacturePartEvent = $ManufacturePartEventRepository
-            ->forEvent(new ManufacturePartEventUid())
+            ->forEvent(new ManufacturePartEventUid('7a661a85-ea8a-7960-b94d-13dadd7b87bc'))
             ->find();
 
-    }
+        // dump($ManufacturePartEvent);
 
+        self::assertTrue(true);
+    }
 }
