@@ -27,6 +27,8 @@ namespace BaksDev\Manufacture\Part\Repository\ManufacturePartEvent;
 
 use BaksDev\Core\Doctrine\ORMQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartInvariable\ManufacturePartInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use InvalidArgumentException;
 
@@ -35,7 +37,10 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
 {
     private ManufacturePartEventUid|false $event = false;
 
-    public function __construct(private readonly ORMQueryBuilder $ORMQueryBuilder) {}
+    public function __construct(
+        private readonly ORMQueryBuilder $ORMQueryBuilder,
+        private readonly ManufacturePartInvariableInterface $ManufacturePartInvariableRepository
+    ) {}
 
     public function forEvent(ManufacturePartEvent|ManufacturePartEventUid|string $event): self
     {
@@ -82,8 +87,29 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
                 type: ManufacturePartEventUid::TYPE
             );
 
-        return $orm
+        /** @var ManufacturePartEvent $ManufacturePartEvent */
+        $ManufacturePartEvent = $orm
             ->enableCache('manufacture-part', '1 day')
-            ->getOneOrNullResult() ?: false;
+            ->getOneOrNullResult();
+
+
+        /** Получаем активное состояние ManufacturePartInvariable если не определено */
+
+        if(($ManufacturePartEvent instanceof ManufacturePartEvent) && false === $ManufacturePartEvent->isInvariable())
+        {
+            $ManufacturePartInvariable = $this
+                ->ManufacturePartInvariableRepository
+                ->forPart($ManufacturePartEvent->getMain())
+                ->find();
+
+            if(false === ($ManufacturePartInvariable instanceof ManufacturePartInvariable))
+            {
+                return false;
+            }
+
+            $ManufacturePartEvent->setInvariable($ManufacturePartInvariable);
+        }
+
+        return $ManufacturePartEvent ?: false;
     }
 }

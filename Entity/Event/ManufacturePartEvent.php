@@ -230,9 +230,33 @@ class ManufacturePartEvent extends EntityEvent
         return $this->main;
     }
 
-    public function getInvariable(): ?ManufacturePartInvariable
+    /**
+     * ManufacturePartInvariable
+     */
+
+    public function isInvariable(): bool
     {
-        return $this->invariable;
+        return $this->invariable instanceof ManufacturePartInvariable;
+    }
+
+    public function setInvariable(mixed $ManufacturePartInvariable): self
+    {
+        if($ManufacturePartInvariable instanceof ManufacturePartInvariable)
+        {
+            $this->invariable = $ManufacturePartInvariable;
+        }
+
+        return $this;
+    }
+
+    public function getManufacturePartNumber(): string
+    {
+        return $this->invariable->getNumber();
+    }
+
+    public function getManufacturePartQuantity(): int
+    {
+        return $this->invariable->getQuantity();
     }
 
 
@@ -257,4 +281,5 @@ class ManufacturePartEvent extends EntityEvent
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
+
 }
