@@ -55,6 +55,7 @@ final class OrdersManufacturePartHandler extends AbstractHandler
 
         $this->messageDispatch
             ->addClearCacheOther('wildberries-manufacture')
+            ->addClearCacheOther('wildberries-package')
             ->addClearCacheOther('manufacture-part');
 
         return $this->main;

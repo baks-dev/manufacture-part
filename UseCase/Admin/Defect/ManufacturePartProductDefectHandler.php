@@ -158,6 +158,7 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
 
         /* Отправляем сообщение в шину */
         $this->messageDispatch
+            ->addClearCacheOther('wildberries-manufacture')
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), total: $command->getTotal()),

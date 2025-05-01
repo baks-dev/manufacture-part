@@ -47,6 +47,7 @@ final class ManufactureProductStockHandler extends AbstractHandler
 
         /* Отправляем сообщение в шину */
         $this->messageDispatch
+            ->addClearCacheOther('wildberries-manufacture')
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ProductStockMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),

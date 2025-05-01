@@ -30,16 +30,15 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
-use BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
-use BaksDev\Manufacture\Part\UseCase\ProductStocks\ManufactureProductStockDTO;
-use BaksDev\Manufacture\Part\UseCase\ProductStocks\ManufactureProductStockHandler;
-use BaksDev\Manufacture\Part\UseCase\ProductStocks\Products\ProductStockDTO;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
-use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
+use BaksDev\Products\Stocks\Entity\Total\ProductStockTotal;
+use BaksDev\Products\Stocks\Repository\ProductStocksTotalStorage\ProductStocksTotalStorageInterface;
+use BaksDev\Products\Stocks\Repository\UpdateProductStock\AddProductStockInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -54,17 +53,18 @@ final readonly class ProductStocksByPartCompletedDispatcher
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private ProductsByManufacturePartInterface $ProductsByManufacturePart,
-        private ManufactureProductStockHandler $ManufactureProductStockHandler,
         private DeduplicatorInterface $deduplicator,
-        private CurrentProductIdentifierInterface $CurrentProductIdentifier
+        private CurrentProductIdentifierInterface $CurrentProductIdentifier,
+        private AddProductStockInterface $AddProductStock,
+        private EntityManagerInterface $entityManager,
+        private ProductStocksTotalStorageInterface $ProductStocksTotalStorage,
     ) {}
 
     public function __invoke(ManufacturePartMessage $message): bool
     {
         $DeduplicatorExecuted = $this
             ->deduplicator
-            ->namespace('wildberries-package')
+            ->namespace('manufacture-part')
             ->deduplication([(string) $message->getId(), self::class]);
 
         if($DeduplicatorExecuted->isExecuted())
@@ -101,6 +101,11 @@ final readonly class ProductStocksByPartCompletedDispatcher
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
+
+        /** Создаем приход нас клад */
+
+        $ManufacturePartInvariableDTO = $ManufacturePartDTO->getInvariable();
+
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
@@ -114,45 +119,97 @@ final readonly class ProductStocksByPartCompletedDispatcher
 
             if(false === ($CurrentProductIdentifierResult instanceof CurrentProductIdentifierResult))
             {
-                continue;
-            }
-
-            $ProductStockDTO = new ProductStockDTO()
-                ->setProduct($CurrentProductIdentifierResult->getProduct())
-                ->setOfferConst($CurrentProductIdentifierResult->getOfferConst())
-                ->setVariationConst($CurrentProductIdentifierResult->getVariationConst())
-                ->setModificationConst($CurrentProductIdentifierResult->getModificationConst())
-                ->setTotal($ManufacturePartProductsDTO->getTotal());
-
-            $ManufactureProductStockDTO = new ManufactureProductStockDTO()
-                ->addProduct($ProductStockDTO);
-
-            $ManufactureProductStockDTO
-                ->getInvariable()
-                ->setUsr($ManufacturePartDTO->getInvariable()->getUsr())
-                ->setProfile($ManufacturePartDTO->getInvariable()->getProfile());
-
-            $ProductStock = $this->ManufactureProductStockHandler->handle($ManufactureProductStockDTO);
-
-            if(false === ($ProductStock instanceof ProductStock))
-            {
                 $this->logger->critical(
-                    sprintf('manufacture-part: Ошибка %s при обновлении складских остатков после производства', $ProductStock),
-                    [var_export($message, true), self::class.':'.__LINE__]
+                    'manufacture-part: идентификатор продукции не найден для обновления остатка после производства',
+                    [
+                        'ProductEventUid' => (string) $ManufacturePartProductsDTO->getProduct(),
+                        'ProductOfferUid' => (string) $ManufacturePartProductsDTO->getOffer(),
+                        'ProductVariationUid' => (string) $ManufacturePartProductsDTO->getVariation(),
+                        'ProductModificationUid' => (string) $ManufacturePartProductsDTO->getModification(),
+                        self::class.':'.__LINE__
+                    ]
                 );
 
                 continue;
             }
 
-            $this->logger->warning(
-                'Обновили остатки склада после производства',
-                [var_export($CurrentProductIdentifierResult, true), self::class.':'.__LINE__]
-            );
-        }
+            /** Получаем место для хранения указанной продукции данного профиля */
+            $ProductStockTotal = $this->ProductStocksTotalStorage
+                ->profile($ManufacturePartInvariableDTO->getProfile())
+                ->product($CurrentProductIdentifierResult->getProduct())
+                ->offer($CurrentProductIdentifierResult->getOfferConst())
+                ->variation($CurrentProductIdentifierResult->getVariationConst())
+                ->modification($CurrentProductIdentifierResult->getModificationConst())
+                ->storage('pl') // производственная линия
+                ->find();
 
+            if(false === ($ProductStockTotal instanceof ProductStockTotal))
+            {
+                /* Создаем новое место складирования на указанный профиль пользователя  */
+                $ProductStockTotal = new ProductStockTotal(
+                    $ManufacturePartInvariableDTO->getUsr(),
+                    $ManufacturePartInvariableDTO->getProfile(),
+                    $CurrentProductIdentifierResult->getProduct(),
+                    $CurrentProductIdentifierResult->getOfferConst(),
+                    $CurrentProductIdentifierResult->getVariationConst(),
+                    $CurrentProductIdentifierResult->getModificationConst(),
+                    'pl'
+                );
+
+                $this->entityManager->persist($ProductStockTotal);
+                $this->entityManager->flush();
+
+                $this->logger->info(
+                    'Место складирования профиля не найдено! Создали новое место для указанной продукции',
+                    [
+                        self::class.':'.__LINE__,
+                        'profile' => (string) $ManufacturePartInvariableDTO->getProfile()
+                    ]
+                );
+            }
+
+            $this->logger->info(
+                sprintf('Добавляем приход продукции прозводственной партии %s', $ManufacturePartInvariableDTO->getNumber()),
+                [self::class.':'.__LINE__]
+            );
+
+            $this->handle($ProductStockTotal, $ManufacturePartProductsDTO->getTotal());
+
+        }
 
         $DeduplicatorExecuted->save();
 
         return true;
+    }
+
+
+    public function handle(ProductStockTotal $ProductStockTotal, int $total): void
+    {
+        /** Добавляем приход на указанный профиль (склад) */
+        $rows = $this->AddProductStock
+            ->total($total)
+            ->reserve(false) // не обновляем резерв
+            ->updateById($ProductStockTotal);
+
+        if(empty($rows))
+        {
+            $this->logger->critical(
+                'Ошибка при обновлении складских остатков после производства',
+                [
+                    'ProductStockTotalUid' => (string) $ProductStockTotal->getId(),
+                    self::class.':'.__LINE__,
+                ]
+            );
+
+            return;
+        }
+
+        $this->logger->info(
+            'Добавили приход продукции на склад после производства',
+            [
+                'ProductStockTotalUid' => (string) $ProductStockTotal->getId(),
+                self::class.':'.__LINE__,
+            ]
+        );
     }
 }
