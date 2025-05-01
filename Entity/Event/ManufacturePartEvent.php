@@ -156,6 +156,19 @@ class ManufacturePartEvent extends EntityEvent
     }
 
     /**
+     * Идентификатор ManufacturePart
+     */
+    public function setMain(ManufacturePartUid|ManufacturePart $main): void
+    {
+        $this->main = $main instanceof ManufacturePart ? $main->getId() : $main;
+    }
+
+    public function getId(): ManufacturePartEventUid
+    {
+        return $this->id;
+    }
+
+    /**
      * Product
      * @return Collection{ int, ManufacturePartProduct }
      */
@@ -197,6 +210,7 @@ class ManufacturePartEvent extends EntityEvent
         return (is_null($this->complete) && is_null($complete)) || $this->complete->equals($complete);
     }
 
+
     /**
      * Action
      */
@@ -205,23 +219,6 @@ class ManufacturePartEvent extends EntityEvent
         return $this->action;
     }
 
-    /**
-     * Profile
-     */
-    public function getPartProfile(): ?UserProfileUid
-    {
-        return $this->invariable?->getProfile();
-    }
-
-    public function getQuantity(): int
-    {
-        return $this->invariable->getQuantity();
-    }
-
-    public function getNumber(): string
-    {
-        return $this->invariable->getNumber();
-    }
 
     public function getComment(): ?string
     {
@@ -233,18 +230,11 @@ class ManufacturePartEvent extends EntityEvent
         return $this->main;
     }
 
-    /**
-     * Идентификатор ManufacturePart
-     */
-    public function setMain(ManufacturePartUid|ManufacturePart $main): void
+    public function getInvariable(): ?ManufacturePartInvariable
     {
-        $this->main = $main instanceof ManufacturePart ? $main->getId() : $main;
+        return $this->invariable;
     }
 
-    public function getId(): ManufacturePartEventUid
-    {
-        return $this->id;
-    }
 
     public function getDto($dto): mixed
     {

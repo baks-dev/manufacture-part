@@ -113,11 +113,22 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this->event->getId();
     }
 
-    public function setEvent(ManufacturePartEvent $event): self
+
+    public function getUsr(): UserUid
     {
-        $this->event = $event;
-        return $this;
+        return $this->usr;
     }
+
+    public function getProfile(): UserProfileUid
+    {
+        return $this->profile;
+    }
+
+    public function getNumber(): string
+    {
+        return $this->number;
+    }
+
 
     /**
      * Quantity
@@ -133,13 +144,6 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this;
     }
 
-    /**
-     * Profile
-     */
-    public function getProfile(): ?UserProfileUid
-    {
-        return $this->profile;
-    }
 
     public function getDto($dto): mixed
     {
@@ -164,12 +168,5 @@ class ManufacturePartInvariable extends EntityReadonly
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
-    /**
-     * Number
-     */
-    public function getNumber(): string
-    {
-        return $this->number;
-    }
 
 }

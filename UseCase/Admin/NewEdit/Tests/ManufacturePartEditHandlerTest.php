@@ -29,13 +29,17 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\ManufacturePartStatusCollection;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @group manufacture-part
@@ -46,14 +50,20 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[When(env: 'test')]
 class ManufacturePartEditHandlerTest extends KernelTestCase
 {
+
+
+    public static function setUpBeforeClass(): void
+    {
+        // Бросаем событие консольной комманды
+        $dispatcher = self::getContainer()->get(EventDispatcherInterface::class);
+        $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
+        $dispatcher->dispatch($event, 'console.command');
+
+    }
+
+
     public function testUseCase(): void
     {
-        /**
-         * Инициируем статус для итератора тегов
-         * @var ManufacturePartStatusCollection $ManufacturePartStatus
-         */
-        $ManufacturePartStatus = self::getContainer()->get(ManufacturePartStatusCollection::class);
-        $ManufacturePartStatus->cases();
 
         /** @var ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent */
         $ManufacturePartCurrentEvent = self::getContainer()->get(ManufacturePartCurrentEventInterface::class);

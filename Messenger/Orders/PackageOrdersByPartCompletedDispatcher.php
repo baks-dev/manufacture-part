@@ -28,9 +28,11 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders;
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
+use BaksDev\Manufacture\Part\Repository\ManufacturePartInvariable\ManufacturePartInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
@@ -61,6 +63,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         private OrderStatusHandler $OrderStatusHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
+        private ManufacturePartInvariableInterface $ManufacturePartInvariableRepository
     ) {}
 
     /**
@@ -120,12 +123,24 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             return false;
         }
 
+
+        $ManufacturePartInvariable = $this->ManufacturePartInvariableRepository
+            ->forPart($message->getId())
+            ->find();
+
+        if(false === ($ManufacturePartInvariable instanceof ManufacturePartInvariable))
+        {
+            return false;
+        }
+
+
         //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
         //            ->forEvent($message->getEvent())
         //            ->find();
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
+
 
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
@@ -189,9 +204,9 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                     $OrderStatusDTO = new OrderStatusDTO(
                         OrderStatusPackage::class,
                         $OrderEvent->getId(),
+                    );
 
-                    )
-                        ->setProfile($ManufacturePartEvent->getPartProfile());
+                    $OrderStatusDTO->setProfile($ManufacturePartInvariable->getProfile());
 
                     /** @var OrderStatusHandler $statusHandler */
                     $OrderStatusHandler = $this->OrderStatusHandler->handle($OrderStatusDTO);

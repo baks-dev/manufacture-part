@@ -31,6 +31,7 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+use BaksDev\Manufacture\Part\UseCase\Admin\Completed\Tests\ManufacturePartCompletedHandlerTest;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
