@@ -91,7 +91,7 @@ class ManufacturePartWorking extends EntityEvent
     {
         if($dto instanceof ManufacturePartWorkingInterface || $dto instanceof self)
         {
-            if(empty($dto->getProfile()) && empty($dto->getWorking()))
+            if(is_null($dto->getProfile()) && is_null($dto->getWorking()))
             {
                 $this->event->resetWorking();
                 return false;

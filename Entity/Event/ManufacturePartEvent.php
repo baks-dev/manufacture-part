@@ -200,6 +200,7 @@ class ManufacturePartEvent extends EntityEvent
         return $this->status->equals($status);
     }
 
+
     public function equalsManufacturePartComplete(mixed $complete): bool
     {
         if(is_string($complete) && class_exists($complete))
@@ -249,14 +250,9 @@ class ManufacturePartEvent extends EntityEvent
         return $this;
     }
 
-    public function getManufacturePartNumber(): string
+    public function getInvariable(): ManufacturePartInvariable
     {
-        return $this->invariable->getNumber();
-    }
-
-    public function getManufacturePartQuantity(): int
-    {
-        return $this->invariable->getQuantity();
+        return $this->invariable;
     }
 
 
@@ -281,5 +277,4 @@ class ManufacturePartEvent extends EntityEvent
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
-
 }

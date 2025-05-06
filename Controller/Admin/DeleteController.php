@@ -103,7 +103,7 @@ final class DeleteController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'number' => $ManufacturePartInvariable->getNumber()
+            'number' => $ManufacturePartEvent->getInvariable()->getNumber()
         ]);
     }
 }
