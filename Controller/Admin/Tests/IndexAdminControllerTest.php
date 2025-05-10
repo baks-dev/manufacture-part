@@ -31,48 +31,66 @@ use Symfony\Component\DependencyInjection\Attribute\When;
  * @group manufacture-part
  */
 #[When(env: 'test')]
-final class NewControllerTest extends WebTestCase
+final class IndexAdminControllerTest extends WebTestCase
 {
-    private const string URL = '/admin/manufacture/part/new';
-    private const string ROLE = 'ROLE_MANUFACTURE_PART_NEW';
+    private const string URL = '/admin/manufacture/parts';
+
+    private const string ROLE = 'ROLE_MANUFACTURE_PART';
 
     /** Доступ по роли ROLE_PRODUCT */
     public function testRoleSuccessful(): void
     {
+        self::ensureKernelShutdown();
         $client = static::createClient();
 
-        $usr = TestUserAccount::getModer(self::ROLE);
+        foreach(TestUserAccount::getDevice() as $device)
+        {
+            $client->setServerParameter('HTTP_USER_AGENT', $device);
 
-        $client->loginUser($usr, 'user');
-        $client->request('GET', self::URL);
+            $usr = TestUserAccount::getModer(self::ROLE);
 
-        self::assertResponseIsSuccessful();
+            $client->loginUser($usr, 'user');
+            $client->request('GET', self::URL);
 
+            self::assertResponseIsSuccessful();
+        }
     }
 
     /** Доступ по роли ROLE_ADMIN */
     public function testRoleAdminSuccessful(): void
     {
+        self::ensureKernelShutdown();
         $client = static::createClient();
 
-        $usr = TestUserAccount::getAdmin();
+        foreach(TestUserAccount::getDevice() as $device)
+        {
+            $client->setServerParameter('HTTP_USER_AGENT', $device);
 
-        $client->loginUser($usr, 'user');
-        $client->request('GET', self::URL);
+            $usr = TestUserAccount::getAdmin();
 
-        self::assertResponseIsSuccessful();
+            $client->loginUser($usr, 'user');
+            $client->request('GET', self::URL);
+
+            self::assertResponseIsSuccessful();
+        }
     }
 
     /** Доступ по роли ROLE_USER */
     public function testRoleUserFiled(): void
     {
+        self::ensureKernelShutdown();
         $client = static::createClient();
 
-        $usr = TestUserAccount::getUsr();
-        $client->loginUser($usr, 'user');
-        $client->request('GET', self::URL);
+        foreach(TestUserAccount::getDevice() as $device)
+        {
+            $client->setServerParameter('HTTP_USER_AGENT', $device);
 
-        self::assertResponseStatusCodeSame(403);
+            $usr = TestUserAccount::getUsr();
+            $client->loginUser($usr, 'user');
+            $client->request('GET', self::URL);
+
+            self::assertResponseStatusCodeSame(403);
+        }
     }
 
     /** Доступ по без роли */
@@ -80,10 +98,15 @@ final class NewControllerTest extends WebTestCase
     {
         self::ensureKernelShutdown();
         $client = static::createClient();
-        $client->request('GET', self::URL);
 
-        // Full authentication is required to access this resource
-        self::assertResponseStatusCodeSame(401);
+        foreach(TestUserAccount::getDevice() as $device)
+        {
+            $client->setServerParameter('HTTP_USER_AGENT', $device);
+
+            $client->request('GET', self::URL);
+
+            // Full authentication is required to access this resource
+            self::assertResponseStatusCodeSame(401);
+        }
     }
-
 }

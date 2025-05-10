@@ -31,7 +31,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
  * @group manufacture-part
  */
 #[When(env: 'test')]
-final class ManufactureControllerTest extends WebTestCase
+final class ManufactureAdminControllerTest extends WebTestCase
 {
     private const string URL = '/admin/manufacture/all';
 

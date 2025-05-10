@@ -34,11 +34,12 @@ use Symfony\Component\DependencyInjection\Attribute\When;
  * @group manufacture-part
  */
 #[When(env: 'test')]
-final class PackageControllerTest extends WebTestCase
+final class ActionAdminControllerTest extends WebTestCase
 {
-    private const string URL = '/admin/manufacture/part/package/%s';
+    private const string URL = '/admin/manufacture/part/action/%s';
 
-    private const string ROLE = 'ROLE_MANUFACTURE_PART_NEW';
+    private const string ROLE = 'ROLE_MANUFACTURE_PART_ACTION';
+
 
     private static ?ManufacturePartUid $identifier = null;
 

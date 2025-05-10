@@ -21,32 +21,34 @@
  *  THE SOFTWARE.
  */
 
-namespace BaksDev\Manufacture\Part\Controller\Admin\Products\Tests;
+namespace BaksDev\Manufacture\Part\Controller\Admin\Tests;
 
-use BaksDev\Products\Product\Entity\Product;
-use BaksDev\Products\Product\Type\Event\ProductEventUid;
+use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\User\Tests\TestUserAccount;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/** @group manufacture-part */
+/**
+ * @group manufacture-part
+ */
 #[When(env: 'test')]
-final class AddControllerTest extends WebTestCase
+final class DeleteAdminControllerTest extends WebTestCase
 {
-    private const string URL = '/admin/manufacture/part/product/add?product=%s';
+    private const string URL = '/admin/manufacture/part/delete/%s';
 
-    private const string ROLE = 'ROLE_MANUFACTURE_PART_ADD';
+    private const string ROLE = 'ROLE_MANUFACTURE_PART_DELETE';
 
 
-    private static ?ProductEventUid $identifier = null;
+    private static ?ManufacturePartUid $identifier = null;
 
     public static function setUpBeforeClass(): void
     {
         // Получаем одно из событий Продукта
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        self::$identifier = $em->getRepository(Product::class)
-            ->findOneBy([], ['id' => 'DESC'])?->getEvent();
+        self::$identifier = $em->getRepository(ManufacturePart::class)
+            ->findOneBy([], ['id' => 'DESC'])?->getId();
 
         $em->clear();
         //$em->close();

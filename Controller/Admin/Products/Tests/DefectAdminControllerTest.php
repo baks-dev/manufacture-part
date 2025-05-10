@@ -21,33 +21,31 @@
  *  THE SOFTWARE.
  */
 
-namespace BaksDev\Manufacture\Part\Controller\Admin\Tests;
+namespace BaksDev\Manufacture\Part\Controller\Admin\Products\Tests;
 
-use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductUid;
 use BaksDev\Users\User\Tests\TestUserAccount;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group manufacture-part
- */
+/** @group manufacture-part */
 #[When(env: 'test')]
-final class DeleteControllerTest extends WebTestCase
+final class DefectAdminControllerTest extends WebTestCase
 {
-    private const string URL = '/admin/manufacture/part/delete/%s';
+    private const string URL = '/admin/manufacture/part/product/defect/%s';
 
-    private const string ROLE = 'ROLE_MANUFACTURE_PART_DELETE';
+    private const string ROLE = 'ROLE_MANUFACTURE_PART_DEFECT';
 
 
-    private static ?ManufacturePartUid $identifier = null;
+    private static ?ManufacturePartProductUid $identifier = null;
 
     public static function setUpBeforeClass(): void
     {
         // Получаем одно из событий Продукта
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        self::$identifier = $em->getRepository(ManufacturePart::class)
+        self::$identifier = $em->getRepository(ManufacturePartProduct::class)
             ->findOneBy([], ['id' => 'DESC'])?->getId();
 
         $em->clear();
