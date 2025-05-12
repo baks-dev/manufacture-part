@@ -74,13 +74,14 @@ final class QrcodeController extends AbstractController
             throw new RuntimeException('Barcode write error');
         }
 
-        $QRCode = $BarcodeWrite->render();
-
+        $render = $BarcodeWrite->render();
+        $render = strip_tags($render, ['path']);
+        $render = trim($render);
         $BarcodeWrite->remove();
 
         return $this->render(
             [
-                'qrcode' => $QRCode,
+                'qrcode' => $render,
                 'item' => $ManufacturePartEvent
             ]
         );

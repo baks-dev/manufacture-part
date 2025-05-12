@@ -41,6 +41,7 @@ use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionForm;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionHandler;
+use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use chillerlan\QRCode\QRCode;
 use InvalidArgumentException;
 use RuntimeException;
@@ -98,7 +99,7 @@ final class ActionController extends AbstractController
         /**
          * Если все этапы выполнены - получаем все выполненные этапы
          */
-        if(!$working)
+        if(false === ($working instanceof UsersTableActionsWorkingUid))
         {
             $all = $activeWorkingManufacturePart->fetchCompleteWorkingByManufacturePartAssociative($ManufacturePartEvent->getMain());
 
@@ -177,16 +178,17 @@ final class ActionController extends AbstractController
         {
             /**
              * Проверить права на исполнение
-             * chmod +x /home/bundles.baks.dev/vПendor/baks-dev/barcode/Writer/Generate
+             * chmod +x /home/bundles.baks.dev/vendor/baks-dev/barcode/Writer/Generate
              * chmod +x /home/bundles.baks.dev/vendor/baks-dev/barcode/Reader/Decode
              * */
             throw new RuntimeException('Barcode write error');
         }
 
-        $QRCode = $this->BarcodeWrite->render();
-
+        $render = $this->BarcodeWrite->render();
+        $render = strip_tags($render, ['path']);
+        $render = trim($render);
         $this->BarcodeWrite->remove();
 
-        return $QRCode;
+        return $render;
     }
 }
