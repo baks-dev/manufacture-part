@@ -67,6 +67,14 @@ class ManufacturePart
     }
 
     /**
+     * Идентификатор
+     */
+    public function getId(): ManufacturePartUid
+    {
+        return $this->id;
+    }
+
+    /**
      * Идентификатор События
      */
     public function getEvent(): ManufacturePartEventUid
@@ -79,11 +87,5 @@ class ManufacturePart
         $this->event = $event instanceof ManufacturePartEvent ? $event->getId() : $event;
     }
 
-    /**
-     * Идентификатор
-     */
-    public function getId(): ManufacturePartUid
-    {
-        return $this->id;
-    }
+
 }

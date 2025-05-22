@@ -27,7 +27,6 @@ namespace BaksDev\Manufacture\Part\Messenger\UsersTable;
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
-use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
@@ -117,19 +116,25 @@ final readonly class AddUserTableByManufacturePartWorking
             return false;
         }
 
-        $ManufacturePartInvariable = $this->ManufacturePartInvariableRepository
-            ->forPart($message->getId())
-            ->find();
+        //        $ManufacturePartInvariable = $this->ManufacturePartInvariableRepository
+        //            ->forPart($message->getId())
+        //            ->find();
 
-        if(false === ($ManufacturePartInvariable instanceof ManufacturePartInvariable))
-        {
-            return false;
-        }
+        //        if(false === ($ManufacturePartInvariable instanceof ManufacturePartInvariable))
+        //        {
+        //            return false;
+        //        }
 
-        /** Получаем общее количество в заявке */
-        $this->logger->info('Добавляем действие сотрудника в табель', [self::class.':'.__LINE__]);
+        //        /** Получаем общее количество в заявке */
+        //        $this->logger->info('Добавляем действие сотрудника в табель', [self::class.':'.__LINE__]);
 
-        /** Создаем и сохраняем табель сотруднику */
+
+        /**
+         * Создаем и сохраняем табель сотруднику
+         */
+
+        $ManufacturePartInvariable = $ManufacturePartEvent->getInvariable();
+
         $UsersTableDTO = new UsersTableDTO(authority: $ManufacturePartWorkingDTO->getProfile())
             ->setProfile($ManufacturePartWorkingDTO->getProfile())
             ->setWorking($ManufacturePartWorkingDTO->getWorking())
