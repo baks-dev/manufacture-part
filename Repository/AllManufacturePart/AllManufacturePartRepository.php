@@ -243,7 +243,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
         if($this->search?->getQuery())
         {
             $dbal
-                ->createSearchQueryBuilder($this->search)
+                ->createSearchQueryBuilder($this->search, true)
                 ->addSearchEqualUid('part.id')
                 ->addSearchLike('invariable.number');
         }

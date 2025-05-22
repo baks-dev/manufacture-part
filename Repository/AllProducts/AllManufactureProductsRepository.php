@@ -460,7 +460,7 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         if($this->search?->getQuery())
         {
             $dbal
-                ->createSearchQueryBuilder($this->search)
+                ->createSearchQueryBuilder($this->search, true)
                 ->addSearchEqualUid('product.id')
                 ->addSearchEqualUid('product.event')
                 ->addSearchEqualUid('product_variation.id')
