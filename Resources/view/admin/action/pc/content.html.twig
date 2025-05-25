@@ -7,7 +7,7 @@
 
             <h5 class="modal-title">
                 {# Заголовок модального окна #}
-                {{ 'admin.page.action'|trans }} #{{ part.number }}
+                {{ 'admin.page.action'|trans }} #{{ part.invariable.number }}
             </h5>
 
             <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -62,7 +62,7 @@
                             {% if  working.working_id == current %}
                                 {% set bg = 'text-muted' %}
                                 {% set color = 'text-muted  fw-normal' %}
-                                <strong class="text-danger">{{ part.quantity }} шт.</strong>
+                                <strong class="text-danger">{{ part.invariable.quantity }} шт.</strong>
                             {% endif %}
 
                         </div>
@@ -97,7 +97,7 @@
 
                 {# Удалить #}
                 {{ form_widget(form.manufacture_part_action, { label: '
-				<span>Выполнено '~  part.quantity ~' шт.</span>
+				<span>Выполнено '~  part.invariable.quantity ~' шт.</span>
 				<span class="spinner-border spinner-border-sm vertical-middle d-none"></span>
 			'}) }}
             </div>
