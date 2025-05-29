@@ -147,7 +147,7 @@ final class ManufacturePartForm extends AbstractType
             }
         );
 
-        $builder->add('complete', DeliveryForm::class);
+        $builder->add('complete', DeliveryForm::class, ['required' => false]);
 
         $builder->add('comment', TextareaType::class, ['required' => false]);
 

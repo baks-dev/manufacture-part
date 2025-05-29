@@ -66,6 +66,7 @@ final class NewController extends AbstractController
             )
             ->handleRequest($request);
 
+
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part'))
         {
             $this->refreshTokenForm($form);
