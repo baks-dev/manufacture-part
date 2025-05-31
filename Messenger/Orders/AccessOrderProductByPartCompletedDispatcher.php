@@ -162,15 +162,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                 $AccessOrderDTO = new AccessOrderDTO();
                 $OrderEvent->getDto($AccessOrderDTO);
 
-                /**
-                 * Если заказ FBS - присваиваем в качестве комментария к заказу идентификатор производственной партии
-                 */
-                if($ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class))
-                {
-                    $AccessOrderDTO->addComment($ManufacturePartDTO->getInvariable()->getNumber());
-                }
-
-
                 /** @var AccessOrderProductDTO $AccessOrderProductDTO */
                 foreach($AccessOrderDTO->getProduct() as $AccessOrderProductDTO)
                 {

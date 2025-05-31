@@ -141,7 +141,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
-
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
@@ -195,7 +194,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
 
                 if(true === $isPackage)
                 {
-
                     $this->logger->info(
                         sprintf('%s: Отправляем заказ на упаковку', $OrderEvent->getOrderNumber()),
                         [self::class.':'.__LINE__]
@@ -205,6 +203,9 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                         OrderStatusPackage::class,
                         $OrderEvent->getId(),
                     );
+
+                    // Добавляем в комментарий идентификатор производственной партии
+                    $OrderStatusDTO->addComment($ManufacturePartDTO->getInvariable()->getNumber());
 
                     $OrderStatusDTO->setProfile($ManufacturePartInvariable->getProfile());
 
