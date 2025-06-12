@@ -64,7 +64,7 @@ class ManufacturePartProduct extends EntityEvent
 
     /** Порядок сортировки */
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private int $sort;
+    private readonly int $sort;
 
     /**
      * Идентификатор События!!! продукта

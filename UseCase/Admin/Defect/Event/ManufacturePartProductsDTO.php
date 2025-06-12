@@ -133,7 +133,10 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
      */
     public function getSort(): int
     {
-        $this->sort ?: $this->sort = time();
+        if(false === (new ReflectionProperty(self::class, 'sort')->isInitialized($this)))
+        {
+            $this->sort = time();
+        }
 
         return $this->sort;
     }

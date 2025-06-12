@@ -29,9 +29,7 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartInvariable\ManufacturePartInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusPackage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -51,9 +49,7 @@ final readonly class AddUserTableByManufacturePartWorking
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private ManufacturePartEventInterface $ManufacturePartEventRepository,
-        private ManufacturePartInvariableInterface $ManufacturePartInvariableRepository,
         private UsersTableHandler $usersTableHandler,
         private DeduplicatorInterface $deduplicator
     ) {}
@@ -116,18 +112,6 @@ final readonly class AddUserTableByManufacturePartWorking
             return false;
         }
 
-        //        $ManufacturePartInvariable = $this->ManufacturePartInvariableRepository
-        //            ->forPart($message->getId())
-        //            ->find();
-
-        //        if(false === ($ManufacturePartInvariable instanceof ManufacturePartInvariable))
-        //        {
-        //            return false;
-        //        }
-
-        //        /** Получаем общее количество в заявке */
-        //        $this->logger->info('Добавляем действие сотрудника в табель', [self::class.':'.__LINE__]);
-
 
         /**
          * Создаем и сохраняем табель сотруднику
@@ -154,8 +138,8 @@ final readonly class AddUserTableByManufacturePartWorking
 
         $this->logger->info(
             'Добавили табель сотрудника', [
-            'profile' => $ManufacturePartWorkingDTO->getProfile(),
-            'working' => $ManufacturePartWorkingDTO->getWorking(),
+            'profile' => (string) $ManufacturePartWorkingDTO->getProfile(),
+            'working' => (string) $ManufacturePartWorkingDTO->getWorking(),
             'quantity' => $ManufacturePartInvariable->getQuantity()
         ]);
 

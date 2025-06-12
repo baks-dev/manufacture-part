@@ -111,7 +111,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         }
 
         /**
-         * Определяем тип производства для заказов
+         * Определяем тип доставки
          * доступно только для заказов типа FBO
          */
 
@@ -123,6 +123,12 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             default => false,
         };
 
+
+        /**
+         * Определяем способ оплаты заказа
+         * доступно только для заказов типа FBO
+         */
+
         /** @var TypePaymentInterface $paymentType */
         $paymentType = match (true)
         {
@@ -130,6 +136,11 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypePaymentFboWildberries::TYPE,
             default => false,
         };
+
+        /**
+         * Определяем тип профиля заказа
+         * доступно только для заказов типа FBO
+         */
 
         /** @var TypeProfileInterface $profileType */
         $profileType = match (true)
@@ -139,6 +150,8 @@ final readonly class NewOrderFboByPartCompletedDispatcher
             default => false,
         };
 
+
+        // Если у заказа не определен тип
         if(false === ($profileType || $orderType || $paymentType))
         {
             return;

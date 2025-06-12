@@ -68,7 +68,7 @@ final readonly class ManufacturePartCompleted
 
         if($DeduplicatorExecuted->isExecuted())
         {
-            // return;
+            return;
         }
 
         $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
@@ -121,7 +121,7 @@ final readonly class ManufacturePartCompleted
         $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
         $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
 
-        if(!$handle instanceof ManufacturePart)
+        if(false === ($handle instanceof ManufacturePart))
         {
             throw new DomainException(sprintf('%s: Ошибка при полном выполнении (статус Complete) производственной партии', $handle));
         }
