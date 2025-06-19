@@ -19,6 +19,7 @@ admin:
     edit: 'Manufacture request updated successfully'
     delete: 'Product order successfully deleted'
     restore: 'Product order successfully restored'
+    add: 'Product successfully added: %s'
 
   danger:
     new: '%s: Error adding production request'

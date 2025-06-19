@@ -26,6 +26,35 @@
                     <div class="w-100">
                         {{ item.users_profile_username }}
                     </div>
+
+
+                    {# Чекбокс добавления товара в ПП #}
+                    {% if is_granted('ROLE_MANUFACTURE_PART_ADD') or  is_granted('ROLE_ADMIN') %}
+
+                        {% if opens %}
+
+                            {# Чекбокс для множественного добавления товаров в производственную партию #}
+                            <span class="px-2 mt-2">
+                                <input
+                                    type="checkbox"
+                                    class="add-all-to-production"
+                                    {#data-formname=".................."#}
+                                    data-formname="{{ add_selected_product_form_name }}"
+                                    data-product="{{ item.event }}"
+                                    data-offer="{{ item.product_offer_id }}"
+                                    data-variation="{{ item.product_variation_id }}"
+                                    data-modification="{{ item.product_modification_id }}"
+                                    data-total="100"
+
+                                    title="{{ item.exist_manufacture ? 'Продукция на производстве' : 'Выбрать данный товар'}}"
+                                    {{ item.exist_manufacture ? 'disabled' }}
+                                >
+                            </span>
+
+                        {% endif %}
+                    {% endif %}
+
+
                     <div class="text-muted">
                         {% if item.category_name %}
                             <span class="badge text-bg-secondary">{{ item.category_name }}</span>
@@ -39,14 +68,11 @@
 
 
             {# Обложка  #}
-
-
             <div class="d-flex flex-column small gap-1 p-2 bg-cover lazy col-2 w-100"
                  style=" height: 200px;"
                  data-bg="{{ cdn_image_path(item.product_image, item.product_image_ext, item.product_image_cdn) }}"
             >
             </div>
-
 
             <div class="card-body d-flex flex-column p-2 small">
 
@@ -103,17 +129,26 @@
                                     title='{{ item.exist_manufacture ? 'Продукция на производстве' : 'Добавить в партию производства' }}'
                             >
 
-                        <a href="{{ path('manufacture-part:admin.products.add', {
-                            product: item.event,
-                            offer: item.product_offer_id,
-                            variation: item.product_variation_id,
-                            modification: item.product_modification_id,
-                            total: 100
-                        }) }}"
+                        {# Для возможности открытия модвльного окна в script.js через POST добавлены data-атрибуты #}
+                        {# data-formname - для хранения отправляемых данных  #}
+                        {# data-method - опредеяем метод METHOD для указания в request.open  #}
+                        <a href="{{ path('manufacture-part:admin.selected-products.add') }}"
 
                            class="btn btn-sm {{ item.exist_manufacture ? 'btn-secondary' : 'btn-primary' }} modal-link disabled"
                            data-bs-toggle="modal"
                            data-bs-target="#modal"
+
+                           data-method="post"
+                           data-formname="{{ add_selected_product_form_name }}"
+                           data-product="{{ item.event }}"
+                           data-offer="{{ item.product_offer_id }}"
+                           data-variation="{{ item.product_variation_id }}"
+                           data-modification="{{ item.product_modification_id }}"
+                           data-collection-form="product_form_data"
+                           data-total="100"
+
+                           data-post-class="add-one-to-production"
+
                         >
                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
                                 class="bi bi-folder-plus" viewBox="0 0 16 16">
@@ -121,6 +156,7 @@
                               <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5Z"/>
                             </svg>
                         </a>
+
                     </span>
 
                         {% else %}
