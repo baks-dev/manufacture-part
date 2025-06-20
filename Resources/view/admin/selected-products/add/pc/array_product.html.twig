@@ -1,0 +1,45 @@
+{# Обложка  #}
+{% set image_path = '/assets/img/blank.svg' %}
+
+{#{% if card.product_image_ext is defined and card.product_image_ext is not null %}#}
+{% if card.productImageExt is defined and card.productImageExt is not null %}
+{#    {% set img_host =  card.product_image_cdn == true  ? CDN_HOST : '' %}#}
+{#    {% set img_dir = card.product_image %}#}
+{#    {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ card.product_image_ext %}#}
+{#    {% set image_path = img_host ~ img_dir ~ img_file %}#}
+
+    {% set image_path = cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) %}
+{% endif %}
+
+
+<button class="btn btn-link icon bg-cover rounded-2 lazy img-product m-0 "
+        style=" width: 55px; height: 70px; background-image: url({{ image_path }});">
+</button>
+
+<div>
+
+    <div class="fw-bolder">{{ card.productName }}</div>
+
+    <div>
+        {% if card.productOfferName %}
+            <small class="opacity-50">{{ card.productOfferName }}:</small> &nbsp;
+            <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>&nbsp;
+        {% endif %}
+
+        {% if card.productVariationName %}
+            <small class="opacity-50">{{ card.productVariationName }}:</small> &nbsp;
+            <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>&nbsp;
+        {% endif %}
+
+        {% if card.productModificationName %}
+            <small class="opacity-50">{{ card.productModificationName }}:</small> &nbsp;
+            <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>&nbsp;
+        {% endif %}
+
+    </div>
+
+    <div>
+        <small class="opacity-50">Количество в партии:</small> &nbsp;
+        <strong>{{ card.productTotal }}</strong> шт.
+    </div>
+</div>

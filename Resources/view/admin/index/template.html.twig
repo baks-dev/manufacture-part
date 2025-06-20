@@ -108,8 +108,58 @@ setTimeout(function vwZSPXkyxD() {
 
 }, 100);
 
-</script>
 
+/** Обработчики кнопок выбора товаров */
+var select_all_to_production = document.querySelector("#select-all-to-production");
+var add_all_to_production = document.querySelector("#add-all-to-production");
+
+/** Выбор из списка ответов */
+select_all_to_production?.addEventListener("click", function() {
+
+    // Выбрать все
+    select_all_to_production.classList.toggle("selected");
+
+    const button_text = select_all_to_production.classList.contains('selected') ? 'Снять выбор' : 'Выбрать все';
+    select_all_to_production.innerText = button_text;
+
+    const products = document.querySelectorAll('.add-all-to-production');
+
+    // Выбрать все НЕ disabled (т.е. те, которые не на производстве)
+    products.forEach(checkbox => {if (!checkbox.disabled) { checkbox.checked = !checkbox.checked} } )
+
+    const checkboxes = document.querySelectorAll('.add-all-to-production');
+    const atLeastOneChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+    if (atLeastOneChecked) {
+       add_all_to_production.style.display = 'inline-block';
+    }
+    else {
+        add_all_to_production.style.display = 'none';
+    }
+
+});
+
+var checkboxs_all_to_production = document.querySelectorAll(".add-all-to-production");
+
+/** Скрыть или показать кнопку "Добавить выбранные" */
+for (checkbox_all_to_production of checkboxs_all_to_production) {
+
+    checkbox_all_to_production?.addEventListener("click", function() {
+
+        const checkboxes = document.querySelectorAll('.add-all-to-production');
+        const atLeastOneChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+        if (atLeastOneChecked) {
+           add_all_to_production.style.display = 'inline-block';
+        }
+        else {
+            add_all_to_production.style.display = 'none';
+        }
+
+    });
+}
+
+</script>
 
 
 {% endblock %}

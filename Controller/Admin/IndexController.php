@@ -33,6 +33,7 @@ use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Manufacture\Part\Repository\AllProducts\AllManufactureProductsInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartResult;
+use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsForm;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterForm;
@@ -65,7 +66,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.index'),]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.index'),],
             )
             ->handleRequest($request);
 
@@ -102,7 +103,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: ProductFilterForm::class,
                 data: $filter,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.index')]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.index')],
             )
             ->handleRequest($request);
 
@@ -116,6 +117,8 @@ final class IndexController extends AbstractController
             ->findPaginator();
 
 
+        /** Форма добавление одного продукта */
+
         return $this->render(
             [
                 'opens' => $opens,
@@ -124,7 +127,9 @@ final class IndexController extends AbstractController
                 'filter' => $filterForm->createView(),
                 'current_profile' => $this->getCurrentProfileUid(),
                 'token' => $tokenUserGenerator->generate($this->getUsr()),
-            ]
+                'add_selected_product_form_name' => $this->createForm(type: ManufactureSelectionPartProductsForm::class)->getName(),
+
+            ],
         );
     }
 }

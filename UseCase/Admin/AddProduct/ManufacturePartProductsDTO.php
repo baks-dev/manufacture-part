@@ -81,9 +81,8 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     private readonly int $sort;
 
 
-    public function __construct(UserProfileUid $profile)
+    public function __construct()
     {
-        $this->profile = $profile;
         $this->sort = time();
     }
 
@@ -181,6 +180,16 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     public function setModification(?ProductModificationUid $modification): self
     {
         $this->modification = $modification;
+        return $this;
+    }
+
+    public function setProfile(UserProfileUid $profile)
+    {
+        if(false === (new \ReflectionProperty(self::class, 'profile')->isInitialized($this)))
+        {
+            $this->profile = $profile;
+        }
+
         return $this;
     }
 

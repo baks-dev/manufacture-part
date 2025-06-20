@@ -136,6 +136,46 @@
 
         {% include Template('_includes/'~baks_settings.device~'/pagination.html.twig') with { 'pagination' : query } %}
 
+        <div class="container to-production-actions d-flex gap-2 ">
+
+            <button
+                    class="btn btn-light opacity-75 btn btn-danger text-nowrap"
+                    role="tooltip"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-delay='{"show":600,"hide":100}'
+                    title="Выбрать все"
+                    id="select-all-to-production"
+            >
+                Выбрать все
+            </button>
+
+
+            <a
+                    class="btn btn-light opacity-75 btn modal-btn btn-danger modal-link text-nowrap"
+                    role="tooltip"
+{#                    data-bs-toggle="tooltip"#}
+                    data-bs-placement="bottom"
+                    data-bs-delay='{"show":600,"hide":100}'
+                    title="Добавить выбранные"
+                    id="add-all-to-production"
+
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal"
+
+                    data-post-class="add-all-to-production"
+
+                    data-method="post"
+                    data-collection-form="product_form_data"
+
+                    href="/admin/manufacture/part/selected-product/add"
+                    style="display: none;"
+            >
+                Добавить выбранные
+            </a>
+
+        </div>
+
     </section>
 
 </main>
