@@ -205,9 +205,8 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                     );
 
                     // Добавляем в комментарий идентификатор производственной партии
-                    $OrderStatusDTO->addComment($ManufacturePartDTO->getInvariable()->getNumber());
-
-                    $OrderStatusDTO->setProfile($ManufacturePartInvariable->getProfile());
+                    $OrderStatusDTO->addComment($ManufacturePartEvent->getInvariable()->getNumber());
+                    $OrderStatusDTO->setProfile($ManufacturePartEvent->getInvariable()->getProfile());
 
                     /** @var OrderStatusHandler $statusHandler */
                     $OrderStatusHandler = $this->OrderStatusHandler->handle($OrderStatusDTO);
