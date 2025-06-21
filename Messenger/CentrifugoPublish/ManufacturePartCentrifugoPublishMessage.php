@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Messenger\CentrifugoPublish;
 
+use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
@@ -58,31 +59,36 @@ final class ManufacturePartCentrifugoPublishMessage
     private ?int $total;
 
     /**
-     * Идентификатор manufacturePartEvent
+     * Идентификатор события производственной партии
      */
     private string|null $manufacturePartEvent;
 
     public function __construct(
         string $identifier,
-        string $profile,
-        int|null $total = null,
-        string|null $manufacturePartEvent = null,
 
-        ?string $event = null,
-        ?string $offer = null,
-        ?string $variation = null,
-        ?string $modification = null,
+        UserProfileUid $profile,
+
+        ManufacturePartEventUid|null $manufacturePartEvent = null,
+
+        ProductEventUid|null $event = null,
+        ProductOfferUid|null $offer = null,
+        ProductVariationUid|null $variation = null,
+        ProductModificationUid|null $modification = null,
+
+        int|null $total = null,
     )
     {
         $this->identifier = $identifier;
-        $this->profile = $profile;
-        $this->total = $total;
+        $this->profile = (string) $profile;
+
         $this->manufacturePartEvent = $manufacturePartEvent;
 
-        $this->event = $event;
-        $this->offer = $offer;
-        $this->variation = $variation;
-        $this->modification = $modification;
+        $this->event = $event ? (string) $event : null;
+        $this->offer = $offer ? (string) $offer : null;
+        $this->variation = $variation ? (string) $variation : null;
+        $this->modification = $modification ? (string) $modification : null;
+
+        $this->total = $total;
     }
 
 
@@ -113,9 +119,9 @@ final class ManufacturePartCentrifugoPublishMessage
     /**
      * Идентификатор События
      */
-    public function getManufacturePartEvent(): string|false
+    public function getManufacturePartEvent(): ManufacturePartEventUid|false
     {
-        return $this->manufacturePartEvent ?? false;
+        return $this->manufacturePartEvent ? new ManufacturePartEventUid($this->manufacturePartEvent) : false;
     }
 
 

@@ -76,17 +76,16 @@ final class AddSelectedProductsController extends AbstractController
         /** @var ManufacturePartProductsDTO $ManufacturePartProductDTO */
         foreach($ManufactureSelectionPartProductDTO->getProductFormData() as $key => $ManufacturePartProductDTO)
         {
-            /** Скрываем у других продукты */
-            /* Отправка в очередь данных для CentrifugoPublish - remove */
+            /** Скрываем у других продукты для избежания двойного производства */
             $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
                 identifier: $ManufacturePartProductDTO->getIdentifier(),
-                profile: (string) $this->getCurrentProfileUid(),
+                profile: $this->getCurrentProfileUid(),
             );
 
             $messageDispatch
                 ->dispatch(
                     message: $ManufacturePartCentrifugoPublishMessage,
-                    transport: 'manufacture-part'
+                    transport: 'manufacture-part',
                 );
 
             $events[$key] = $ManufacturePartProductDTO->getProduct();
@@ -100,64 +99,83 @@ final class AddSelectedProductsController extends AbstractController
         {
             $this->refreshTokenForm($form);
 
-            /** Обход выбранных товаров */
-            /** @var ManufacturePartProductsDTO $value */
+            $countTotal = 0;
+            $isError = false;
+
+            /**
+             * Добавляем в производственную партию каждый товар
+             *
+             * @var ManufacturePartProductsDTO $value
+             */
             foreach($ManufactureSelectionPartProductDTO->getProductFormData() as $ManufacturePartProductDTO)
             {
-
-                /** Добавляем в производственную партию каждый товар */
-
                 /** Указать профиль отв. лица */
                 $ManufacturePartProductDTO->setProfile($this->getProfileUid());
 
-                /** Отправить данные по каждому товару в производственую партию */
                 $handle = $ManufacturePartProductHandler->handle($ManufacturePartProductDTO);
 
-
-                /** Если был добавлен продукт в открытую партию отправляем сокет */
-
-                $return = null;
                 if($handle instanceof ManufacturePartProduct)
                 {
-
-                    /* Отправка в очередь данных для CentrifugoPublish + remove */
                     $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
+
+                    /** Скрываем у ВСЕХ пользователей продукты после добавления в списке */
                         identifier: $ManufacturePartProductDTO->getIdentifier(),
-                        profile: (string) $this->getCurrentProfileUid(),
+                        profile: $this->getCurrentProfileUid(),
+
+                        /** Передаем идентификаторы продукта для вставки шаблона */
+                        manufacturePartEvent: $handle->getEvent()->getId(),
+                        event: $ManufacturePartProductDTO->getProduct(),
+                        offer: $ManufacturePartProductDTO->getOffer(),
+                        variation: $ManufacturePartProductDTO->getVariation(),
+                        modification: $ManufacturePartProductDTO->getModification(),
+
                         total: $ManufacturePartProductDTO->getTotal(),
-                        manufacturePartEvent: (string) $handle->getEvent(),
-                        event: (string) $ManufacturePartProductDTO->getProduct(),
-                        offer: (string) $ManufacturePartProductDTO->getOffer(),
-                        variation: (string) $ManufacturePartProductDTO->getVariation(),
-                        modification: (string) $ManufacturePartProductDTO->getModification(),
                     );
 
                     $messageDispatch
                         ->dispatch(
                             message: $ManufacturePartCentrifugoPublishMessage,
-                            transport: 'manufacture-part'
+                            transport: 'manufacture-part',
                         );
 
+                    $countTotal += $ManufacturePartProductDTO->getTotal();
 
-                    /* В toast передадим аргумент - кол-во добавленного товар */
-                    $return = $this->addFlash(
-                        type: 'admin.page.add',
-                        message: 'admin.success.add' ,
-                        domain: 'admin.manufacture.part',
-                        arguments: [$ManufacturePartProductDTO->getTotal()],
-                        status: $request->isXmlHttpRequest() ? 200 : 302 // не делаем редирект в случае AJAX
-                    );
-
+                    continue;
                 }
 
+                /** Ошибка при добавлении товара в производственную партию */
+                $this->addFlash(
+                    type: 'admin.page.add',
+                    message: 'admin.danger.add',
+                    domain: 'manufacture-part.admin',
+                    arguments: $ManufacturePartProductDTO->getTotal(),
+                    status: $request->isXmlHttpRequest() ? 200 : 302, // не делаем редирект в случае AJAX
+                );
+
+                $isError = true;
             }
 
-            return $request->isXmlHttpRequest() ? $return : $this->redirectToRoute('manufacture-part:admin.index');
+            if($countTotal > 0)
+            {
+                /* В toast передадим аргумент - кол-во добавленного товар */
+                $return = $this->addFlash(
+                    type: 'admin.page.add',
+                    message: 'admin.success.add',
+                    domain: 'manufacture-part.admin',
+                    arguments: (string) $countTotal,
+                    status: $request->isXmlHttpRequest() ? 200 : 302, // не делаем редирект в случае AJAX
+                );
 
+                if(false === $isError)
+                {
+                    return $request->isXmlHttpRequest() ? $return : $this->redirectToRoute('manufacture-part:admin.index');
+                }
+            }
         }
 
-        /** Получим данные */
-        $details = $productsDetail->events($events)
+        /** Получаем информацию о добавленных продуктов */
+        $details = $productsDetail
+            ->events($events)
             ->offers($offers)
             ->variations($variations)
             ->modifications($modifications)
@@ -165,7 +183,7 @@ final class AddSelectedProductsController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'cards' => $details
+            'cards' => $details,
         ]);
     }
 }

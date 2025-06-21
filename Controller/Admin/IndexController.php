@@ -82,11 +82,11 @@ final class IndexController extends AbstractController
         /**
          * Фильтр продукции
          */
-        $filter = new ProductFilterDTO();
+        $filter = new ProductFilterDTO()->hiddenMaterials();
 
         if($opens instanceof OpenManufacturePartResult)
         {
-            /* Если открыт производственный процесс - жестко указываем категорию и скрываем выбор */
+            /** Если открыт производственный процесс - жестко указываем категорию и скрываем выбор */
 
             $CategoryProductUid = new CategoryProductUid(
                 $opens->getCategoryId(), // $opens['category_id'],
@@ -98,7 +98,6 @@ final class IndexController extends AbstractController
                 ->categoryInvisible();
         }
 
-
         $filterForm = $this
             ->createForm(
                 type: ProductFilterForm::class,
@@ -106,6 +105,7 @@ final class IndexController extends AbstractController
                 options: ['action' => $this->generateUrl('manufacture-part:admin.index')],
             )
             ->handleRequest($request);
+
 
         /**
          * Список продукции

@@ -80,7 +80,7 @@ final class NewController extends AbstractController
                 (
                     'admin.page.new',
                     'admin.danger.exist',
-                    'admin.manufacture.part'
+                    'manufacture-part.admin',
                 );
 
                 return $this->redirectToReferer();
@@ -92,7 +92,7 @@ final class NewController extends AbstractController
             (
                 'admin.page.new',
                 $handle instanceof ManufacturePart ? 'admin.success.new' : 'admin.danger.new',
-                'admin.manufacture.part',
+                'manufacture-part.admin',
                 $handle
             );
 

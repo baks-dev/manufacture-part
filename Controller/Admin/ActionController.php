@@ -140,7 +140,7 @@ final class ActionController extends AbstractController
                 $this->addFlash(
                     'admin.page.action',
                     'admin.success.action',
-                    'admin.manufacture.part'
+                    'manufacture-part.admin',
                 );
 
                 return $this->redirectToRoute('manufacture-part:admin.manufacture');
@@ -149,7 +149,7 @@ final class ActionController extends AbstractController
             $this->addFlash(
                 'admin.page.action',
                 'admin.danger.action',
-                'admin.manufacture.part',
+                'manufacture-part.admin',
                 $handle);
 
             return $this->redirectToReferer();

@@ -1,4 +1,4 @@
-{% trans_default_domain 'admin.manufacture.part' %}
+{% trans_default_domain 'manufacture-part.admin' %}
 
 {% if cards %}
 
@@ -8,16 +8,16 @@
 
             {{ form_start(form) }}
 
-            <div class="modal-header border-0">
 
-                <div class='d-flex gap-3'>
-                    <h5 class='lh-1'>
-                        {{ 'admin.page.add'|trans }}
-                    </h5>
-                </div>
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    {# Заголовок модального окна #}
+                    {{ 'admin.page.add'|trans }}
+                </h5>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
-
 
             <div class="modal-body d-flex justify-content-between " style="flex-direction: column;">
 
@@ -25,29 +25,27 @@
                     {% set arr_property = card.categorySectionField|json_decode %}
                     {# Вывод товара #}
 
-                    <div class='d-flex gap-2 align-items-center'>
-
-                        {# Свойства, учавствующие в превью карточки #}
+                    {# <div class='d-flex gap-2 align-items-center'>
+                    #}{# Свойства, учавствующие в превью карточки #}{#
                         {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
                             {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
                         {% endfor %}
 
-                    </div>
+                    </div> #}
 
-                    <div class="d-flex justify-content-between gap-3 align-items-center w-100 mb-3">
+                    <div class="d-flex justify-content-between gap-3 align-items-center w-100 mb-2  {{ loop.last ?: 'border-bottom border-light' }}">
 
                         {# Обложка  #}
                         {% set image_path = '/assets/img/blank.svg' %}
 
                         {% if card.productImageExt is defined and card.productImageExt is not null %}
-
                             {% set image_path = cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) %}
                         {% endif %}
 
                         {# ФОТО ПРОДУКТА  #}
                         <div>
                             <div class="icon rounded-4 mb-2 bg-cover p-1"
-                                 style="width: 75px; height: 75px; background-image: url('{{ image_path }}');"
+                                 style="width: 45px; height: 60px; background-image: url('{{ image_path }}');"
                             ></div>
                         </div>
 
@@ -68,6 +66,8 @@
                                 </a>
                             </div>
 
+                            <div class="d-flex gap-3">
+
                             <div>
                                 {% if card.productOfferName %}
                                     <small class="opacity-50">{{ card.productOfferName }}:</small>&nbsp;
@@ -85,6 +85,8 @@
                                     <small class="opacity-50">{{ card.productModificationName }}:</small>&nbsp;
                                     <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>
                                 {% endif %}
+                            </div>
+
                             </div>
 
                         </div>
@@ -137,17 +139,24 @@
                 {% endfor %}
             </div>
 
-            <div class="w-100 text-end">
 
-                <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">
-                    {{ 'admin.success.cancel'|trans }}
-                </button>
+            <div class="modal-footer ">
+                <div class="flex-grow-1">
+                    &nbsp;
+                </div>
+                <div class="mt-3 gap-3 d-flex">
+                    {# Отмена #}
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        {{ 'btn.cancel'|trans({}, 'core.btn') }}
+                    </button>
 
-                {{ form_widget(form.manufacture_part_products, { label: '
-                                                    <span>'~ 'btn.add'|trans({}, 'core.btn') ~'</span>
-                                                    '}) }}
+                    {{ form_widget(form.manufacture_part_products, { label: '
+                    <span>'~ 'btn.add'|trans({}, 'core.btn') ~'</span>
+                    <span class="spinner-border spinner-border-sm vertical-middle d-none"></span>
+                '}) }}
+                </div>
             </div>
-            {# <span class="spinner-border spinner-border-sm vertical-middle d-none"></span> #}
+
 
             {{ form_end(form) }}
 

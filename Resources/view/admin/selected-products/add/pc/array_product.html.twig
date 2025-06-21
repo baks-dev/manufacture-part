@@ -1,19 +1,9 @@
+{% trans_default_domain('manufacture-part.admin') %}
+{# @var card \BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidResult #}
+
 {# Обложка  #}
-{% set image_path = '/assets/img/blank.svg' %}
-
-{#{% if card.product_image_ext is defined and card.product_image_ext is not null %}#}
-{% if card.productImageExt is defined and card.productImageExt is not null %}
-{#    {% set img_host =  card.product_image_cdn == true  ? CDN_HOST : '' %}#}
-{#    {% set img_dir = card.product_image %}#}
-{#    {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ card.product_image_ext %}#}
-{#    {% set image_path = img_host ~ img_dir ~ img_file %}#}
-
-    {% set image_path = cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) %}
-{% endif %}
-
-
 <button class="btn btn-link icon bg-cover rounded-2 lazy img-product m-0 "
-        style=" width: 55px; height: 70px; background-image: url({{ image_path }});">
+        style=" width: 55px; height: 70px; background-image: url({{ cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) }});">
 </button>
 
 <div>

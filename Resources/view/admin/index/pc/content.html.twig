@@ -1,4 +1,4 @@
-{% trans_default_domain('admin.manufacture.part') %}
+{% trans_default_domain('manufacture-part.admin') %}
 
 
 <main class="main d-print-none">
@@ -16,7 +16,6 @@
                     Производственный процесс
                 </h1>
             </div>
-
 
             <button {# href="{{ path('products-stocks:admin.purchase.index') }}" #}
                     class="btn btn-light opacity-25"
@@ -129,52 +128,75 @@
 
                 {% for item in query.data %}
                     {{ include(_self|replace({ "content.html.twig": "card.html.twig" })) }}
+                {% else %}
+
+                    <div class="alert alert-warning m-3 w-100" role="alert">
+
+                        <div class="d-flex align-items-baseline gap-3">
+                            <div>
+                                <div class="icon rounded-circle bg-contain p-2 bg-primary text-white"
+                                     style="width: 10px; height: 10px;"><span class="small">!</span></div>
+                            </div>
+                            <div class="small lh-1">
+                                Информация по данному запросу отсутствует
+                            </div>
+                        </div>
+
+                    </div>
                 {% endfor %}
             </div>
 
         </div>
 
+
+        {% if query.data %}
+
+            <div class="position-absolute mt-2 pt-1 small">
+                <strong class="">Множественный выбор:</strong>
+            </div>
+
+            <div class="to-production-actions d-flex gap-2 sticky-bottom ps-5 pb-3 pt-2" style="margin-left: 130px;">
+
+                <button
+                        class="btn btn-sm btn-outline-primary text-nowrap mb-2"
+                        role="tooltip"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="bottom"
+                        data-bs-delay='{"show":600,"hide":100}'
+                        title="Выбрать все"
+                        id="select-all-to-production"
+                >
+                    Выбрать все
+                </button>
+
+                <a
+                        class="btn btn-sm btn-danger opacity-75 text-nowrap mb-2 d-none"
+                        role="tooltip"
+                        data-bs-placement="bottom"
+                        data-bs-delay='{"show":600,"hide":100}'
+                        title="Добавить выбранные"
+                        id="add-all-to-production"
+
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal"
+
+                        data-post-class="add-all-to-production"
+
+                        data-method="post"
+                        data-collection-form="product_form_data"
+
+                        href="/admin/manufacture/part/selected-product/add"
+
+                >
+                    Добавить выбранные
+                </a>
+
+            </div>
+        {% endif %}
+
+
+
         {% include Template('_includes/'~baks_settings.device~'/pagination.html.twig') with { 'pagination' : query } %}
-
-        <div class="container to-production-actions d-flex gap-2 ">
-
-            <button
-                    class="btn btn-light opacity-75 btn btn-danger text-nowrap"
-                    role="tooltip"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    data-bs-delay='{"show":600,"hide":100}'
-                    title="Выбрать все"
-                    id="select-all-to-production"
-            >
-                Выбрать все
-            </button>
-
-
-            <a
-                    class="btn btn-light opacity-75 btn modal-btn btn-danger modal-link text-nowrap"
-                    role="tooltip"
-{#                    data-bs-toggle="tooltip"#}
-                    data-bs-placement="bottom"
-                    data-bs-delay='{"show":600,"hide":100}'
-                    title="Добавить выбранные"
-                    id="add-all-to-production"
-
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal"
-
-                    data-post-class="add-all-to-production"
-
-                    data-method="post"
-                    data-collection-form="product_form_data"
-
-                    href="/admin/manufacture/part/selected-product/add"
-                    style="display: none;"
-            >
-                Добавить выбранные
-            </a>
-
-        </div>
 
     </section>
 

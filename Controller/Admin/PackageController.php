@@ -94,7 +94,7 @@ final class PackageController extends AbstractController
                 $this->addFlash(
                     'admin.page.package',
                     'admin.success.package',
-                    'admin.manufacture.part'
+                    'manufacture-part.admin',
                 );
 
                 return $this->redirectToRoute('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]);
@@ -103,7 +103,7 @@ final class PackageController extends AbstractController
             $this->addFlash(
                 'admin.page.package',
                 'admin.danger.package',
-                'admin.manufacture.part',
+                'manufacture-part.admin',
                 $handle
             );
 

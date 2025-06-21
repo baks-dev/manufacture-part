@@ -73,7 +73,7 @@ final class DeleteProductsController extends AbstractController
             $this->addFlash(
                 'admin.page.product_delete',
                 $handle instanceof ManufacturePartProduct ? 'admin.success.product_delete' : 'admin.danger.product_delete',
-                'admin.manufacture.part',
+                'manufacture-part.admin',
                 $handle);
 
             return $this->redirectToReferer();

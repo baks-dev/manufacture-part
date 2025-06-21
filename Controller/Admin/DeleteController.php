@@ -86,7 +86,11 @@ final class DeleteController extends AbstractController
 
             if($handle instanceof ManufacturePart)
             {
-                $this->addFlash('admin.page.delete', 'admin.success.delete', 'admin.manufacture.part');
+                $this->addFlash(
+                    'admin.page.delete',
+                    'admin.success.delete',
+                    'manufacture-part.admin',
+                );
 
                 return $this->redirectToRoute('manufacture-part:admin.manufacture');
             }
@@ -94,7 +98,7 @@ final class DeleteController extends AbstractController
             $this->addFlash(
                 'admin.page.delete',
                 'admin.danger.delete',
-                'admin.manufacture.part',
+                'manufacture-part.admin',
                 $handle
             );
 

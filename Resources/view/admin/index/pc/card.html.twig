@@ -20,42 +20,43 @@
         <div class="card bg-light-primary rounded-4">
 
             <div class="card-body small p-2">
-                <div class="d-flex justify-content-between align-items-center small">
+                <div class="d-flex align-items-center small">
 
-                    {# Бренд #}
-                    <div class="w-100">
-                        {{ item.users_profile_username }}
-                    </div>
+                    <div class="w-100 d-flex gap-3 align-items-center">
 
-
-                    {# Чекбокс добавления товара в ПП #}
-                    {% if is_granted('ROLE_MANUFACTURE_PART_ADD') or  is_granted('ROLE_ADMIN') %}
-
-                        {% if opens %}
+                        {# Чекбокс добавления товара в ПП #}
+                        {% if opens and (is_granted('ROLE_MANUFACTURE_PART_ADD') or  is_granted('ROLE_ADMIN')) %}
 
                             {# Чекбокс для множественного добавления товаров в производственную партию #}
-                            <span class="px-2 mt-2">
-                                <input
-                                    type="checkbox"
-                                    class="add-all-to-production"
-                                    {#data-formname=".................."#}
-                                    data-formname="{{ add_selected_product_form_name }}"
-                                    data-product="{{ item.event }}"
-                                    data-offer="{{ item.product_offer_id }}"
-                                    data-variation="{{ item.product_variation_id }}"
-                                    data-modification="{{ item.product_modification_id }}"
-                                    data-total="100"
+                            <div class="h5">
 
-                                    title="{{ item.exist_manufacture ? 'Продукция на производстве' : 'Выбрать данный товар'}}"
-                                    {{ item.exist_manufacture ? 'disabled' }}
+                                <input
+                                        id="check-{{ identifier }}"
+                                        type="checkbox"
+                                        class="form-check-input add-all-to-production btn-outline-danger"
+
+                                        {# Данные, отправляемые POST #}
+                                        data-formname="{{ add_selected_product_form_name }}"
+                                        data-product="{{ item.event }}"
+                                        data-offer="{{ item.product_offer_id }}"
+                                        data-variation="{{ item.product_variation_id }}"
+                                        data-modification="{{ item.product_modification_id }}"
+                                        data-total="100"
+
+                                        title="{{ item.exist_manufacture ? 'Продукция на производстве' : 'Выбрать данный товар' }}"
+                                        {{ item.exist_manufacture ? 'disabled' }}
                                 >
-                            </span>
+                            </div>
 
                         {% endif %}
-                    {% endif %}
 
+                        <label for="check-{{ identifier }}">
+                            {{ item.users_profile_username }}
+                        </label>
 
-                    <div class="text-muted">
+                    </div>
+
+                    <div class="text-muted flex-shrink-1">
                         {% if item.category_name %}
                             <span class="badge text-bg-secondary">{{ item.category_name }}</span>
                         {% else %}
@@ -86,6 +87,7 @@
                     <span class="fw-bolder mb-1 text-dark text-decoration-none product-name">
                         {{ item.product_name|capitalize }}
                     </span>
+
                     <div class="text-muted fw-bolder">
 
                         {# Значение множественного варианта ТП #}
@@ -110,10 +112,10 @@
                     <div class="d-flex align-items-center">
                         <form method="post" action='{{ path('manufacture-part:admin.index') }}' class="p-0">
                             <input type="hidden" name="search_form[query]" value="{{ item.product_article }}">
+
                             <button type="submit" class="btn btn-link text-decoration-none btn-sm p-0 border-0 small">
                                 <span class="">{{ item.product_article }}</span>
                             </button>
-
                         </form>
                     </div>
 
@@ -130,8 +132,8 @@
                             >
 
                         {# Для возможности открытия модвльного окна в script.js через POST добавлены data-атрибуты #}
-                        {# data-formname - для хранения отправляемых данных  #}
-                        {# data-method - опредеяем метод METHOD для указания в request.open  #}
+                                {# data-formname - для хранения отправляемых данных  #}
+                                {# data-method - опредеяем метод METHOD для указания в request.open  #}
                         <a href="{{ path('manufacture-part:admin.selected-products.add') }}"
 
                            class="btn btn-sm {{ item.exist_manufacture ? 'btn-secondary' : 'btn-primary' }} modal-link disabled"
