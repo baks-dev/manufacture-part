@@ -81,7 +81,7 @@ final class ManufacturePartCentrifugoPublishMessage
         $this->identifier = $identifier;
         $this->profile = (string) $profile;
 
-        $this->manufacturePartEvent = $manufacturePartEvent;
+        $this->manufacturePartEvent = $manufacturePartEvent ? (string) $manufacturePartEvent : null;
 
         $this->event = $event ? (string) $event : null;
         $this->offer = $offer ? (string) $offer : null;

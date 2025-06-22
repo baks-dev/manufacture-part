@@ -81,21 +81,21 @@ final readonly class ManufacturePartCentrifugoPublishHandler
          * Добавляем продукт в блок информации о производственной партии
          */
 
-        $event = $message->getEvent();
-        $offer = $message->getOffer();
-        $variation = $message->getVariation();
-        $modification = $message->getModification();
-
         $product = $this->ProductDetailByUids
-            ->event($event)
-            ->offer($offer)
-            ->variation($variation)
-            ->modification($modification)
+            ->event($message->getEvent())
+            ->offer($message->getOffer())
+            ->variation($message->getVariation())
+            ->modification($message->getModification())
             ->findResult();
+
+        if(false === $product)
+        {
+            return;
+        }
 
         // HTML продукта
         $card = $this->Twig->render(
-            name: '@manufacture-part/admin/selected-products/add/centrifugo.html.twig',
+            name: '@manufacture-part/admin/selected-products/add/pc/array_product.html.twig',
             context: ['card' => $product]);
 
         $this->CentrifugoPublish

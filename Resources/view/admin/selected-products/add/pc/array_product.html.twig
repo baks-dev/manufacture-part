@@ -1,35 +1,54 @@
 {% trans_default_domain('manufacture-part.admin') %}
 {# @var card \BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidResult #}
 
-{# Обложка  #}
-<button class="btn btn-link icon bg-cover rounded-2 lazy img-product m-0 "
-        style=" width: 55px; height: 70px; background-image: url({{ cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) }});">
-</button>
+{% if card %}
 
-<div>
-
-    <div class="fw-bolder">{{ card.productName }}</div>
+    {# Обложка  #}
+    <button class="btn btn-link icon bg-cover rounded-2 lazy img-product m-0 "
+            style=" width: 55px; height: 70px; background-image: url({{ cdn_image_path(card.productImage, card.productImageExt, card.productImageCdn) }});">
+    </button>
 
     <div>
-        {% if card.productOfferName %}
-            <small class="opacity-50">{{ card.productOfferName }}:</small> &nbsp;
-            <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>&nbsp;
-        {% endif %}
 
-        {% if card.productVariationName %}
-            <small class="opacity-50">{{ card.productVariationName }}:</small> &nbsp;
-            <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>&nbsp;
-        {% endif %}
+        <div class="fw-bolder">{{ card.productName }}</div>
 
-        {% if card.productModificationName %}
-            <small class="opacity-50">{{ card.productModificationName }}:</small> &nbsp;
-            <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>&nbsp;
-        {% endif %}
+        <div>
+            {% if card.productOfferName %}
+                <small class="opacity-50">{{ card.productOfferName }}:</small> &nbsp;
+                <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>&nbsp;
+            {% endif %}
 
+            {% if card.productVariationName %}
+                <small class="opacity-50">{{ card.productVariationName }}:</small> &nbsp;
+                <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>&nbsp;
+            {% endif %}
+
+            {% if card.productModificationName %}
+                <small class="opacity-50">{{ card.productModificationName }}:</small> &nbsp;
+                <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>&nbsp;
+            {% endif %}
+
+        </div>
+
+        <div>
+            <small class="opacity-50">Количество в партии:</small> &nbsp;
+            <strong>{{ card.productTotal }}</strong> шт.
+        </div>
     </div>
 
-    <div>
-        <small class="opacity-50">Количество в партии:</small> &nbsp;
-        <strong>{{ card.productTotal }}</strong> шт.
+{% else %}
+
+    <div class="alert alert-warning m-3 w-100" role="alert">
+
+        <div class="d-flex align-items-baseline gap-3">
+            <div>
+                <div class="icon rounded-circle bg-contain p-2 bg-primary text-white"
+                     style="width: 10px; height: 10px;"><span class="small">!</span></div>
+            </div>
+            <div class="small lh-1">
+                Информация по данному запросу отсутствует
+            </div>
+        </div>
     </div>
-</div>
+
+{% endif %}
