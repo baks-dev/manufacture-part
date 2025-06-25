@@ -59,6 +59,11 @@ final class ManufacturePartCentrifugoPublishMessage
     private ?int $total;
 
     /**
+     * Устройство
+     */
+    private string $device;
+
+    /**
      * Идентификатор события производственной партии
      */
     private string|null $manufacturePartEvent;
@@ -76,6 +81,7 @@ final class ManufacturePartCentrifugoPublishMessage
         ProductModificationUid|null $modification = null,
 
         int|null $total = null,
+        string $device = 'pc'
     )
     {
         $this->identifier = $identifier;
@@ -89,6 +95,8 @@ final class ManufacturePartCentrifugoPublishMessage
         $this->modification = $modification ? (string) $modification : null;
 
         $this->total = $total;
+
+        $this->device = $device;
     }
 
 
@@ -145,4 +153,9 @@ final class ManufacturePartCentrifugoPublishMessage
         return $this->modification ? new ProductModificationUid($this->modification) : false;
     }
 
+    public function getDevice(): string
+    {
+        return $this->device;
+    }
+    
 }

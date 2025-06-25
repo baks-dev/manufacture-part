@@ -97,6 +97,8 @@ final class AddSelectedProductsController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('product_form_data'))
         {
+            $device = $request->headers->get('x-device');
+            
             $this->refreshTokenForm($form);
 
             $countTotal = 0;
@@ -130,6 +132,7 @@ final class AddSelectedProductsController extends AbstractController
                         modification: $ManufacturePartProductDTO->getModification(),
 
                         total: $ManufacturePartProductDTO->getTotal(),
+                        device: $device
                     );
 
                     $messageDispatch

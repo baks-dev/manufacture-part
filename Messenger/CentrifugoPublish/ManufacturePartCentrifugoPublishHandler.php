@@ -93,9 +93,12 @@ final readonly class ManufacturePartCentrifugoPublishHandler
             return;
         }
 
+        /** Получение устройства для подключения шаблона */
+        $device = $message->getDevice();
+
         // HTML продукта
         $card = $this->Twig->render(
-            name: '@manufacture-part/admin/selected-products/add/pc/array_product.html.twig',
+            name: '@manufacture-part/admin/selected-products/add/' . $device . '/array_product.html.twig',
             context: ['card' => $product]);
 
         $this->CentrifugoPublish
