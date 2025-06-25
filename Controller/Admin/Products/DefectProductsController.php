@@ -53,7 +53,6 @@ final class DefectProductsController extends AbstractController
         ManufacturePartProductDefectHandler $ManufacturePartProductDefectHandler,
     ): Response
     {
-
         $ManufacturePartDTO = new ManufacturePartProductDefectDTO($ManufacturePartProduct->getId());
         //$ManufacturePartEvent->getDto($ManufacturePartDTO);
 
