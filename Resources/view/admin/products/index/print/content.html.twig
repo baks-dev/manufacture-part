@@ -1,0 +1,19 @@
+<table class="table table-borderless mt-3">
+    <thead>
+    <tr>
+        <th class="text-center">Изображение</th>
+        <th class="text-start">Наименование</th>
+        <th class="text-nowrap">Размер</th>
+        <th class="text-center">Артикул</th>
+        <th class="text-center">Количество</th>
+
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for item in query.data %}
+        {{ include(_self|replace({ "content.html.twig": "card.html.twig" })) }}
+    {% endfor %}
+
+    </tbody>
+</table>
