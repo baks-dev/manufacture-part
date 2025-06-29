@@ -1,27 +1,28 @@
 <tr>
 
     {# Обложка  #}
-    <td style="vertical-align: middle;">
-        <div class="d-flex flex-column w-100 p-4"
-             style="height: 100%; width: 100px;">
-            <img
-                    src="{{ cdn_image_path(item.product_image, item.product_image_ext, item.product_image_cdn) }}"
-                    style="height: 100%; width: 100px;"
-            />
-        </div>
+    <td class="vertical-middle">
+        <img
+                src="{{ cdn_image_path(item.product_image, item.product_image_ext, item.product_image_cdn) }}"
+                style="height: 100%; width: 100px;"
+        />
     </td>
 
     {# Наименование #}
-    <td style="vertical-align: middle;">
-        <div class="text-truncate py-5 px-2">
-            <span class="fw-bolder mb-1 text-dark text-decoration-none product-name">
+    <td class="vertical-middle">
+
+        <div class="d-flex flex-column w-100 p-4">
+            <strong>
                 {{ item.product_name }}
+            </strong>
+            <span>
+                {{ item.product_article }}
             </span>
         </div>
     </td>
 
     {# Размер #}
-    <td style="vertical-align: middle;">
+    <td class="vertical-middle">
         <div class="py-5">
             {# Значение множественного варианта ТП #}
             {{ item.product_variation_value|call_twig_func(item.product_variation_reference~'_render') ~
@@ -40,15 +41,8 @@
         </div>
     </td>
 
-    {# Артикул #}
-    <td style="vertical-align: middle;">
-        <div class="p-3 py-5 text-center">
-            {{ item.product_article }}
-        </div>
-    </td>
-
     {# Количество #}
-    <td style="vertical-align: middle;">
+    <td class="vertical-middle">
         <div class="py-5 text-center">
             <strong>{{ item.product_total }}</strong> &nbsp; шт.
         </div>
