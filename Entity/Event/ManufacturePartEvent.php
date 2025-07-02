@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Entity\Event;
 
 use BaksDev\Core\Entity\EntityEvent;
 use BaksDev\Delivery\Type\Id\DeliveryUid;
+use BaksDev\Manufacture\Part\Entity\Depends\ManufacturePartDepends;
 use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Modify\ManufacturePartModify;
@@ -38,6 +39,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -134,11 +136,18 @@ class ManufacturePartEvent extends EntityEvent
     private ?string $comment = null;
 
 
+    /** ManufacturePartDepends */
+    #[ORM\OneToOne(targetEntity: ManufacturePartDepends::class, mappedBy: 'event', cascade: ['all'])]
+    private Collection $depends;
+
+
     public function __construct()
     {
         $this->id = new ManufacturePartEventUid();
         $this->modify = new ManufacturePartModify($this);
         $this->status = new ManufacturePartStatus(ManufacturePartStatusOpen::class);
+        $this->depends = new ArrayCollection();
+
     }
 
     /**
