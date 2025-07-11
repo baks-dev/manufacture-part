@@ -31,6 +31,7 @@ use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see ManufacturePartProduct */
@@ -78,6 +79,7 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     /**
      * Порядок сортировки
      */
+    #[Assert\NotBlank]
     private readonly int $sort;
 
 
@@ -185,7 +187,7 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
 
     public function setProfile(UserProfileUid $profile)
     {
-        if(false === (new \ReflectionProperty(self::class, 'profile')->isInitialized($this)))
+        if(false === (new ReflectionProperty(self::class, 'profile')->isInitialized($this)))
         {
             $this->profile = $profile;
         }

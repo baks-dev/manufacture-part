@@ -32,6 +32,7 @@ use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
 use Doctrine\Common\Collections\ArrayCollection;
+use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see ManufacturePartProduct */
@@ -75,6 +76,10 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     #[Assert\NotBlank]
     #[Assert\Range(min: 1)]
     private ?int $total = 1;
+
+    /** Порядок сортировки */
+    #[Assert\NotBlank]
+    private readonly int $sort;
 
     private ArrayCollection $ord;
 
@@ -207,6 +212,26 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     public function removeOrd(ManufacturePartProductOrderDTO $order): void
     {
         $this->ord->removeElement($order);
+    }
+
+    /**
+     * Sort
+     */
+    public function getSort(): int
+    {
+        $this->sort ?: $this->sort = time();
+
+        return $this->sort;
+    }
+
+    public function setSort(?int $sort): self
+    {
+        if($sort && false === (new ReflectionProperty(self::class, 'sort')->isInitialized($this)))
+        {
+            $this->sort = $sort;
+        }
+
+        return $this;
     }
 
 }

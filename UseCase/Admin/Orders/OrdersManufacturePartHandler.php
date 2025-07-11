@@ -33,9 +33,7 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 final class OrdersManufacturePartHandler extends AbstractHandler
 {
     /** @see ManufacturePart */
-    public function handle(
-        OrdersManufacturePartDTO $command
-    ): string|ManufacturePart
+    public function handle(OrdersManufacturePartDTO $command): string|ManufacturePart
     {
         $this
             ->setCommand($command)
