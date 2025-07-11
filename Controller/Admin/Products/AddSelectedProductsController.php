@@ -104,15 +104,21 @@ final class AddSelectedProductsController extends AbstractController
             $countTotal = 0;
             $isError = false;
 
+            $sort = time();
+            $sort = (string) $sort;
+            $sort = (int) substr($sort, 1);
+
             /**
              * Добавляем в производственную партию каждый товар
              *
-             * @var ManufacturePartProductsDTO $value
+             * @var ManufacturePartProductsDTO $ManufacturePartProductDTO
              */
             foreach($ManufactureSelectionPartProductDTO->getProductFormData() as $ManufacturePartProductDTO)
             {
                 /** Указать профиль отв. лица */
-                $ManufacturePartProductDTO->setProfile($this->getProfileUid());
+                $ManufacturePartProductDTO
+                    ->setProfile($this->getProfileUid())
+                    ->setSort($sort);
 
                 $handle = $ManufacturePartProductHandler->handle($ManufacturePartProductDTO);
 
@@ -143,8 +149,11 @@ final class AddSelectedProductsController extends AbstractController
 
                     $countTotal += $ManufacturePartProductDTO->getTotal();
 
+                    $sort++;
+
                     continue;
                 }
+
 
                 /** Ошибка при добавлении товара в производственную партию */
                 $this->addFlash(

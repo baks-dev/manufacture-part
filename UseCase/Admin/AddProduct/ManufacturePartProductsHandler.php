@@ -36,6 +36,7 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePartByAction\OpenManufacturePartByActionInterface;
+use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,7 +86,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             $command->getProduct()
         );
 
-        if(!$ProductEvent || !$ProductEvent->getRootCategory())
+        if(false === ($ProductEvent instanceof ProductEvent) || false === ($ProductEvent->getRootCategory() instanceof CategoryProductUid))
         {
             $uniqid = uniqid('', false);
             $errorsString = sprintf(
@@ -107,7 +108,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             ]
         );
 
-        if(!$UsersTableActionsEvent)
+        if(false === ($UsersTableActionsEvent instanceof UsersTableActionsEvent))
         {
             $uniqid = uniqid('', false);
             $errorsString = sprintf(

@@ -83,11 +83,6 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     private readonly int $sort;
 
 
-    public function __construct()
-    {
-        $this->sort = time();
-    }
-
     /**
      * Общее количество в партии
      */
@@ -208,6 +203,18 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
      */
     public function getSort(): int
     {
+        $this->sort ?: $this->sort = time();
+
         return $this->sort;
+    }
+
+    public function setSort(?int $sort): self
+    {
+        if($sort && false === (new ReflectionProperty(self::class, 'sort')->isInitialized($this)))
+        {
+            $this->sort = $sort;
+        }
+
+        return $this;
     }
 }
