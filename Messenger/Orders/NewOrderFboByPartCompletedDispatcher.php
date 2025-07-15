@@ -55,7 +55,7 @@ use BaksDev\Reference\Money\Type\Money;
 use BaksDev\Users\Profile\TypeProfile\Type\Id\Choice\Collection\TypeProfileInterface;
 use BaksDev\Users\Profile\TypeProfile\Type\Id\TypeProfileUid;
 use BaksDev\Users\Profile\UserProfile\Entity\Event\UserProfileEvent;
-use BaksDev\Users\Profile\UserProfile\Repository\CurrentUserProfileEventById\CurrentUserProfileEventByIdInterfaceInterface;
+use BaksDev\Users\Profile\UserProfile\Repository\CurrentUserProfileEventById\CurrentUserProfileEventByIdInterface;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\PaymentType\TypePaymentFboWildberries;
 use BaksDev\Wildberries\Orders\Type\ProfileType\TypeProfileFboWildberries;
@@ -72,7 +72,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private CurrentUserProfileEventByIdInterfaceInterface $CurrentUserProfileEvent,
+        private CurrentUserProfileEventByIdInterface $CurrentUserProfileEvent,
         private CurrentProductIdentifierInterface $CurrentProductIdentifier,
         private NewOrderHandler $NewOrderHandler,
         private DeduplicatorInterface $deduplicator,
