@@ -32,7 +32,7 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Working\ManufacturePartWorking;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartActionEvent\ManufacturePartActionEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Users\Profile\UserProfile\Entity\Personal\UserProfilePersonal;
+use BaksDev\Users\Profile\UserProfile\Entity\Event\Personal\UserProfilePersonal;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
