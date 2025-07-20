@@ -47,7 +47,7 @@ class ManufacturePartDepends extends EntityEvent
     /** Связь на событие */
     #[Assert\NotBlank]
     #[ORM\Id]
-    #[ORM\OneToOne(targetEntity: ManufacturePartEvent::class, inversedBy: 'depends')]
+    #[ORM\ManyToOne(targetEntity: ManufacturePartEvent::class, inversedBy: 'depends')]
     #[ORM\JoinColumn(name: 'event', referencedColumnName: 'id')]
     private ManufacturePartEvent $event;
 

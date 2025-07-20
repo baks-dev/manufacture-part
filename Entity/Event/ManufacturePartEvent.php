@@ -137,7 +137,7 @@ class ManufacturePartEvent extends EntityEvent
 
 
     /** ManufacturePartDepends */
-    #[ORM\OneToOne(targetEntity: ManufacturePartDepends::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: ManufacturePartDepends::class, mappedBy: 'event', cascade: ['all'])]
     private Collection $depends;
 
 
