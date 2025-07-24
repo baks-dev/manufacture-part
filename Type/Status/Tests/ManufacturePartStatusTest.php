@@ -55,7 +55,9 @@ final class ManufacturePartStatusTest extends KernelTestCase
             self::assertTrue($ManufacturePartStatus->equals($ManufacturePartStatus)); // объект класса
 
             $ManufacturePartStatusType = new ManufacturePartStatusType();
-            $platform = $this->getMockForAbstractClass(AbstractPlatform::class);
+            $platform = $this
+                ->getMockBuilder(AbstractPlatform::class)
+                ->getMock();
 
             $convertToDatabase = $ManufacturePartStatusType->convertToDatabaseValue($ManufacturePartStatus, $platform);
             self::assertEquals($ManufacturePartStatus->getManufacturePartStatusValue(), $convertToDatabase);
