@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -37,8 +38,11 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\OrdersManufacturePartHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\ManufacturePartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders\ManufacturePartProductOrderDTO;
+use BaksDev\Orders\Order\Entity\Event\OrderEvent;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
+use BaksDev\Orders\Order\UseCase\Admin\Access\Products\AccessOrderProductDTO;
+use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
@@ -98,6 +102,8 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
         $orderType = match (true)
         {
+            /* FBS Ozon */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
             /* FBS Wb */
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb*/
@@ -105,14 +111,11 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
             default => false,
         };
 
+
         if(false === $orderType)
         {
             return false;
         }
-
-        //        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
-        //            ->fromPart($message->getId())
-        //            ->find();
 
         $ManufacturePartDTO = new OrdersManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
@@ -142,8 +145,10 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
                 continue;
             }
 
+            /** Количество единиц для производства конкретного продукта */
             $total = $ManufacturePartProductsDTO->getTotal();
 
+            /** @var OrderEvent $OrderEvent */
             foreach($orders as $OrderEvent)
             {
                 /** Если количество заказов в упаковке равное произведенной продукции - завершаем цикл*/
@@ -155,13 +160,17 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
                 $AccessOrderDTO = new AccessOrderDTO();
                 $OrderEvent->getDto($AccessOrderDTO);
 
+                /**
+                 * Проверяем, готов ли продукт к сборке
+                 */
                 $isPackage = true;
 
+                /** @var AccessOrderProductDTO $AccessOrderProductDTO */
                 foreach($AccessOrderDTO->getProduct() as $AccessOrderProductDTO)
                 {
+                    /** Пропускаем, если есть продукция в заказе НЕ ГОТОВАЯ к сборке */
                     $AccessOrderPriceDTO = $AccessOrderProductDTO->getPrice();
 
-                    // Пропускаем, если есть продукция в заказе НЕ ГОТОВАЯ к сборке
                     if(false === $AccessOrderPriceDTO->isAccess())
                     {
                         $isPackage = false;
@@ -179,13 +188,12 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
                     [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
                 );
 
-                /** Присваиваем заказ продукции в производственной партии */
+                /** Добавляем заказ продукции в производственную партию */
                 $ManufacturePartProductOrderDTO = new ManufacturePartProductOrderDTO()->setOrd($OrderEvent->getMain());
                 $ManufacturePartProductsDTO->addOrd($ManufacturePartProductOrderDTO);
             }
 
             /** Сохраняем производственную партию */
-
             $this->logger->info(
                 'Сохраняем производственную партию с указанными заказами к продукции',
                 [self::class.':'.__LINE__]
@@ -205,7 +213,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
         /**
          * Приступаем к упаковке заказов
-         * @see PackageOrdersByPartCompletedDispatcher
+         * @see PackageProductStockByPartCompletedDispatcher
          */
 
         $DeduplicatorExecuted->save();

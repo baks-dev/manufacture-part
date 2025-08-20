@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -32,13 +33,13 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/* Перевод ManufacturePartProductOrder */
-
 #[ORM\Entity]
 #[ORM\Table(name: 'manufacture_part_product_order')]
 class ManufacturePartProductOrder extends EntityEvent
 {
-    /** Связь на продукт */
+    /**
+     * Связь на продукт из производственной партии
+     */
     #[Assert\NotBlank]
     #[Assert\Uuid]
     #[ORM\Id]
@@ -47,7 +48,7 @@ class ManufacturePartProductOrder extends EntityEvent
     private ManufacturePartProduct $product;
 
     /**
-     * Идентификатор заказа, закрепленного за упаковкой продукта производства
+     * Идентификатор заказа, закрепленного за продуктом
      */
     #[Assert\Uuid]
     #[ORM\Id]

@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -27,6 +28,8 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\Delete;
 
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusDelete;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see ManufacturePartEvent */
@@ -41,6 +44,12 @@ final class ManufacturePartDeleteDTO implements ManufacturePartEventInterface
     private readonly ManufacturePartEventUid $id;
 
     /**
+     * Статус производственной партии
+     */
+    #[Assert\NotBlank]
+    private readonly ManufacturePartStatus $status;
+
+    /**
      * Модификатор
      */
     #[Assert\Valid]
@@ -49,7 +58,7 @@ final class ManufacturePartDeleteDTO implements ManufacturePartEventInterface
     public function __construct(/*ManufacturePartEventUid $id*/)
     {
         $this->modify = new Modify\ModifyDTO();
-        //$this->id = $id;
+        $this->status = new ManufacturePartStatus(ManufacturePartStatusDelete::class);
     }
 
 
@@ -64,4 +73,11 @@ final class ManufacturePartDeleteDTO implements ManufacturePartEventInterface
         return $this->modify;
     }
 
+    /**
+     * Статус производственной партии
+     */
+    public function getStatus(): ManufacturePartStatus
+    {
+        return $this->status;
+    }
 }

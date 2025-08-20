@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -105,7 +106,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
 
-        /** Создаем приход нас клад */
+        /** Создаем приход на склад */
 
         $ManufacturePartInvariableDTO = $ManufacturePartDTO->getInvariable();
 
@@ -204,8 +205,10 @@ final readonly class ProductStocksByPartCompletedDispatcher
              * Обновляем остаток в карточке на количество произведенной продукции
              */
 
+
             $UpdateProductQuantityMessage = new UpdateProductQuantityMessage(
                 event: $ManufacturePartProductsDTO->getProduct(),
+                reserve: $ManufacturePartProductsDTO->getTotal(),
                 quantity: $ManufacturePartProductsDTO->getTotal(),
                 offer: $ManufacturePartProductsDTO->getOffer(),
                 variation: $ManufacturePartProductsDTO->getVariation(),
