@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -44,6 +45,7 @@ use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Status\OrderStatusHandler;
+use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
@@ -110,6 +112,8 @@ final readonly class PackageOrdersByPartCompletedDispatcher
 
         $orderType = match (true)
         {
+            /* FBS Ozon */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
             /* FBS Wb */
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb*/
@@ -132,11 +136,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         {
             return false;
         }
-
-
-        //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-        //            ->forEvent($message->getEvent())
-        //            ->find();
 
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

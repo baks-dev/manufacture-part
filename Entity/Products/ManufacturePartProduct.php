@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -38,8 +39,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
-
-/* Перевод ManufacturePartProduct */
 
 #[ORM\Entity]
 #[ORM\Table(name: 'manufacture_part_product')]
@@ -109,7 +108,6 @@ class ManufacturePartProduct extends EntityEvent
     #[Assert\Valid]
     #[ORM\OneToMany(targetEntity: ManufacturePartProductOrder::class, mappedBy: 'product', cascade: ['all'], fetch: 'EAGER')]
     private Collection $ord;
-
 
     public function __construct(ManufacturePartEvent $event)
     {

@@ -19,12 +19,12 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Messenger\Orders;
-
 
 use BaksDev\Core\Cache\AppCacheInterface;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
@@ -40,6 +40,7 @@ use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderBy
 use BaksDev\Orders\Order\Repository\UpdateAccessOrderProduct\UpdateAccessOrderProductInterface;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Access\Products\AccessOrderProductDTO;
+use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
@@ -62,7 +63,6 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         private UpdateAccessOrderProductInterface $UpdateAccessOrderProduct,
         private DeduplicatorInterface $deduplicator,
     ) {}
-
 
     public function __invoke(ManufacturePartMessage $message): bool
     {
@@ -102,6 +102,8 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
         $orderType = match (true)
         {
+            /* FBS Ozon */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
             /* FBS Wb */
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb*/
@@ -121,14 +123,15 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
         $DeliveryUid = new DeliveryUid($orderType);
 
-        /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
+        /**
+         * Перебираем все количество продукции в производственной партии
+         */
 
+        /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
-            /**
-             * Перебираем все количество продукции в производственной партии
-             */
 
+            /** Количество произведенной продукции для одной позиции в заказе */
             $total = $ManufacturePartProductsDTO->getTotal();
 
             for($i = 1; $i <= $total; $i++)
@@ -270,7 +273,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
         /**
          * Приступаем к обновлению продукцию в производственной партии идентификаторами заказов, готовых к сборке
-         * @see ManufacturePartProductOrderByPartCompletedDispatch
+         * @see ManufacturePartProductOrderByPartCompletedDispatcher
          */
 
         $DeduplicatorExecuted->save();

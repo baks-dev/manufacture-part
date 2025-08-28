@@ -28,7 +28,7 @@ namespace BaksDev\Manufacture\Part\Messenger\Orders\Tests;
 
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Messenger\Orders\ManufacturePartProductOrderByPartCompletedDispatcher;
+use BaksDev\Manufacture\Part\Messenger\Orders\AccessOrderProductByPartCompletedDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -44,18 +44,18 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 #[Group('manufacture-part')]
 #[When(env: 'test')]
-class ManufacturePartProductOrderByPartCompletedTest extends KernelTestCase
+class AccessOrderProductByPartCompletedDispatcherDebugTest extends KernelTestCase
 {
 
     public function testUseCase(): void
     {
-        // Бросаем событие консольной команды
+        // Бросаем событие консольной комманды
         $dispatcher = self::getContainer()->get(EventDispatcherInterface::class);
         $event = new ConsoleCommandEvent(new Command(), new StringInput(''), new NullOutput());
         $dispatcher->dispatch($event, 'console.command');
 
-        /** @var ManufacturePartProductOrderByPartCompletedDispatcher $ManufacturePartProductOrderByPartCompleted */
-        $ManufacturePartProductOrderByPartCompleted = self::getContainer()->get(ManufacturePartProductOrderByPartCompletedDispatcher::class);
+        /** @var AccessOrderProductByPartCompletedDispatcher $AccessOrderProductByPartCompletedDispatcher */
+        $AccessOrderProductByPartCompletedDispatcher = self::getContainer()->get(AccessOrderProductByPartCompletedDispatcher::class);
 
         self::assertTrue(true);
         return;
@@ -66,14 +66,14 @@ class ManufacturePartProductOrderByPartCompletedTest extends KernelTestCase
         /** @var ManufacturePart|null $manufacturePart */
         $manufacturePart = $em->getRepository(ManufacturePart::class)->find('0198605e-86d7-71b8-9ed0-ba21bd85e23b');
 
+        // ozon
         $ManufacturePartMessage = new ManufacturePartMessage(
             $manufacturePart->getId(),
             $manufacturePart->getEvent(),
         );
 
-        $dispatch = $ManufacturePartProductOrderByPartCompleted($ManufacturePartMessage);
+        $dispatch = $AccessOrderProductByPartCompletedDispatcher($ManufacturePartMessage);
 
         self::assertFalse($dispatch);
-
     }
 }

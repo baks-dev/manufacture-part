@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -35,9 +36,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
-
-
-/* ManufacturePartInvariable */
 
 #[ORM\Entity]
 #[ORM\Table(name: 'manufacture_part_invariable')]
@@ -113,7 +111,6 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this->event->getId();
     }
 
-
     public function getUsr(): UserUid
     {
         return $this->usr;
@@ -129,7 +126,6 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this->number;
     }
 
-
     /**
      * Quantity
      */
@@ -144,7 +140,6 @@ class ManufacturePartInvariable extends EntityReadonly
         return $this;
     }
 
-
     public function getDto($dto): mixed
     {
         $dto = is_string($dto) && class_exists($dto) ? new $dto() : $dto;
@@ -157,7 +152,6 @@ class ManufacturePartInvariable extends EntityReadonly
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
-
     public function setEntity($dto): mixed
     {
         if($dto instanceof ManufacturePartInvariableInterface || $dto instanceof self)
@@ -167,6 +161,4 @@ class ManufacturePartInvariable extends EntityReadonly
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
-
-
 }
