@@ -99,7 +99,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         {
             $this->logger->critical(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return;
@@ -170,8 +170,8 @@ final readonly class NewOrderFboByPartCompletedDispatcher
                 [
                     'message' => $message,
                     'delivery' => $orderType,
-                    self::class.':'.__LINE__
-                ]
+                    self::class.':'.__LINE__,
+                ],
             );
 
             return;
@@ -186,11 +186,13 @@ final readonly class NewOrderFboByPartCompletedDispatcher
          */
 
         $OrderDTO = new NewOrderDTO();
-        $OrderDTO->setProfile($ManufacturePartInvariableDTO->getProfile());
 
         $NewOrderInvariableDTO = $OrderDTO->getInvariable();
-        $NewOrderInvariableDTO->setUsr($ManufacturePartInvariableDTO->getUsr());
-        $NewOrderInvariableDTO->setNumber($ManufacturePartInvariableDTO->getNumber());
+
+        $NewOrderInvariableDTO
+            ->setUsr($ManufacturePartInvariableDTO->getUsr())
+            ->setProfile($ManufacturePartInvariableDTO->getProfile())
+            ->setNumber($ManufacturePartInvariableDTO->getNumber());
 
         /**
          * OrderUserDTO
@@ -210,8 +212,9 @@ final readonly class NewOrderFboByPartCompletedDispatcher
 
         if(true === ($UserProfileEvent instanceof UserProfileEvent))
         {
-            $OrderUserDTO->setUsr($UserProfileEvent->getUser());
-            $OrderUserDTO->setProfile($UserProfileEvent->getId());
+            $OrderUserDTO
+                ->setUsr($UserProfileEvent->getUser())
+                ->setProfile($UserProfileEvent->getId());
         }
 
         /** Тип профиля FBO */
@@ -219,10 +222,11 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         $OrderProfileDTO?->setType($Profile);
 
         /** Тип доставки FBO */
-        $OrderDeliveryDTO->setDelivery($Delivery);
-        $OrderDeliveryDTO->setEvent($DeliveryEventUid);
-        $OrderDeliveryDTO->setLatitude(new GpsLatitude(55.755892));
-        $OrderDeliveryDTO->setLongitude(new GpsLongitude(37.617188));
+        $OrderDeliveryDTO
+            ->setDelivery($Delivery)
+            ->setEvent($DeliveryEventUid)
+            ->setLatitude(new GpsLatitude(55.755892))
+            ->setLongitude(new GpsLongitude(37.617188));
 
         /** Способ оплаты FBO */
         $Payment = new PaymentUid($paymentType);
@@ -275,7 +279,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         {
             $this->logger->critical(
                 sprintf('wildberries-package: Ошибка %s при добавлении заказа DBS при выполненном производстве', $Order),
-                [$message, self::class.':'.__LINE__]
+                [$message, self::class.':'.__LINE__],
             );
 
             return;
