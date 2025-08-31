@@ -30,13 +30,12 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\Collection\Manufa
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatusType;
 use BaksDev\Wildberries\Orders\Type\WildberriesStatus\Status\Collection\WildberriesStatusInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group manufacture-part
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 final class ManufacturePartStatusTest extends KernelTestCase
 {
     public function testUseCase(): void

@@ -33,6 +33,8 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -41,13 +43,8 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @group manufacture-part
- * @group manufacture-part-usecase
- *
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartNewHandlerTest::class
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class ManufacturePartEditHandlerTest extends KernelTestCase
 {
 
@@ -61,7 +58,7 @@ class ManufacturePartEditHandlerTest extends KernelTestCase
 
     }
 
-
+    #[DependsOnClass(ManufacturePartNewHandlerTest::class)]
     public function testUseCase(): void
     {
 

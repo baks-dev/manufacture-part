@@ -37,15 +37,12 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\User\Type\Id\UserUid;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-
-/**
- * @group manufacture-part
- * @group manufacture-part-usecase
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class ManufacturePartNewHandlerTest extends KernelTestCase
 {
     public static function setUpBeforeClass(): void

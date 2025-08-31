@@ -29,6 +29,7 @@ use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Messenger\Orders\PackageOrdersByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -37,11 +38,8 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-
-/**
- * @group manufacture-part
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class PackageOrdersByPartCompletedTest extends KernelTestCase
 {
     public function testUseCase(): void

@@ -35,19 +35,17 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartEditHandlerTest;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartNewHandlerTest;
 use BaksDev\Manufacture\Part\UseCase\Admin\Package\ManufacturePartPackageDTO;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group manufacture-part
- * @group manufacture-part-usecase
- *
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartNewHandlerTest::class
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartEditHandlerTest::class
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class ManufacturePartPackageHandlerTest extends KernelTestCase
 {
+    #[DependsOnClass(ManufacturePartNewHandlerTest::class)]
+    #[DependsOnClass(ManufacturePartEditHandlerTest::class)]
     public function testUseCase(): void
     {
         /** @var ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent */

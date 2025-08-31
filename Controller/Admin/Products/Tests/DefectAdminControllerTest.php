@@ -27,11 +27,12 @@ use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Type\Product\ManufacturePartProductUid;
 use BaksDev\Users\User\Tests\TestUserAccount;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/** @group manufacture-part */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 final class DefectAdminControllerTest extends WebTestCase
 {
     private const string URL = '/admin/manufacture/part/product/defect/%s';

@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\Tests;
 
 use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -35,11 +36,8 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-
-/**
- * @group manufacture-part
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class ManufacturePartEventRepositoryTest extends KernelTestCase
 {
     public static function setUpBeforeClass(): void

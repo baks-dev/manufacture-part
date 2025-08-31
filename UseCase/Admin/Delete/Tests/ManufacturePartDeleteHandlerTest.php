@@ -31,7 +31,6 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
-use BaksDev\Manufacture\Part\UseCase\Admin\Completed\Tests\ManufacturePartCompletedHandlerTest;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartHandler;
@@ -39,18 +38,13 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartEditHand
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartNewHandlerTest;
 use BaksDev\Manufacture\Part\UseCase\Admin\Package\Tests\ManufacturePartPackageHandlerTest;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group manufacture-part
- * @group manufacture-part-usecase
- *
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartNewHandlerTest::class
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Tests\ManufacturePartEditHandlerTest::class
- * @depends BaksDev\Manufacture\Part\UseCase\Admin\Package\Tests\ManufacturePartPackageHandlerTest::class
- */
 #[When(env: 'test')]
+#[Group('manufacture-part')]
 class ManufacturePartDeleteHandlerTest extends KernelTestCase
 {
     public static function tearDownAfterClass(): void
@@ -79,6 +73,9 @@ class ManufacturePartDeleteHandlerTest extends KernelTestCase
         $em->clear();
     }
 
+    #[DependsOnClass(ManufacturePartNewHandlerTest::class)]
+    #[DependsOnClass(ManufacturePartEditHandlerTest::class)]
+    #[DependsOnClass(ManufacturePartPackageHandlerTest::class)]
     public function testUseCase(): void
     {
         /** @var ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent */
