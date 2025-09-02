@@ -36,7 +36,9 @@ use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\ConstId\ProductModificationConst;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
+use BaksDev\Users\UsersTable\Entity\Actions\UsersTableActions;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
+use BaksDev\Users\UsersTable\Type\Actions\Id\UsersTableActionsUid;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]
@@ -57,8 +59,9 @@ final readonly class OpenManufacturePartResult
 
         private string $actions_id, // " => "01961691-d9a3-777e-8cc5-18ab44580a71"
         private string $actions_name, // " => "Производство футболок"
-        private string $category_id, // " => "01876af0-ddfc-70c3-ab25-5f85f55a9907"
-        private string $category_name, // " => "Triangle"
+        private string $actions_main,
+        private ?string $category_id, // " => "01876af0-ddfc-70c3-ab25-5f85f55a9907"
+        private ?string $category_name, // " => "Triangle"
 
         private ?string $product_id, // " => null
         private ?string $product_event, // " => null
@@ -93,7 +96,9 @@ final readonly class OpenManufacturePartResult
         private ?string $product_image_ext, // " => null
         private ?bool $product_image_cdn, // " => null
 
-
+        private ?bool $actions_offer_offer,
+        private ?bool $actions_offer_variation,
+        private ?bool $actions_offer_modification,
     ) {}
 
     /**
@@ -161,6 +166,11 @@ final readonly class OpenManufacturePartResult
         return new UsersTableActionsEventUid($this->actions_id);
     }
 
+    public function getActionsMain(): UsersTableActionsUid
+    {
+        return new UsersTableActionsUid($this->actions_main);
+    }
+
     /**
      * ActionsName
      */
@@ -173,15 +183,16 @@ final readonly class OpenManufacturePartResult
      * CategoryId
      * @see UsersTableActionsEvent
      */
-    public function getCategoryId(): CategoryProductUid
+    public function getCategoryId(): ?CategoryProductUid
     {
-        return new CategoryProductUid($this->category_id);
+//        return new CategoryProductUid($this->category_id);
+        return $this->category_id ? new CategoryProductUid($this->category_id) : null;
     }
 
     /**
      * CategoryName
      */
-    public function getCategoryName(): string
+    public function getCategoryName(): ?string
     {
         return $this->category_name;
     }
@@ -353,5 +364,22 @@ final readonly class OpenManufacturePartResult
         return $this->product_image_cdn === true;
     }
 
+    /**
+     * Action offer
+     */
+    public function getActionsOfferOffer(): bool
+    {
+        return $this->actions_offer_offer === true;
+    }
+
+    public function getActionsOfferVariation(): bool
+    {
+        return $this->actions_offer_variation === true;
+    }
+
+    public function getActionsOfferModification(): bool
+    {
+        return $this->actions_offer_modification === true;
+    }
 
 }

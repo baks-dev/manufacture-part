@@ -82,9 +82,9 @@ final class ManufacturePartProductsHandler extends AbstractHandler
 
 
         /** Получаем категорию продукции */
-        $ProductEvent = $this->getRepository(ProductEvent::class)->find(
-            $command->getProduct()
-        );
+        $ProductEvent = $this
+            ->getRepository(ProductEvent::class)
+            ->find($command->getProduct());
 
         if(false === ($ProductEvent instanceof ProductEvent) || false === ($ProductEvent->getRootCategory() instanceof CategoryProductUid))
         {
@@ -92,7 +92,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             $errorsString = sprintf(
                 'Not found root category %s by product id: %s',
                 ProductEvent::class,
-                $command->getProduct()
+                $command->getProduct(),
             );
             $this->logger->error($uniqid.': '.$errorsString);
 
@@ -100,19 +100,23 @@ final class ManufacturePartProductsHandler extends AbstractHandler
         }
 
 
-        /** Проверяем, что категория продукции соответствует категории партии */
-        $UsersTableActionsEvent = $this->getRepository(UsersTableActionsEvent::class)->findOneBy(
-            [
-                'id' => $ManufacturePartEvent->getAction(),
-                'category' => $ProductEvent->getRootCategory()
-            ]
-        );
+        /**
+         * Проверяем, что категория продукции соответствует категории партии
+         *
+         * @var UsersTableActionsEvent $UsersTableActionsEvent
+         */
+        $UsersTableActionsEvent = $this
+            ->getRepository(UsersTableActionsEvent::class)
+            ->find($ManufacturePartEvent->getAction());
 
-        if(false === ($UsersTableActionsEvent instanceof UsersTableActionsEvent))
+        if(
+            true === ($UsersTableActionsEvent?->getActionCategory() instanceof CategoryProductUid)
+            && false === $ProductEvent->getRootCategory()->equals($UsersTableActionsEvent?->getActionCategory())
+        )
         {
             $uniqid = uniqid('', false);
             $errorsString = sprintf(
-                'Продукция не соответствует категории производственной партии'
+                'Продукция не соответствует категории производственной партии',
             );
             $this->logger->error($uniqid.': '.$errorsString);
 
@@ -142,7 +146,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ManufacturePartMessage($ManufacturePartEvent->getMain(), $ManufacturePartEvent->getId()),
-                transport: 'manufacture-part'
+                transport: 'manufacture-part',
             );
 
         // 'manufacture_part_high'

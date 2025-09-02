@@ -195,8 +195,9 @@
         {% endif %}
 
 
-
-        {% include Template('_includes/'~baks_settings.device~'/pagination.html.twig') with { 'pagination' : query } %}
+        {% if (query.data) %}
+            {% include Template('_includes/'~baks_settings.device~'/pagination.html.twig') with { 'pagination' : query } %}
+        {% endif %}
 
     </section>
 

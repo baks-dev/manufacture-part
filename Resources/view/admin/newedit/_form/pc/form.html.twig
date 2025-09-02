@@ -9,7 +9,7 @@
 {{ form_row(form.action, {
     label: 'Производственный процесс'|trans,
     placeholder: form.category.vars.data ? 'Выберите производственный процесс'|trans : 'Выберите категорию ...',
-    disabled: form.category.vars.data ? false : true,
+    disabled: form.action.vars.choices|length > 0 ? false : true,
     attr: { 'data-select' : 'select2' }
 }) }}
 

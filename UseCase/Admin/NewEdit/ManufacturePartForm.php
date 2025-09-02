@@ -31,6 +31,7 @@ use BaksDev\Products\Category\Repository\CategoryChoice\CategoryChoiceInterface;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\UsersTable\Repository\Actions\UsersTableActionsChoice\UsersTableActionsChoiceInterface;
 use BaksDev\Users\UsersTable\Type\Actions\Event\UsersTableActionsEventUid;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -68,7 +69,7 @@ final class ManufacturePartForm extends AbstractType
                 'label' => false,
                 'expanded' => false,
                 'multiple' => false,
-                'required' => true,
+                'required' => false,
             ]);
 
 
@@ -85,12 +86,10 @@ final class ManufacturePartForm extends AbstractType
 
         $formModifier = function(FormInterface $form, ?CategoryProductUid $category = null): void {
 
-            /** @var ManufacturePartDTO $ManufacturePartDTO */
-            $ManufacturePartDTO = $form->getData();
-
-            $choice = !$category ? [] : $this->usersTableActionsChoice
+            $choice = $this->usersTableActionsChoice
                 ->forCategory($category)
                 ->getCollection();
+
 
             $form
                 ->add('action', ChoiceType::class, [
@@ -107,6 +106,7 @@ final class ManufacturePartForm extends AbstractType
                     'multiple' => false,
                     'required' => true,
                 ]);
+
         };
 
 
@@ -115,25 +115,11 @@ final class ManufacturePartForm extends AbstractType
             /** @var ManufacturePartDTO $ManufacturePartDTO */
             $ManufacturePartDTO = $event->getData();
 
+
             if($ManufacturePartDTO->getFixed())
             {
-                $form = $event->getForm();
 
-                if($ManufacturePartDTO->getCategory())
-                {
-                    $formModifier($event->getForm(), $ManufacturePartDTO->getCategory());
-                }
-                else
-                {
-                    $form
-                        ->add('action', ChoiceType::class, [
-                            'choices' => [],
-                            'expanded' => false,
-                            'multiple' => false,
-                            'required' => true,
-                            'disabled' => true
-                        ]);
-                }
+                $formModifier($event->getForm(), $ManufacturePartDTO->getCategory());
 
             }
         });

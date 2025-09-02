@@ -30,6 +30,7 @@ use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\ManufacturePartCentrifugoPublishMessage;
+use BaksDev\Manufacture\Part\Messenger\ManufacturePartProduct\ManufacturePartProductMessage;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufacturePartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufacturePartProductsHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsDTO;
@@ -144,6 +145,23 @@ final class AddSelectedProductsController extends AbstractController
                     $messageDispatch
                         ->dispatch(
                             message: $ManufacturePartCentrifugoPublishMessage,
+                            transport: 'manufacture-part',
+                        );
+
+                    /* Отправка сообщения по продукту произв. партии */
+                    // TODO Сделать по ManufacturePartCentrifugoPublishMessage
+                    $ManufacturePartProductMessage = new ManufacturePartProductMessage(
+                        event: $ManufacturePartProductDTO->getProduct(),
+                        offer: $ManufacturePartProductDTO->getOffer(),
+                        variation: $ManufacturePartProductDTO->getVariation(),
+                        modification: $ManufacturePartProductDTO->getModification(),
+                        total: $ManufacturePartProductDTO->getTotal(),
+
+                    );
+
+                    $messageDispatch
+                        ->dispatch(
+                            message: $ManufacturePartProductMessage,
                             transport: 'manufacture-part',
                         );
 

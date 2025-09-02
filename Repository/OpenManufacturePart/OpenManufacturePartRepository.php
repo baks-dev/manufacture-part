@@ -56,6 +56,7 @@ use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
+use BaksDev\Users\UsersTable\Entity\Actions\Offer\UsersTableActionsOffer;
 use BaksDev\Users\UsersTable\Entity\Actions\Trans\UsersTableActionsTrans;
 use InvalidArgumentException;
 
@@ -422,6 +423,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
 
         $dbal
             ->addSelect('actions_event.id AS actions_id')
+            ->addSelect('actions_event.main AS actions_main')
             ->leftJoin(
                 'part_event',
                 UsersTableActionsEvent::class,
@@ -436,6 +438,18 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 UsersTableActionsTrans::class,
                 'actions_trans',
                 'actions_trans.event = actions_event.id AND actions_trans.local = :local'
+            );
+
+        $dbal
+            ->addSelect('actions_offer.offer AS actions_offer_offer')
+            ->addSelect('actions_offer.variation AS actions_offer_variation')
+            ->addSelect('actions_offer.modification AS actions_offer_modification')
+            ->leftJoin(
+                'actions_event',
+                UsersTableActionsOffer::class,
+                'actions_offer',
+                //                'actions_offer.event = actions_event.id AND actions_trans.local = :local'
+                'actions_offer.event = actions_event.id'
             );
 
         $dbal

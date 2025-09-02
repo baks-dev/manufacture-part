@@ -30,13 +30,17 @@ use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Form\Search\SearchForm;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use BaksDev\Manufacture\Part\Application\BaksDevManufacturePartApplicationBundle;
+use BaksDev\Manufacture\Part\Application\Type\Id\ManufactureApplicationUid;
 use BaksDev\Manufacture\Part\Repository\AllProducts\AllManufactureProductsInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\OpenManufacturePart\OpenManufacturePartResult;
+use BaksDev\Manufacture\Part\Repository\UserTableActionOffers\UserTableActionOffersInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsForm;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterDTO;
 use BaksDev\Products\Product\Forms\ProductFilter\Admin\ProductFilterForm;
+use BaksDev\Users\UsersTable\Type\Actions\Id\UsersTableActionsUid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -55,6 +59,7 @@ final class IndexController extends AbstractController
         OpenManufacturePartInterface $openManufacturePart,
         AllManufactureProductsInterface $allManufactureProducts,
         TokenUserGenerator $tokenUserGenerator,
+        UserTableActionOffersInterface $userTableActionOffers,
         int $page = 0,
     ): Response
     {
@@ -93,9 +98,13 @@ final class IndexController extends AbstractController
                 $opens->getCategoryName(), // $opens['category_name']
             );
 
-            $filter
-                ->setCategory($CategoryProductUid)
-                ->categoryInvisible();
+            /* Проверить задана ли категория */
+            if(null !== $opens->getCategoryId())
+            {
+                $filter
+                    ->setCategory($CategoryProductUid)
+                    ->categoryInvisible();
+            }
         }
 
         $filterForm = $this
@@ -107,6 +116,26 @@ final class IndexController extends AbstractController
             ->handleRequest($request);
 
 
+        $show_products = true;
+        $manufacture_application_action_settings = false;
+        /** Проверить, установлен ли manufacture-part-application */
+        $has_manufacture_part_application = class_exists(BaksDevManufacturePartApplicationBundle::class);
+
+        if($has_manufacture_part_application)
+        {
+
+            /* Если main равен предустановленному значению */
+            if($opens && $opens->getActionsMain()->equals(ManufactureApplicationUid::ACTION_ID))
+            {
+                $show_products = false;
+            }
+
+            /* Получить настройки offer для action Произв-ной заявки */
+            $manufacture_application_action_settings = $has_manufacture_part_application ?
+                $userTableActionOffers->findActionOffersByMain(new UsersTableActionsUid(ManufactureApplicationUid::ACTION_ID)) : false;
+
+        }
+
         /**
          * Список продукции
          */
@@ -114,6 +143,7 @@ final class IndexController extends AbstractController
             ->search($search)
             ->filter($filter)
             ->forDeliveryType($opens ? $opens->getComplete() : false)
+            ->setShowProducts($show_products)
             ->findPaginator();
 
 
@@ -128,7 +158,8 @@ final class IndexController extends AbstractController
                 'current_profile' => $this->getCurrentProfileUid(),
                 'token' => $tokenUserGenerator->generate($this->getUsr()),
                 'add_selected_product_form_name' => $this->createForm(type: ManufactureSelectionPartProductsForm::class)->getName(),
-
+                'has_manufacture_part_application' => $has_manufacture_part_application,
+                'manufacture_application_action_settings' => $manufacture_application_action_settings,
             ],
         );
     }

@@ -66,6 +66,8 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
 
     private DeliveryUid|false $delivery = false;
 
+    private bool $show_products = true;
+
     public function __construct(
         private readonly DBALQueryBuilder $DBALQueryBuilder,
         private readonly PaginatorInterface $paginator,
@@ -81,6 +83,12 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
     public function filter(ProductFilterDTO $filter): self
     {
         $this->filter = $filter;
+        return $this;
+    }
+
+    public function setShowProducts(bool $show_products): self
+    {
+        $this->show_products = $show_products;
         return $this;
     }
 
@@ -117,6 +125,11 @@ final class AllManufactureProductsRepository implements AllManufactureProductsIn
         $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
+
+        /* Скрыть товары */
+        if (!$this->show_products) {
+            return $this->paginator;
+        }
 
         $dbal
             ->select('product.id')
