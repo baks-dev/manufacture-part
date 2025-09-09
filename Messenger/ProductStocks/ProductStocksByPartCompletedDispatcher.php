@@ -207,6 +207,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
             $UpdateProductQuantityMessage = new UpdateProductQuantityMessage(
                 event: $ManufacturePartProductsDTO->getProduct(),
                 quantity: $ManufacturePartProductsDTO->getTotal(),
+                reserve: $ManufacturePartProductsDTO->getTotal(),
                 offer: $ManufacturePartProductsDTO->getOffer(),
                 variation: $ManufacturePartProductsDTO->getVariation(),
                 modification: $ManufacturePartProductsDTO->getModification(),

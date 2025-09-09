@@ -278,7 +278,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         if(false === ($Order instanceof Order))
         {
             $this->logger->critical(
-                sprintf('wildberries-package: Ошибка %s при добавлении заказа DBS при выполненном производстве', $Order),
+                sprintf('wildberries-package: Ошибка %s при добавлении заказа FBO при выполненном производстве', $Order),
                 [$message, self::class.':'.__LINE__],
             );
 
