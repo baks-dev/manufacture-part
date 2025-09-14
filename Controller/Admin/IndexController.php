@@ -117,11 +117,12 @@ final class IndexController extends AbstractController
 
 
         $show_products = true;
-        $manufacture_application_action_settings = false;
-        /** Проверить, установлен ли manufacture-part-application */
-        $has_manufacture_part_application = class_exists(BaksDevManufacturePartApplicationBundle::class);
+        $hasManufacturePartApplicationSettings = false;
 
-        if($has_manufacture_part_application)
+        /** Проверить, установлен ли manufacture-part-application */
+        $hasManufacturePartApplication = class_exists(BaksDevManufacturePartApplicationBundle::class);
+
+        if($hasManufacturePartApplication)
         {
 
             /* Если main равен предустановленному значению */
@@ -131,8 +132,8 @@ final class IndexController extends AbstractController
             }
 
             /* Получить настройки offer для action Произв-ной заявки */
-            $manufacture_application_action_settings = $has_manufacture_part_application ?
-                $userTableActionOffers->findActionOffersByMain(new UsersTableActionsUid(ManufactureApplicationUid::ACTION_ID)) : false;
+            $hasManufacturePartApplicationSettings = $userTableActionOffers
+                ->findActionOffersByMain(new UsersTableActionsUid(ManufactureApplicationUid::ACTION_ID));
 
         }
 
@@ -158,8 +159,8 @@ final class IndexController extends AbstractController
                 'current_profile' => $this->getCurrentProfileUid(),
                 'token' => $tokenUserGenerator->generate($this->getUsr()),
                 'add_selected_product_form_name' => $this->createForm(type: ManufactureSelectionPartProductsForm::class)->getName(),
-                'has_manufacture_part_application' => $has_manufacture_part_application,
-                'manufacture_application_action_settings' => $manufacture_application_action_settings,
+                'has_manufacture_part_application' => $hasManufacturePartApplication,
+                'manufacture_application_action_settings' => $hasManufacturePartApplicationSettings,
             ],
         );
     }
