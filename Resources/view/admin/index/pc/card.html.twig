@@ -189,7 +189,8 @@
 
 
                                 {# Производственная заявка #}
-                                {% if has_manufacture_part_application %}
+                                {% if has_manufacture_part_application and (is_granted('ROLE_MANUFACTURE_PART_APPLICATION_NEW') or is_granted('ROLE_ADMIN')) %}
+
 
                                     <span
                                             role="tooltip"
@@ -208,9 +209,11 @@
                                            data-formname="manufacture_application_collection_form"
                                            data-product="{{ item.event }}"
 
-                                           data-offer="{{ manufacture_application_action_settings.actions_offer_offer ? item.product_offer_id : false }}"
-                                           data-variation="{{ manufacture_application_action_settings.actions_offer_variation ? item.product_variation_id : false }}"
-                                           data-modification="{{ manufacture_application_action_settings.actions_offer_modification ? item.product_modification_id : false }}"
+                                            {% if manufacture_application_action_settings %}
+                                                data-offer="{{ manufacture_application_action_settings.actions_offer_offer ? item.product_offer_id : false }}"
+                                                data-variation="{{ manufacture_application_action_settings.actions_offer_variation ? item.product_variation_id : false }}"
+                                                data-modification="{{ manufacture_application_action_settings.actions_offer_modification ? item.product_modification_id : false }}"
+                                            {% endif %}
 
                                            data-collection-form="product_data"
                                            data-post-class="add-one-to-collection"
