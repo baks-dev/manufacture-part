@@ -45,8 +45,11 @@
         </a> &nbsp;
 
         <div>
-            <small class="opacity-50 fw-normal">Категория:</small> &nbsp; <strong>{{ item.category_name }}</strong>
-            &nbsp;
+            {% if item.category_name %}
+                <small class="opacity-50 fw-normal">Категория:</small> &nbsp; <strong>{{ item.category_name }}</strong>
+                &nbsp;
+            {% endif %}
+
             <small class="opacity-50 fw-normal">Производство:</small> &nbsp; <strong>{{ item.action_name }}</strong>
         </div>
         <div>
