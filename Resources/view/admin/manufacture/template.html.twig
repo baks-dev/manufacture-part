@@ -12,9 +12,9 @@
 
 {# ---- CSS ------------------------------------------------------------ #}
 {% block stylesheets %}
-    <link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet" type="text/css">
-    <link href="/assets/plugins/datepicker/datepicker.min.css" rel="stylesheet">
-    <link href="/assets/css/print.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/{{ version }}/plugins/nice-select2/nice-select2.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/{{ version }}/plugins/datepicker/datepicker.min.css" rel="stylesheet">
+    <link href="/assets/{{ version }}/css/print.min.css" rel="stylesheet" type="text/css">
 {% endblock %}
 {# ---- HEADER-БЛОК ------------------------------------------------------------ #}
 {# {% block header %}
@@ -44,9 +44,9 @@
 
 {% block javascript %}
 
-<script nonce='{{ csp_nonce() }}' async  data-src='/assets/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
-<script nonce='{{ csp_nonce() }}' async  data-src="/assets/plugins/datepicker/datepicker.min.js?v={{ version }}" class="lazy"></script>
-<script nonce='{{ csp_nonce() }}' async  data-src="/assets/js/print.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src='/assets/{{ version }}/plugins/nice-select2/nice-select2.min.js?v={{ version }}' class='lazy'></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/{{ version }}/plugins/datepicker/datepicker.min.js?v={{ version }}" class="lazy"></script>
+<script nonce='{{ csp_nonce() }}' async  data-src="/assets/{{ version }}/js/print.min.js?v={{ version }}" class="lazy"></script>
 <script nonce="{{ csp_nonce() }}">
 
 document.addEventListener("DOMContentLoaded", (event) => {

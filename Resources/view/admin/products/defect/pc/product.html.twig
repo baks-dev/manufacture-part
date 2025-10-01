@@ -1,5 +1,5 @@
 {# Обложка  #}
-{% set image_path = '/assets/img/blank.svg' %}
+{% set image_path = '/assets/'~version~'/img/blank.svg' %}
 
 {% if product.product_image_ext is defined and product.product_image_ext is not null %}
     {% set img_host =  product.product_image_cdn == true  ? CDN_HOST : '' %}
