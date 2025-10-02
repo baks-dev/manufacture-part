@@ -206,18 +206,16 @@ final readonly class ProductStocksByPartCompletedDispatcher
 
             $UpdateProductQuantityMessage = new UpdateProductQuantityMessage(
                 event: $ManufacturePartProductsDTO->getProduct(),
-                quantity: $ManufacturePartProductsDTO->getTotal(),
-                reserve: $ManufacturePartProductsDTO->getTotal(),
                 offer: $ManufacturePartProductsDTO->getOffer(),
                 variation: $ManufacturePartProductsDTO->getVariation(),
                 modification: $ManufacturePartProductsDTO->getModification(),
+                quantity: $ManufacturePartProductsDTO->getTotal(),
             );
 
             $this->MessageDispatch->dispatch(
                 message: $UpdateProductQuantityMessage,
                 transport: $ManufacturePartInvariableDTO->getProfile().'-low',
             );
-
 
             $this->logger->info(
                 'Добавили приход продукции после производства',
