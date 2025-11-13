@@ -47,7 +47,7 @@ use BaksDev\Orders\Order\UseCase\Admin\New\Products\Price\NewOrderPriceDTO;
 use BaksDev\Orders\Order\UseCase\Admin\New\User\OrderUserDTO;
 use BaksDev\Payment\Type\Id\Choice\Collection\TypePaymentInterface;
 use BaksDev\Payment\Type\Id\PaymentUid;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Reference\Currency\Type\Currencies\RUR;
 use BaksDev\Reference\Currency\Type\Currency;
@@ -73,7 +73,7 @@ final readonly class NewOrderFboByPartCompletedDispatcher
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private CurrentUserProfileEventByIdInterface $CurrentUserProfileEvent,
-        private CurrentProductIdentifierInterface $CurrentProductIdentifier,
+        private CurrentProductIdentifierByEventInterface $CurrentProductIdentifier,
         private NewOrderHandler $NewOrderHandler,
         private DeduplicatorInterface $deduplicator,
         private CurrentDeliveryEventInterface $CurrentDeliveryEvent,

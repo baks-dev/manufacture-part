@@ -35,7 +35,7 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartSt
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
 use BaksDev\Products\Product\Messenger\Quantity\UpdateProductQuantityMessage;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Stocks\Entity\Total\ProductStockTotal;
 use BaksDev\Products\Stocks\Repository\ProductStocksTotalStorage\ProductStocksTotalStorageInterface;
@@ -56,7 +56,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private DeduplicatorInterface $deduplicator,
-        private CurrentProductIdentifierInterface $CurrentProductIdentifier,
+        private CurrentProductIdentifierByEventInterface $CurrentProductIdentifier,
         private AddProductStockInterface $AddProductStock,
         private EntityManagerInterface $entityManager,
         private ProductStocksTotalStorageInterface $ProductStocksTotalStorage,

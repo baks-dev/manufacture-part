@@ -57,10 +57,13 @@ final class DefectProductsController extends AbstractController
         //$ManufacturePartEvent->getDto($ManufacturePartDTO);
 
         // Форма
-        $form = $this->createForm(ManufacturePartProductDefectForm::class, $ManufacturePartDTO, [
-            'action' => $this->generateUrl('manufacture-part:admin.products.defect', ['id' => $ManufacturePartDTO->getId()]),
-        ]);
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: ManufacturePartProductDefectForm::class,
+                data: $ManufacturePartDTO,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.products.defect', ['id' => $ManufacturePartDTO->getId()])],
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_product_defect'))
         {
@@ -84,6 +87,7 @@ final class DefectProductsController extends AbstractController
                 'admin.danger.defect',
                 'manufacture-part.admin',
                 $handle);
+
             return $this->redirectToReferer();
         }
 

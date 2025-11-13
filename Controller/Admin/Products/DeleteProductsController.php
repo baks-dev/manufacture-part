@@ -28,10 +28,14 @@ namespace BaksDev\Manufacture\Part\Controller\Admin\Products;
 
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\UseCase\Admin\Products\Delete\ManufacturePartProductDeleteDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Products\Delete\ManufacturePartProductDeleteForm;
 use BaksDev\Manufacture\Part\UseCase\Admin\Products\Delete\ManufacturePartProductDeleteHandler;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
+use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,16 +54,21 @@ final class DeleteProductsController extends AbstractController
         Request $request,
         #[MapEntity] ManufacturePartProduct $ManufacturePartProduct,
         ManufacturePartProductDeleteHandler $ManufacturePartProductDefectHandler,
+        CurrentProductIdentifierByEventInterface $CurrentProductIdentifierByEventRepository,
+        MessageDispatchInterface $messageDispatch
     ): Response
     {
 
         $ManufacturePartDTO = new ManufacturePartProductDeleteDTO($ManufacturePartProduct->getId());
 
         // Форма
-        $form = $this->createForm(ManufacturePartProductDeleteForm::class, $ManufacturePartDTO, [
-            'action' => $this->generateUrl('manufacture-part:admin.products.delete', ['id' => $ManufacturePartDTO->getId()]),
-        ]);
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: ManufacturePartProductDeleteForm::class,
+                data: $ManufacturePartDTO,
+                options: ['action' => $this->generateUrl('manufacture-part:admin.products.delete', ['id' => $ManufacturePartDTO->getId()])],
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_product_delete'))
         {
@@ -67,14 +76,39 @@ final class DeleteProductsController extends AbstractController
 
             $handle = $ManufacturePartProductDefectHandler->handle(
                 $ManufacturePartDTO,
-                $this->isGranted('ROLE_ADMIN') ? null : $this->getCurrentProfileUid()
+                $this->isGranted('ROLE_ADMIN') ? null : $this->getCurrentProfileUid(),
             );
 
+
+            /** Получаем текущий идентификатор продукта */
+            $CurrentProductIdentifierResult = $CurrentProductIdentifierByEventRepository
+                ->forEvent($ManufacturePartProduct->getEvent())
+                ->forOffer($ManufacturePartProduct->getOffer())
+                ->forVariation($ManufacturePartProduct->getVariation())
+                ->forModification($ManufacturePartProduct->getModification())
+                ->find();
+
+            /**
+             * Удаляем идентификатор продукта из партии
+             */
+
+            if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
+            {
+                $messageDispatch->dispatch(
+                    message: new ManufactureProductMessage(
+                        invariable: $CurrentProductIdentifierResult->getProductInvariable(),
+                        manufacture: false,
+                    ),
+                    transport: 'manufacture-part',
+                );
+            }
+
             $this->addFlash(
-                'admin.page.product_delete',
-                $handle instanceof ManufacturePartProduct ? 'admin.success.product_delete' : 'admin.danger.product_delete',
-                'manufacture-part.admin',
-                $handle);
+                type: 'admin.page.product_delete',
+                message: $handle instanceof ManufacturePartProduct ? 'admin.success.product_delete' : 'admin.danger.product_delete',
+                domain: 'manufacture-part.admin',
+                arguments: $handle,
+            );
 
             return $this->redirectToReferer();
         }

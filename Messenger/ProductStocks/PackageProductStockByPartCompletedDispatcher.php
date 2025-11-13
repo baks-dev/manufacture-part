@@ -39,7 +39,7 @@ use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusNew;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\PackageOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\Products\PackageOrderProductDTO;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\ProductStockOrderDTO;
@@ -63,7 +63,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private CurrentProductIdentifierInterface $CurrentProductIdentifier,
+        private CurrentProductIdentifierByEventInterface $CurrentProductIdentifier,
         private PackageProductStockHandler $PackageProductStockHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,

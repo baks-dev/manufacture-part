@@ -27,12 +27,13 @@ namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
-use BaksDev\Manufacture\Part\Repository\ManufacturePartEvent\ManufacturePartEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Completed\ManufacturePartCompletedHandler;
@@ -50,12 +51,12 @@ final readonly class ManufacturePartCompleted
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private ManufacturePartEventInterface $ManufacturePartEventRepository,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
         private ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         private CentrifugoPublishInterface $CentrifugoPublish,
         private DeduplicatorInterface $deduplicator,
+        private MessageDispatchInterface $messageDispatch,
     ) {}
 
 
@@ -82,7 +83,7 @@ final readonly class ManufacturePartCompleted
 
         $this->logger->info(
             'Проверяем, что производственная партия не выполнена',
-            [var_export($message, true), self::class.':'.__LINE__]
+            [var_export($message, true), self::class.':'.__LINE__],
         );
 
         if(true === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class))
@@ -130,5 +131,13 @@ final readonly class ManufacturePartCompleted
 
         $DeduplicatorExecuted->save();
 
+        /**
+         * Удаляем идентификатор партии на всю продукцию
+         */
+
+        $this->messageDispatch->dispatch(
+            message: new ManufactureProductMessage(false, $message->getId()),
+            transport: 'manufacture-part',
+        );
     }
 }

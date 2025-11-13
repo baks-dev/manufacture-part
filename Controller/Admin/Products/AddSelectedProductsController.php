@@ -31,11 +31,16 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\ManufacturePartCentrifugoPublishMessage;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartProduct\ManufacturePartProductMessage;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
+use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufacturePartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufacturePartProductsHandler;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsForm;
+use BaksDev\Products\Product\Entity\ProductInvariable;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\ProductsDetailByUids\ProductsDetailByUidsInterface;
+use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -53,6 +58,7 @@ final class AddSelectedProductsController extends AbstractController
         Request $request,
         ManufacturePartProductsHandler $ManufacturePartProductHandler,
         ProductsDetailByUidsInterface $productsDetail,
+        CurrentProductIdentifierByEventInterface $CurrentProductIdentifierByEventRepository,
         MessageDispatchInterface $messageDispatch
     ): Response
     {
@@ -99,7 +105,7 @@ final class AddSelectedProductsController extends AbstractController
         if($form->isSubmitted() && $form->isValid() && $form->has('product_form_data'))
         {
             $device = $request->headers->get('x-device');
-            
+
             $this->refreshTokenForm($form);
 
             $countTotal = 0;
@@ -125,6 +131,26 @@ final class AddSelectedProductsController extends AbstractController
 
                 if($handle instanceof ManufacturePartProduct)
                 {
+                    $ManufacturePartUid = $handle->getEvent()->getMain();
+
+                    if(false === $ManufacturePartUid instanceof ManufacturePartUid)
+                    {
+                        $isError = true;
+                        continue;
+                    }
+
+                    /** Получаем текущие идентификаторы продукта */
+                    $CurrentProductIdentifierResult = $CurrentProductIdentifierByEventRepository
+                        ->forEvent($ManufacturePartProductDTO->getProduct())
+                        ->forOffer($ManufacturePartProductDTO->getOffer())
+                        ->forVariation($ManufacturePartProductDTO->getVariation())
+                        ->forModification($ManufacturePartProductDTO->getModification())
+                        ->find();
+
+                    /**
+                     * Отправляем сокет для скрытия карточки товара
+                     */
+
                     $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
 
                     /** Скрываем у ВСЕХ пользователей продукты после добавления в списке */
@@ -133,13 +159,13 @@ final class AddSelectedProductsController extends AbstractController
 
                         /** Передаем идентификаторы продукта для вставки шаблона */
                         manufacturePartEvent: $handle->getEvent()->getId(),
-                        event: $ManufacturePartProductDTO->getProduct(),
-                        offer: $ManufacturePartProductDTO->getOffer(),
-                        variation: $ManufacturePartProductDTO->getVariation(),
-                        modification: $ManufacturePartProductDTO->getModification(),
+                        event: $CurrentProductIdentifierResult->getEvent(),
+                        offer: $CurrentProductIdentifierResult->getOffer(),
+                        variation: $CurrentProductIdentifierResult->getVariation(),
+                        modification: $CurrentProductIdentifierResult->getModification(),
 
                         total: $ManufacturePartProductDTO->getTotal(),
-                        device: $device
+                        device: $device,
                     );
 
                     $messageDispatch
@@ -148,13 +174,14 @@ final class AddSelectedProductsController extends AbstractController
                             transport: 'manufacture-part',
                         );
 
+
                     /* Отправка сообщения по продукту произв. партии */
                     // TODO Сделать по ManufacturePartCentrifugoPublishMessage
                     $ManufacturePartProductMessage = new ManufacturePartProductMessage(
-                        event: $ManufacturePartProductDTO->getProduct(),
-                        offer: $ManufacturePartProductDTO->getOffer(),
-                        variation: $ManufacturePartProductDTO->getVariation(),
-                        modification: $ManufacturePartProductDTO->getModification(),
+                        event: $CurrentProductIdentifierResult->getEvent(),
+                        offer: $CurrentProductIdentifierResult->getOffer(),
+                        variation: $CurrentProductIdentifierResult->getVariation(),
+                        modification: $CurrentProductIdentifierResult->getModification(),
                         total: $ManufacturePartProductDTO->getTotal(),
 
                     );
@@ -168,6 +195,21 @@ final class AddSelectedProductsController extends AbstractController
                     $countTotal += $ManufacturePartProductDTO->getTotal();
 
                     $sort++;
+
+                    /**
+                     * Добавляем идентификатор партии на продукт
+                     */
+
+                    if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
+                    {
+                        $messageDispatch->dispatch(
+                            message: new ManufactureProductMessage(
+                                invariable: $CurrentProductIdentifierResult->getProductInvariable(),
+                                manufacture: $ManufacturePartUid,
+                            ),
+                            transport: 'manufacture-part',
+                        );
+                    }
 
                     continue;
                 }
