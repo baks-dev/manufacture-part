@@ -82,7 +82,7 @@ final class DeleteProductsController extends AbstractController
 
             /** Получаем текущий идентификатор продукта */
             $CurrentProductIdentifierResult = $CurrentProductIdentifierByEventRepository
-                ->forEvent($ManufacturePartProduct->getEvent())
+                ->forEvent($ManufacturePartProduct->getProduct())
                 ->forOffer($ManufacturePartProduct->getOffer())
                 ->forVariation($ManufacturePartProduct->getVariation())
                 ->forModification($ManufacturePartProduct->getModification())

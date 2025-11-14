@@ -50,7 +50,7 @@ final class DeleteManufactureProductInvariableHandler extends AbstractHandler
         {
             $collection = $this
                 ->getRepository(ManufactureProductInvariable::class)
-                ->findBy(['manufacture' => $command->getManufacture()]);
+                ->findBy(['invariable' => $command->getInvariable()]);
         }
 
         /** Валидация всех объектов */

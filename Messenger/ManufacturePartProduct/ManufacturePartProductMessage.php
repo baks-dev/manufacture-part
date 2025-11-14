@@ -47,9 +47,9 @@ final class ManufacturePartProductMessage
 
     public function __construct(
         ProductEventUid|null $event = null,
-        ProductOfferUid|null $offer = null,
-        ProductVariationUid|null $variation = null,
-        ProductModificationUid|null $modification = null,
+        ProductOfferUid|null|false $offer = null,
+        ProductVariationUid|null|false $variation = null,
+        ProductModificationUid|null|false $modification = null,
         int|null $total = null,
     ) {
         $this->event = $event ? (string) $event : null;

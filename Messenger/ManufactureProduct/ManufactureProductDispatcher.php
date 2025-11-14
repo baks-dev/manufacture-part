@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger\ManufactureProduct;
 
 
-use BaksDev\Manufacture\Part\Messenger\ManufacturePartProduct\ManufacturePartProductMessage;
+use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete\DeleteManufactureProductInvariableDTO;
 use BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete\DeleteManufactureProductInvariableHandler;
 use BaksDev\Manufacture\Part\UseCase\ManufactureProduct\New\NewManufactureProductInvariableDTO;
@@ -53,7 +53,7 @@ final readonly class ManufactureProductDispatcher
 
         if(
             true === ($message->getInvariable() instanceof ProductInvariableUid)
-            && true === ($message->getManufacture() instanceof ManufacturePartProductMessage)
+            && true === ($message->getManufacture() instanceof ManufacturePartUid)
         )
         {
             $NewManufactureProductInvariableDTO = new NewManufactureProductInvariableDTO(
@@ -72,19 +72,42 @@ final readonly class ManufactureProductDispatcher
         }
 
 
-        /**
-         * Удаляем идентификатор партии либо продукции
-         */
+        if(
+            true === ($message->getInvariable() instanceof ProductInvariableUid)
+            && false === ($message->getManufacture() instanceof ManufacturePartUid)
+        )
+        {
+            $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
+                ->deleteProductByInvariable($message->getInvariable());
 
-        $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
-            ->setManufacture($message->getManufacture());
+            $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
 
-        $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
+            $this->logger->info(
+                'Удалили идентификатор продукта Invariable с продукции',
+                [self::class.':'.__LINE__],
+            );
 
-        $this->logger->info(
-            'Удалили идентификатор партии Manufacture с продукции',
-            [self::class.':'.__LINE__],
-        );
+            return;
+        }
+
+
+        if(
+            true === ($message->getInvariable() instanceof ProductInvariableUid)
+            && true === ($message->getManufacture() instanceof ManufacturePartUid)
+        )
+        {
+            $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
+                ->deleteProductsByManufacture($message->getManufacture());
+
+            $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
+
+            $this->logger->info(
+                'Удалили идентификатор партии Manufacture с продукции',
+                [self::class.':'.__LINE__],
+            );
+
+            return;
+        }
 
 
     }

@@ -28,49 +28,43 @@ namespace BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete;
 use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
-use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see ManufactureProductInvariable */
 final readonly class DeleteManufactureProductInvariableDTO implements ManufactureProductInvariableInterface
 {
-    /**
-     * Идентификатор Invariable продукции
-     */
     #[Assert\Uuid]
-    private ProductInvariableUid $invariable;
+    private ProductInvariableUid|false $invariable;
 
     #[Assert\Uuid]
-    private ManufacturePartUid $manufacture;
+    private ManufacturePartUid|false $manufacture;
 
-    public function getInvariable(): ProductInvariableUid
+    public function getInvariable(): ProductInvariableUid|false
     {
         return $this->invariable;
     }
 
-    public function setInvariable(ProductInvariableUid $invariable): self
+    public function deleteProductByInvariable(ProductInvariableUid $invariable): self
     {
-        if(false === new ReflectionProperty(self::class, 'invariable')->isInitialized($this))
-        {
-            $this->invariable = $invariable;
-        }
+        $this->invariable = $invariable;
+        $this->manufacture = false;
 
         return $this;
     }
 
 
-    public function getManufacture(): ManufacturePartUid
+    public function getManufacture(): ManufacturePartUid|false
     {
         return $this->manufacture;
     }
 
-    public function setManufacture(ManufacturePartUid $manufacture): self
+    public function deleteProductsByManufacture(ManufacturePartUid $manufacture): self
     {
-        if(false === new ReflectionProperty(self::class, 'manufacture')->isInitialized($this))
-        {
-            $this->manufacture = $manufacture;
-        }
+        $this->manufacture = $manufacture;
+        $this->invariable = false;
 
         return $this;
     }
+
+
 }

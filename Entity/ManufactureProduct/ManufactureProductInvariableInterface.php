@@ -31,5 +31,5 @@ interface ManufactureProductInvariableInterface
 
     public function getInvariable(): ProductInvariableUid|false;
 
-    public function getManufacture(): ManufacturePartUid;
+    public function getManufacture(): ManufacturePartUid|false;
 }
