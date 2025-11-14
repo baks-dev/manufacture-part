@@ -29,6 +29,7 @@ namespace BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete;
 use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariable;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
+use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 
 final class DeleteManufactureProductInvariableHandler extends AbstractHandler
 {
@@ -45,13 +46,12 @@ final class DeleteManufactureProductInvariableHandler extends AbstractHandler
                 ->findBy(['manufacture' => $command->getManufacture()]);
         }
 
-        if($command->getInvariable() instanceof )
+        if($command->getInvariable() instanceof ProductInvariableUid)
         {
             $collection = $this
                 ->getRepository(ManufactureProductInvariable::class)
                 ->findBy(['manufacture' => $command->getManufacture()]);
         }
-
 
         /** Валидация всех объектов */
         if($this->validatorCollection->isInvalid())
