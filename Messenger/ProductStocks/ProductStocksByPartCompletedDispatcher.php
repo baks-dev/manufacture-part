@@ -30,6 +30,7 @@ use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
@@ -96,6 +97,15 @@ final readonly class ProductStocksByPartCompletedDispatcher
         {
             return true;
         }
+
+        /**
+         * Удаляем идентификатор партии на всю продукцию
+         */
+
+        $this->MessageDispatch->dispatch(
+            message: new ManufactureProductMessage(false, $message->getId()),
+            transport: 'manufacture-part',
+        );
 
         /**
          * Отправляем продукцию на склад

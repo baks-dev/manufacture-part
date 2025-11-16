@@ -31,7 +31,6 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
-use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
@@ -56,7 +55,6 @@ final readonly class ManufacturePartCompleted
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         private CentrifugoPublishInterface $CentrifugoPublish,
         private DeduplicatorInterface $deduplicator,
-        private MessageDispatchInterface $messageDispatch,
     ) {}
 
 
@@ -131,13 +129,5 @@ final readonly class ManufacturePartCompleted
 
         $DeduplicatorExecuted->save();
 
-        /**
-         * Удаляем идентификатор партии на всю продукцию
-         */
-
-        $this->messageDispatch->dispatch(
-            message: new ManufactureProductMessage(false, $message->getId()),
-            transport: 'manufacture-part',
-        );
     }
 }

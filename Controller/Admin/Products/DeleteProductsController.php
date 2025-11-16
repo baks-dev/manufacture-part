@@ -94,11 +94,14 @@ final class DeleteProductsController extends AbstractController
 
             if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
             {
+                $ManufactureProductMessage = new ManufactureProductMessage(
+                    invariable: $CurrentProductIdentifierResult->getProductInvariable(),
+                    manufacture: false,
+                    type: $ManufacturePartProduct->getEvent()->getComplete(),
+                );
+
                 $messageDispatch->dispatch(
-                    message: new ManufactureProductMessage(
-                        invariable: $CurrentProductIdentifierResult->getProductInvariable(),
-                        manufacture: false,
-                    ),
+                    message: $ManufactureProductMessage,
                     transport: 'manufacture-part',
                 );
             }

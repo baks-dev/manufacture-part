@@ -50,13 +50,18 @@ final class DeleteManufactureProductInvariableHandler extends AbstractHandler
         {
             $collection = $this
                 ->getRepository(ManufactureProductInvariable::class)
-                ->findBy(['invariable' => $command->getInvariable()]);
+                ->findBy(['invariable' => $command->getInvariable(), 'type' => $command->getType()]);
         }
 
         /** Валидация всех объектов */
         if($this->validatorCollection->isInvalid())
         {
             return $this->validatorCollection->getErrorUniqid();
+        }
+
+        if(empty($collection))
+        {
+            return false;
         }
 
         foreach($collection as $manufactureProductInvariable)

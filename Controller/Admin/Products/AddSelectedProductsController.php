@@ -202,11 +202,14 @@ final class AddSelectedProductsController extends AbstractController
 
                     if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
                     {
+                        $ManufactureProductMessage = new ManufactureProductMessage(
+                            invariable: $CurrentProductIdentifierResult->getProductInvariable(),
+                            manufacture: $ManufacturePartUid,
+                            type: $ManufacturePartProductHandler->getComplete(),
+                        );
+
                         $messageDispatch->dispatch(
-                            message: new ManufactureProductMessage(
-                                invariable: $CurrentProductIdentifierResult->getProductInvariable(),
-                                manufacture: $ManufacturePartUid,
-                            ),
+                            message: $ManufactureProductMessage,
                             transport: 'manufacture-part',
                         );
                     }

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\UseCase\ManufactureProduct\New;
 
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
@@ -41,14 +42,23 @@ final  class NewManufactureProductInvariableDTO implements ManufactureProductInv
     #[Assert\Uuid]
     private ManufacturePartUid $manufacture;
 
+    /** Завершающий этап */
+    #[Assert\Uuid]
+    private ?DeliveryUid $type;
+
     /**
      * @param ProductInvariableUid $invariable
      * @param ManufacturePartUid $manufacture
      */
-    public function __construct(ProductInvariableUid $invariable, ManufacturePartUid $manufacture)
+    public function __construct(
+        ProductInvariableUid $invariable,
+        ManufacturePartUid $manufacture,
+        ?DeliveryUid $type = null
+    )
     {
         $this->invariable = $invariable;
         $this->manufacture = $manufacture;
+        $this->type = $type;
     }
 
     public function getInvariable(): ProductInvariableUid
@@ -61,5 +71,8 @@ final  class NewManufactureProductInvariableDTO implements ManufactureProductInv
         return $this->manufacture;
     }
 
-
+    public function getType(): ?DeliveryUid
+    {
+        return $this->type;
+    }
 }

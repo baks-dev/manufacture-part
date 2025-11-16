@@ -35,9 +35,7 @@ final class ManufacturePartDeleteHandler extends AbstractHandler
 {
 
     /** @see ManufacturePart */
-    public function handle(
-        ManufacturePartDeleteDTO $command
-    ): string|ManufacturePart
+    public function handle(ManufacturePartDeleteDTO $command): string|ManufacturePart
     {
 
         $this->setCommand($command)

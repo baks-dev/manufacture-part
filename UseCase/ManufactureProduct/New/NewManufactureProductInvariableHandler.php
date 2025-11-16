@@ -38,7 +38,11 @@ final class NewManufactureProductInvariableHandler extends AbstractHandler
 
         $ManufactureProductInvariable = $this
             ->getRepository(ManufactureProductInvariable::class)
-            ->find($command->getInvariable());
+            ->findOneBy([
+                'invariable' => $command->getInvariable(),
+                'manufacture' => $command->getManufacture(),
+                'type' => $command->getType(),
+            ]);
 
         if(false === $ManufactureProductInvariable instanceof ManufactureProductInvariable)
         {

@@ -94,7 +94,6 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
                 type: ManufacturePartStatus::TYPE
             );
 
-
         $qb->join(
             ManufacturePart::class,
             'part',

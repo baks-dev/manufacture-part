@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger\Orders\Tests;
 
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Messenger\Orders\ManufacturePartProductOrderByPartCompletedDispatch;
 use BaksDev\Manufacture\Part\Messenger\Orders\ManufacturePartProductOrderByPartCompletedDispatcher;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;

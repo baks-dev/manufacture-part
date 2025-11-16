@@ -220,6 +220,11 @@ class ManufacturePartEvent extends EntityEvent
         return (is_null($this->complete) && is_null($complete)) || $this->complete->equals($complete);
     }
 
+    public function getComplete(): ?DeliveryUid
+    {
+        return $this->complete;
+    }
+
 
     /**
      * Action

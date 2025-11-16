@@ -25,10 +25,10 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\UseCase\Admin\AddProduct;
 
-
 use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Core\Validator\ValidatorCollectionInterface;
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Files\Resources\Upload\File\FileUploadInterface;
 use BaksDev\Files\Resources\Upload\Image\ImageUploadInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
@@ -57,13 +57,16 @@ final class ManufacturePartProductsHandler extends AbstractHandler
     )
     {
         parent::__construct($entityManager, $messageDispatch, $validatorCollection, $imageUpload, $fileUpload);
-
     }
+
+    private ?DeliveryUid $complete = null;
 
 
     /** @see ManufacturePart */
     public function handle(ManufacturePartProductsDTO $command): string|ManufacturePart|ManufacturePartProduct
     {
+        $this->complete = null;
+
         /** Валидация DTO  */
         $this->validatorCollection->add($command);
 
@@ -137,8 +140,12 @@ final class ManufacturePartProductsHandler extends AbstractHandler
             return $this->validatorCollection->getErrorUniqid();
         }
 
+
         $this->persist($ManufacturePartProduct);
         $this->flush();
+
+        /* Присваиваем идентификатор завещающего этапа */
+        $this->complete = $ManufacturePartEvent->getComplete();
 
         /* Отправляем сообщение в шину */
         $this->messageDispatch
@@ -151,5 +158,10 @@ final class ManufacturePartProductsHandler extends AbstractHandler
 
         // 'manufacture_part_high'
         return $ManufacturePartProduct;
+    }
+
+    public function getComplete(): ?DeliveryUid
+    {
+        return $this->complete;
     }
 }

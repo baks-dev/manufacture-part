@@ -35,18 +35,11 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Defect\Event\ManufacturePartProductsD
 
 final class ManufacturePartProductDefectHandler extends AbstractHandler
 {
-    //    public function __construct(
-    //        #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-    //        private EntityManagerInterface $entityManager,
-    //        private ValidatorInterface $validator,
-    //        private MessageDispatchInterface $messageDispatch
-    //    ) {}
+
 
     /** @see ManufacturePart */
     public function handle(ManufacturePartProductDefectDTO $command): string|ManufacturePart
     {
-
-
         /**
          * Продукция, которой допущен дефект
          * @var ManufacturePartProduct $ManufacturePartProduct

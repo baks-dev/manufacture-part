@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete;
 
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
@@ -33,20 +34,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 /** @see ManufactureProductInvariable */
 final readonly class DeleteManufactureProductInvariableDTO implements ManufactureProductInvariableInterface
 {
-    #[Assert\Uuid]
     private ProductInvariableUid|false $invariable;
 
-    #[Assert\Uuid]
     private ManufacturePartUid|false $manufacture;
+
+    private ?DeliveryUid $type;
 
     public function getInvariable(): ProductInvariableUid|false
     {
         return $this->invariable;
     }
 
-    public function deleteProductByInvariable(ProductInvariableUid $invariable): self
+    public function deleteProductByInvariable(ProductInvariableUid $invariable, DeliveryUid|null $type = null): self
     {
         $this->invariable = $invariable;
+        $this->type = $type;
         $this->manufacture = false;
 
         return $this;
@@ -62,9 +64,12 @@ final readonly class DeleteManufactureProductInvariableDTO implements Manufactur
     {
         $this->manufacture = $manufacture;
         $this->invariable = false;
-
         return $this;
     }
 
+    public function getType(): ?DeliveryUid
+    {
+        return $this->type;
+    }
 
 }

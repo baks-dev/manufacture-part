@@ -25,27 +25,18 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Messenger\ManufactureProduct;
 
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final readonly class ManufactureProductMessage
+final  class ManufactureProductMessage
 {
-    #[Assert\Uuid]
-    private ProductInvariableUid|false $invariable;
-
-    #[Assert\Uuid]
-    private ManufacturePartUid|false $manufacture;
-
-    /**
-     * @param ProductInvariableUid|false $invariable
-     * @param ManufacturePartUid $manufacture
-     */
-    public function __construct(ProductInvariableUid|false $invariable, ManufacturePartUid|false $manufacture)
-    {
-        $this->invariable = $invariable;
-        $this->manufacture = $manufacture;
-    }
+    public function __construct(
+        #[Assert\Uuid] private readonly ProductInvariableUid|false $invariable,
+        #[Assert\Uuid] private readonly ManufacturePartUid|false $manufacture,
+        #[Assert\Uuid] private DeliveryUid|null $type = null,
+    ) {}
 
     /** @note false возвращается в случае удаления идентификатор партии */
     public function getInvariable(): ProductInvariableUid|false
@@ -57,4 +48,16 @@ final readonly class ManufactureProductMessage
     {
         return $this->manufacture;
     }
+
+    public function getType(): ?DeliveryUid
+    {
+        return $this->type;
+    }
+
+    public function setType(?DeliveryUid $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
 }

@@ -59,6 +59,7 @@ final readonly class ManufactureProductDispatcher
             $NewManufactureProductInvariableDTO = new NewManufactureProductInvariableDTO(
                 $message->getInvariable(),
                 $message->getManufacture(),
+                $message->getType(),
             );
 
             $this->NewManufactureProductInvariableHandler->handle($NewManufactureProductInvariableDTO);
@@ -78,7 +79,7 @@ final readonly class ManufactureProductDispatcher
         )
         {
             $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
-                ->deleteProductByInvariable($message->getInvariable());
+                ->deleteProductByInvariable($message->getInvariable(), $message->getType());
 
             $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
 
@@ -90,9 +91,8 @@ final readonly class ManufactureProductDispatcher
             return;
         }
 
-
         if(
-            true === ($message->getInvariable() instanceof ProductInvariableUid)
+            false === ($message->getInvariable() instanceof ProductInvariableUid)
             && true === ($message->getManufacture() instanceof ManufacturePartUid)
         )
         {

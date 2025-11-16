@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Entity\ManufactureProduct;
 
 use BaksDev\Core\Entity\EntityState;
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use Doctrine\DBAL\Types\Types;
@@ -38,6 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'manufacture_product_invariable')]
+#[ORM\Index(columns: ['type'])]
 class ManufactureProductInvariable extends EntityState
 {
     /**
@@ -57,6 +59,12 @@ class ManufactureProductInvariable extends EntityState
     #[ORM\Column(type: ManufacturePartUid::TYPE, unique: true)]
     private ManufacturePartUid $manufacture;
 
+    /**
+     * Завершающий этап
+     */
+    #[ORM\Column(type: DeliveryUid::TYPE, nullable: true)]
+    private ?DeliveryUid $type;
+
     public function __construct(ProductInvariableUid $invariable)
     {
         $this->invariable = $invariable;
@@ -75,6 +83,11 @@ class ManufactureProductInvariable extends EntityState
     public function getManufacture(): ManufacturePartUid
     {
         return $this->manufacture;
+    }
+
+    public function getType(): ?DeliveryUid
+    {
+        return $this->type;
     }
 
 

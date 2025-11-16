@@ -28,8 +28,10 @@ namespace BaksDev\Manufacture\Part\Controller\Admin;
 
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Delete\ManufacturePartDeleteForm;
@@ -51,6 +53,7 @@ final class DeleteController extends AbstractController
         #[MapEntity] ManufacturePart $ManufacturePart,
         ManufacturePartCurrentEventInterface $manufacturePartCurrentEvent,
         ManufacturePartDeleteHandler $ManufacturePartDeleteHandler,
+        MessageDispatchInterface $messageDispatch
     ): Response
     {
 
@@ -92,6 +95,15 @@ final class DeleteController extends AbstractController
                     'manufacture-part.admin',
                 );
 
+                /** Удаляем блокировку продукции на производственную партию */
+                $messageDispatch->dispatch(
+                    message: new ManufactureProductMessage(
+                        invariable: false,
+                        manufacture: $ManufacturePart->getId(),
+                    ),
+                    transport: 'manufacture-part',
+                );
+
                 return $this->redirectToRoute('manufacture-part:admin.manufacture');
             }
 
@@ -99,7 +111,7 @@ final class DeleteController extends AbstractController
                 'admin.page.delete',
                 'admin.danger.delete',
                 'manufacture-part.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToRoute('manufacture-part:admin.manufacture', status: 400);
@@ -107,7 +119,7 @@ final class DeleteController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'number' => $ManufacturePartEvent->getInvariable()->getNumber()
+            'number' => $ManufacturePartEvent->getInvariable()->getNumber(),
         ]);
     }
 }
