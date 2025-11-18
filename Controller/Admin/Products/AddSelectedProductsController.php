@@ -85,14 +85,14 @@ final class AddSelectedProductsController extends AbstractController
         {
             /** Скрываем у других продукты для избежания двойного производства */
             $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
-                identifier: $ManufacturePartProductDTO->getIdentifier(),
+                identifier: (string) $ManufacturePartProductDTO->getInvariable(),
                 profile: $this->getCurrentProfileUid(),
             );
 
             $messageDispatch
                 ->dispatch(
                     message: $ManufacturePartCentrifugoPublishMessage,
-                    transport: 'manufacture-part',
+                    transport: (string) $this->getProfileUid(),
                 );
 
             $events[$key] = $ManufacturePartProductDTO->getProduct();
@@ -154,7 +154,7 @@ final class AddSelectedProductsController extends AbstractController
                     $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
 
                     /** Скрываем у ВСЕХ пользователей продукты после добавления в списке */
-                        identifier: $ManufacturePartProductDTO->getIdentifier(),
+                        identifier: (string) $CurrentProductIdentifierResult->getProductInvariable(),
                         profile: $this->getCurrentProfileUid(),
 
                         /** Передаем идентификаторы продукта для вставки шаблона */
@@ -183,7 +183,6 @@ final class AddSelectedProductsController extends AbstractController
                         variation: $CurrentProductIdentifierResult->getVariation(),
                         modification: $CurrentProductIdentifierResult->getModification(),
                         total: $ManufacturePartProductDTO->getTotal(),
-
                     );
 
                     $messageDispatch
@@ -210,7 +209,7 @@ final class AddSelectedProductsController extends AbstractController
 
                         $messageDispatch->dispatch(
                             message: $ManufactureProductMessage,
-                            transport: 'manufacture-part',
+                            transport: (string) $this->getProfileUid(),
                         );
                     }
 

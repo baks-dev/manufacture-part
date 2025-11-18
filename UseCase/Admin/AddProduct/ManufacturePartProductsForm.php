@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\AddProduct;
 
 
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
+use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
@@ -45,6 +46,20 @@ final class ManufacturePartProductsForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
+        $builder->add('invariable', HiddenType::class);
+
+        $builder->get('invariable')->addModelTransformer(
+            new CallbackTransformer(
+                function($product) {
+                    return $product instanceof ProductInvariableUid ? $product->getValue() : $product;
+                },
+                function($product) {
+                    return $product ? new ProductInvariableUid($product) : null;
+                },
+            ),
+        );
+
 
         $builder->add('product', HiddenType::class);
 

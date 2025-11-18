@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\UseCase\ManufactureProduct\New;
 
 
 use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Delivery\Type\Id\DeliveryUid;
 use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariable;
 
 final class NewManufactureProductInvariableHandler extends AbstractHandler
@@ -40,13 +41,16 @@ final class NewManufactureProductInvariableHandler extends AbstractHandler
             ->getRepository(ManufactureProductInvariable::class)
             ->findOneBy([
                 'invariable' => $command->getInvariable(),
-                'manufacture' => $command->getManufacture(),
                 'type' => $command->getType(),
             ]);
 
         if(false === $ManufactureProductInvariable instanceof ManufactureProductInvariable)
         {
-            $ManufactureProductInvariable = new ManufactureProductInvariable($command->getInvariable());
+            $ManufactureProductInvariable = new ManufactureProductInvariable(
+                $command->getInvariable(),
+                $command->getType(),
+            );
+
             $this->persist($ManufactureProductInvariable);
 
             $ManufactureProductInvariable->setEntity($command);

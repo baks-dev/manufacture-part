@@ -179,6 +179,7 @@ class ManufacturePartEvent extends EntityEvent
 
     /**
      * Product
+     *
      * @return Collection{ int, ManufacturePartProduct }
      */
     public function getProduct(): Collection
@@ -217,7 +218,10 @@ class ManufacturePartEvent extends EntityEvent
             $complete = new DeliveryUid($complete);
         }
 
-        return (is_null($this->complete) && is_null($complete)) || $this->complete->equals($complete);
+        return
+            (is_null($this) && is_null($complete))
+            || (is_null($this->complete) && is_null($complete))
+            || $this->complete->equals($complete);
     }
 
     public function getComplete(): ?DeliveryUid

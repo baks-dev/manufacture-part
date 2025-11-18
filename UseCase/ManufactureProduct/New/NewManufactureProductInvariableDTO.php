@@ -71,8 +71,12 @@ final  class NewManufactureProductInvariableDTO implements ManufactureProductInv
         return $this->manufacture;
     }
 
-    public function getType(): ?DeliveryUid
+    /**
+     * Возвращает тестовый идентификатор, в случае если способ доставки не определен
+     * например если завершающий этап «Ничего не делать»
+     */
+    public function getType(): DeliveryUid
     {
-        return $this->type;
+        return $this->type ?: new DeliveryUid(DeliveryUid::TEST);
     }
 }

@@ -52,6 +52,13 @@ class ManufactureProductInvariable extends EntityState
     private ProductInvariableUid $invariable;
 
     /**
+     * Завершающий этап
+     */
+    #[ORM\Id]
+    #[ORM\Column(type: DeliveryUid::TYPE)]
+    private DeliveryUid $type;
+
+    /**
      * Идентификатор производственной партии
      */
     #[Assert\NotBlank]
@@ -59,15 +66,11 @@ class ManufactureProductInvariable extends EntityState
     #[ORM\Column(type: ManufacturePartUid::TYPE, unique: true)]
     private ManufacturePartUid $manufacture;
 
-    /**
-     * Завершающий этап
-     */
-    #[ORM\Column(type: DeliveryUid::TYPE, nullable: true)]
-    private ?DeliveryUid $type;
 
-    public function __construct(ProductInvariableUid $invariable)
+    public function __construct(ProductInvariableUid $invariable, DeliveryUid $type)
     {
         $this->invariable = $invariable;
+        $this->type = $type;
     }
 
     public function __toString(): string

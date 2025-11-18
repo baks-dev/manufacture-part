@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\UseCase\Admin\AddProduct;
 
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProductInterface;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
+use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use BaksDev\Products\Product\Type\Offers\Id\ProductOfferUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Id\ProductVariationUid;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModificationUid;
@@ -43,6 +44,11 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
     #[Assert\NotBlank]
     #[Assert\Uuid]
     private readonly UserProfileUid $profile;
+
+    /**
+     * Идентификатор Invariable
+     */
+    private ?ProductInvariableUid $invariable = null;
 
     /**
      * Идентификатор События!!! продукта
@@ -215,6 +221,18 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
             $this->sort = $sort;
         }
 
+        return $this;
+    }
+
+
+    public function getInvariable(): ?ProductInvariableUid
+    {
+        return $this->invariable;
+    }
+
+    public function setInvariable(?ProductInvariableUid $invariable): self
+    {
+        $this->invariable = $invariable;
         return $this;
     }
 }

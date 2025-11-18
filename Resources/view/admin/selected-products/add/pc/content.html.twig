@@ -129,10 +129,11 @@
                         </div>
 
                         {# Вывод скрытых полей - данные для каждого из товаров #}
-                        {{ form_widget(form.product_form_data[loop.index-1].product) }}
-                        {{ form_widget(form.product_form_data[loop.index-1].offer) }}
-                        {{ form_widget(form.product_form_data[loop.index-1].variation) }}
-                        {{ form_widget(form.product_form_data[loop.index-1].modification) }}
+                        {{ form_widget(form.product_form_data[loop.index0].invariable) }}
+                        {{ form_widget(form.product_form_data[loop.index0].product) }}
+                        {{ form_widget(form.product_form_data[loop.index0].offer) }}
+                        {{ form_widget(form.product_form_data[loop.index0].variation) }}
+                        {{ form_widget(form.product_form_data[loop.index0].modification) }}
 
                     </div>
 
