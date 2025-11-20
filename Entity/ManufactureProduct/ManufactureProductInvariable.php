@@ -39,7 +39,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'manufacture_product_invariable')]
-#[ORM\Index(columns: ['type'])]
 class ManufactureProductInvariable extends EntityState
 {
     /**
@@ -63,7 +62,7 @@ class ManufactureProductInvariable extends EntityState
      */
     #[Assert\NotBlank]
     #[Assert\Uuid]
-    #[ORM\Column(type: ManufacturePartUid::TYPE, unique: true)]
+    #[ORM\Column(type: ManufacturePartUid::TYPE)]
     private ManufacturePartUid $manufacture;
 
 
