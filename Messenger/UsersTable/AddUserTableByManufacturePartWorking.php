@@ -77,7 +77,7 @@ final readonly class AddUserTableByManufacturePartWorking
 
         if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
         {
-            $this->logger->critical(
+            $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
                 [var_export($message, true), self::class.':'.__LINE__]
             );
