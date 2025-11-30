@@ -73,6 +73,10 @@ final readonly class ManufactureProductDispatcher
         }
 
 
+        /**
+         * Удаляем идентификатор продукции из партии
+         */
+
         if(
             true === ($message->getInvariable() instanceof ProductInvariableUid)
             && false === ($message->getManufacture() instanceof ManufacturePartUid)
@@ -90,6 +94,9 @@ final readonly class ManufactureProductDispatcher
 
             return;
         }
+
+
+        /** Удаляем идентификатор партии */
 
         if(
             false === ($message->getInvariable() instanceof ProductInvariableUid)

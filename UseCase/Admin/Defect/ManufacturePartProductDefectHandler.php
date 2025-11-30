@@ -31,6 +31,8 @@ use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusClosed;
+use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
 use BaksDev\Manufacture\Part\UseCase\Admin\Defect\Event\ManufacturePartProductsDTO;
 
 final class ManufacturePartProductDefectHandler extends AbstractHandler
@@ -64,6 +66,14 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
         $ManufacturePartEvent = $this
             ->getRepository(ManufacturePartEvent::class)
             ->find($ManufacturePart->getEvent());
+
+        if(
+            true === $ManufacturePartEvent->equalsManufacturePartStatus(ManufacturePartStatusCompleted::class)
+            || true === $ManufacturePartEvent->equalsManufacturePartStatus(ManufacturePartStatusClosed::class)
+        )
+        {
+            return 'Производственная партия закрыта';
+        }
 
         $ManufacturePartDTO = new Event\ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);

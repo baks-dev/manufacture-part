@@ -69,6 +69,12 @@ final class DefectProductsController extends AbstractController
         {
             $this->refreshTokenForm($form);
 
+
+            /** Делаем проверку, что партия не закрыта */
+
+
+
+
             $handle = $ManufacturePartProductDefectHandler->handle($ManufacturePartDTO);
 
             if($handle instanceof ManufacturePart)

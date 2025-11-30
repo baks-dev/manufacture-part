@@ -31,6 +31,7 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Entity\Products\ManufacturePartProduct;
+use BaksDev\Manufacture\Part\Messenger\ManufactureProduct\ManufactureProductMessage;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
@@ -55,6 +56,7 @@ final readonly class ManufacturePartCompleted
         private ManufacturePartCompletedHandler $manufacturePartCompletedHandler,
         private CentrifugoPublishInterface $CentrifugoPublish,
         private DeduplicatorInterface $deduplicator,
+        private MessageDispatchInterface $messageDispatch
     ) {}
 
 
@@ -86,6 +88,15 @@ final readonly class ManufacturePartCompleted
 
         if(true === $ManufacturePartEvent->getStatus()->equals(ManufacturePartStatusCompleted::class))
         {
+            /** Проверяем и удаляем блокировку продукции на производственную партию */
+            $this->messageDispatch->dispatch(
+                message: new ManufactureProductMessage(
+                    invariable: false,
+                    manufacture: $message->getId(),
+                ),
+                transport: 'manufacture-part',
+            );
+
             return;
         }
 
@@ -114,6 +125,16 @@ final readonly class ManufacturePartCompleted
                 ->addData(['identifier' => $identifier]) // ID упаковки
                 ->send('remove');
         }
+
+
+        /** Проверяем и удаляем блокировку продукции на производственную партию */
+        $this->messageDispatch->dispatch(
+            message: new ManufactureProductMessage(
+                invariable: false,
+                manufacture: $message->getId(),
+            ),
+            transport: 'manufacture-part',
+        );
 
 
         /** Производственная партия полностью выполнена (статус Complete) */
