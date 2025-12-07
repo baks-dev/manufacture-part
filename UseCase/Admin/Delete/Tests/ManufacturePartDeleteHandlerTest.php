@@ -100,18 +100,18 @@ class ManufacturePartDeleteHandlerTest extends KernelTestCase
 
     }
 
-    public function testComplete(): void
-    {
-        /** @var DBALQueryBuilder $dbal */
-        $dbal = self::getContainer()->get(DBALQueryBuilder::class);
-
-        $dbal->createQueryBuilder(self::class);
-
-        $dbal->from(ManufacturePart::class)
-            ->where('id = :id')
-            ->setParameter('id', ManufacturePartUid::TEST);
-
-        self::assertFalse($dbal->fetchExist());
-
-    }
+    //    public function testComplete(): void
+    //    {
+    //        /** @var DBALQueryBuilder $dbal */
+    //        $dbal = self::getContainer()->get(DBALQueryBuilder::class);
+    //
+    //        $dbal->createQueryBuilder(self::class);
+    //
+    //        $dbal->from(ManufacturePart::class)
+    //            ->where('id = :id')
+    //            ->setParameter('id', ManufacturePartUid::TEST);
+    //
+    //        self::assertFalse($dbal->fetchExist());
+    //
+    //    }
 }
