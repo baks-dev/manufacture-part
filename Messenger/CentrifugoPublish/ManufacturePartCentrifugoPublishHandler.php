@@ -27,7 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger\CentrifugoPublish;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
-use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByUidInterface;
+use BaksDev\Products\Product\Repository\ProductDetail\ProductDetailByEventInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Twig\Environment;
 
@@ -36,7 +36,7 @@ final readonly class ManufacturePartCentrifugoPublishHandler
 {
     public function __construct(
         private Environment $Twig,
-        private ProductDetailByUidInterface $ProductDetailByUids,
+        private ProductDetailByEventInterface $ProductDetailByUids,
         private ?CentrifugoPublishInterface $CentrifugoPublish = null,
     ) {}
 

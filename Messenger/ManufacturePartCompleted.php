@@ -27,6 +27,7 @@ namespace BaksDev\Manufacture\Part\Messenger;
 
 use BaksDev\Centrifugo\Server\Publish\CentrifugoPublishInterface;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
@@ -94,7 +95,8 @@ final readonly class ManufacturePartCompleted
                     invariable: false,
                     manufacture: $message->getId(),
                 ),
-                transport: 'manufacture-part',
+                stamps: [new MessageDelay('3 seconds')],
+                transport: 'manufacture-part-low',
             );
 
             return;
@@ -127,16 +129,6 @@ final readonly class ManufacturePartCompleted
         }
 
 
-        /** Проверяем и удаляем блокировку продукции на производственную партию */
-        $this->messageDispatch->dispatch(
-            message: new ManufactureProductMessage(
-                invariable: false,
-                manufacture: $message->getId(),
-            ),
-            transport: 'manufacture-part',
-        );
-
-
         /** Производственная партия полностью выполнена (статус Complete) */
         $ManufacturePartCompletedDTO = new ManufacturePartCompletedDTO($message->getEvent());
         $handle = $this->manufacturePartCompletedHandler->handle($ManufacturePartCompletedDTO);
@@ -149,6 +141,19 @@ final readonly class ManufacturePartCompleted
         $this->logger->info('Производственная партия выполнена');
 
         $DeduplicatorExecuted->save();
+
+
+        /**
+         * Проверяем и удаляем блокировку продукции на производственную партию
+         */
+        $this->messageDispatch->dispatch(
+            message: new ManufactureProductMessage(
+                invariable: false,
+                manufacture: $message->getId(),
+            ),
+            stamps: [new MessageDelay('3 seconds')],
+            transport: 'manufacture-part',
+        );
 
     }
 }

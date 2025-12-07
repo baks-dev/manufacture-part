@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Messenger\ManufactureProduct;
 
 
+use BaksDev\Manufacture\Part\Entity\ManufactureProduct\ManufactureProductInvariable;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete\DeleteManufactureProductInvariableDTO;
 use BaksDev\Manufacture\Part\UseCase\ManufactureProduct\Delete\DeleteManufactureProductInvariableHandler;
@@ -62,12 +63,22 @@ final readonly class ManufactureProductDispatcher
                 $message->getType(),
             );
 
-            $this->NewManufactureProductInvariableHandler->handle($NewManufactureProductInvariableDTO);
+            $result = $this->NewManufactureProductInvariableHandler->handle($NewManufactureProductInvariableDTO);
 
-            $this->logger->info(
-                'Добавили идентификатор партии к продукции Invariable',
-                [self::class.':'.__LINE__],
-            );
+            if(true === ($result instanceof ManufactureProductInvariable))
+            {
+                $this->logger->info(
+                    sprintf('Добавили идентификатор партии %s c продукцией %s в блокировку', $message->getManufacture(), $message->getInvariable()),
+                    [self::class.':'.__LINE__],
+                );
+            }
+            else
+            {
+                $this->logger->error(
+                    sprintf('%s: Ошибка при добавлении идентификатора партии %s c продукцией %s', $result, $message->getManufacture(), $message->getInvariable()),
+                    [self::class.':'.__LINE__, var_export($message, true)],
+                );
+            }
 
             return;
         }
@@ -85,12 +96,23 @@ final readonly class ManufactureProductDispatcher
             $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
                 ->deleteProductByInvariable($message->getInvariable(), $message->getType());
 
-            $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
+            $result = $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
 
-            $this->logger->info(
-                'Удалили идентификатор продукта Invariable с продукции',
-                [self::class.':'.__LINE__],
-            );
+            if(true === $result)
+            {
+                $this->logger->info(
+                    sprintf('%s: Удалили идентификатор продукта из блокировки всех партий', $message->getInvariable()),
+                    [self::class.':'.__LINE__],
+                );
+            }
+            else
+            {
+                $this->logger->error(
+                    sprintf('%s: Ошибка при удалении идентификатора продукта %s из блокировки всех партий', $result, $message->getInvariable()),
+                    [self::class.':'.__LINE__, var_export($message, true)],
+                );
+            }
+
 
             return;
         }
@@ -106,16 +128,25 @@ final readonly class ManufactureProductDispatcher
             $DeleteManufactureProductInvariableDTO = new DeleteManufactureProductInvariableDTO()
                 ->deleteProductsByManufacture($message->getManufacture());
 
-            $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
+            $result = $this->DeleteManufactureProductInvariableHandler->handle($DeleteManufactureProductInvariableDTO);
 
-            $this->logger->info(
-                'Удалили идентификатор партии Manufacture с продукции',
-                [self::class.':'.__LINE__],
-            );
+            if(true === $result)
+            {
+                $this->logger->info(
+                    sprintf('%s: Удалили идентификатор партии с продукцией из блокировки', $message->getManufacture()),
+                    [self::class.':'.__LINE__],
+                );
+            }
+            else
+            {
+                $this->logger->error(
+                    sprintf('%s: Ошибка при удалении идентификатора партии %s с продукцией из блокировки', $result, $message->getManufacture()),
+                    [self::class.':'.__LINE__, var_export($message, true)],
+                );
+            }
 
             return;
         }
-
 
     }
 }
