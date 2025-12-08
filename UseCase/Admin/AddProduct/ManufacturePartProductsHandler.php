@@ -68,7 +68,7 @@ final class ManufacturePartProductsHandler extends AbstractHandler
         $this->complete = null;
 
         /** Валидация DTO  */
-        $this->validatorCollection->add($command);
+        $this->setCommand($command);
 
         /**
          * Получаем активную открытую производственную партию ответственного лица

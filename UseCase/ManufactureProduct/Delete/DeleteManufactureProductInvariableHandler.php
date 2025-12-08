@@ -36,8 +36,7 @@ final class DeleteManufactureProductInvariableHandler extends AbstractHandler
     /** @see ManufactureProductInvariable */
     public function handle(DeleteManufactureProductInvariableDTO $command): string|bool
     {
-        /** Валидация DTO  */
-        $this->validatorCollection->add($command);
+        $this->setCommand($command);
 
         if($command->getManufacture() instanceof ManufacturePartUid)
         {
