@@ -113,6 +113,7 @@ setTimeout(function vwZSPXkyxD() {
 /** Обработчики кнопок выбора товаров */
 var select_all_to_production = document.querySelector("#select-all-to-production");
 var add_all_to_production = document.querySelector("#add-all-to-production");
+var add_all_to_telegram = document.querySelector("#add-all-to-telegram");
 
 /** Выбор из списка ответов */
 select_all_to_production?.addEventListener("click", function() {
@@ -151,9 +152,11 @@ select_all_to_production?.addEventListener("click", function() {
 
     if (atLeastOneChecked) {
         add_all_to_production.classList.remove("d-none");
+        add_all_to_telegram?.classList.remove("d-none");
     }
     else {
         add_all_to_production.classList.add("d-none");
+        add_all_to_telegram?.classList.add("d-none");
     }
 
 });
@@ -170,9 +173,11 @@ for (checkbox_all_to_production of checkboxs_all_to_production) {
 
         if (atLeastOneChecked) {
            add_all_to_production.classList.remove("d-none");
+           add_all_to_telegram?.classList.remove("d-none");
         }
         else {
             add_all_to_production.classList.add("d-none");
+            add_all_to_telegram?.classList.add("d-none");
         }
 
     });
