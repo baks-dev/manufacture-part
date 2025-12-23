@@ -33,7 +33,7 @@
                                 <input
                                         id="check-{{ identifier }}"
                                         type="checkbox"
-                                        class="form-check-input add-all-to-production btn-outline-danger"
+                                        class="form-check-input add-all-to-production add-all-to-telegram btn-outline-danger"
 
                                         {# Данные, отправляемые POST #}
                                         data-formname="{{ add_selected_product_form_name }}"
@@ -243,12 +243,12 @@
                     {# Telegram button #}
                     {% if has_telegram_bot %}
                         <span
-                            role="tooltip"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="bottom"
-                            data-bs-delay='{"show":600,"hide":100}'
-                            title="Сообщение о товаре в Telegram"
-                            class="ms-2"
+                                role="tooltip"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                data-bs-delay='{"show":600,"hide":100}'
+                                title="Сообщение о товаре в Telegram"
+                                class="ms-2"
                         >
                             <a href="{{ path('telegram-bot:admin.message.telegram') }}"
                                class="btn-sm btn-primary modal-link rounded-1 disabled"
