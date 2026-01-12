@@ -33,7 +33,7 @@
                                 <input
                                         id="check-{{ identifier }}"
                                         type="checkbox"
-                                        class="form-check-input add-all-to-production add-all-to-telegram btn-outline-danger"
+                                        class="form-check-input add-all-to-production btn-outline-danger"
 
                                         {# Данные, отправляемые POST #}
                                         data-formname="{{ add_selected_product_form_name }}"
@@ -238,40 +238,6 @@
 
 
                     {% endif %}
-
-
-                    {# Telegram button #}
-                    {% if has_telegram_bot %}
-                        <span
-                                role="tooltip"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                data-bs-delay='{"show":600,"hide":100}'
-                                title="Сообщение о товаре в Telegram"
-                                class="ms-2"
-                        >
-                            <a href="{{ path('telegram-bot:admin.message.telegram') }}"
-                               class="btn-sm btn-primary modal-link rounded-1 disabled"
-
-                               data-bs-toggle="modal"
-                               data-bs-target="#modal"
-
-                               data-method="post"
-                               data-formname="{{ telegram_products_info_form_name }}"
-
-                               data-product="{{ item.event }}"
-                               data-offer="{{ item.product_offer_id }}"
-                               data-variation="{{ item.product_variation_id }}"
-                               data-modification="{{ item.product_modification_id }}"
-
-                               data-collection-form="collection" {# name коллекции из DTO #}
-                               data-post-class="add-one-to-collection" {# признак одного элемента #}
-                            >
-                                <img class="shadow rounded-5" src="/assets/telegram-bot/img/telegram.svg" alt="telegram">
-                            </a>
-                        </span>
-                    {% endif %}
-                    {# END Telegram button #}
 
                 </div>
 

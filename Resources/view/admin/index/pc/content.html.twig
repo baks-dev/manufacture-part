@@ -1,6 +1,5 @@
 {% trans_default_domain('manufacture-part.admin') %}
 
-
 <main class="main d-print-none">
 
     <section class="container px-4 mb-5">
@@ -192,32 +191,6 @@
                 >
                     Добавить выбранные
                 </a>
-
-                {% if has_telegram_bot %}
-                <a
-                        class="btn btn-sm btn-primary opacity-75 text-nowrap mb-2 d-none"
-                        role="tooltip"
-                        data-bs-placement="bottom"
-                        data-bs-delay='{"show":600,"hide":100}'
-                        title="Отправить выбранные в Telegram"
-                        id="add-all-to-telegram"
-
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal"
-
-                        data-post-class="add-all-to-telegram"
-
-                        data-method="post"
-                        data-collection-form="collection"
-
-                        data-formname="{{ telegram_products_info_form_name }}"
-
-                        href="{{ path('telegram-bot:admin.message.telegram') }}"
-
-                >
-                    Отправить выбранные в Telegram <img class="shadow rounded-5" src="/assets/telegram-bot/img/telegram.svg" alt="telegram">
-                </a>
-                {% endif %}
 
             </div>
         {% endif %}
