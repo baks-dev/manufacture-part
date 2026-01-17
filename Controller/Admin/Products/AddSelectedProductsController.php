@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,7 @@ use BaksDev\Products\Product\Entity\ProductInvariable;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\ProductsDetailByUids\ProductsDetailByUidsInterface;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -85,15 +86,16 @@ final class AddSelectedProductsController extends AbstractController
         {
             /** Скрываем у других продукты для избежания двойного производства */
             $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
-                identifier: (string) $ManufacturePartProductDTO->getInvariable(),
+                identifier: (string) $ManufacturePartProductDTO->getInvariable() ?: $ManufacturePartProductDTO->getIdentifier(),
                 profile: $this->getCurrentProfileUid(),
             );
 
             $messageDispatch
                 ->dispatch(
                     message: $ManufacturePartCentrifugoPublishMessage,
-                    transport: (string) $this->getProfileUid(),
+                    transport: (string) $this->getCurrentProfileUid(),
                 );
+
 
             $events[$key] = $ManufacturePartProductDTO->getProduct();
             $offers[$key] = $ManufacturePartProductDTO->getOffer();
@@ -151,32 +153,48 @@ final class AddSelectedProductsController extends AbstractController
                      * Отправляем сокет для скрытия карточки товара
                      */
 
-                    $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
+                    if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
+                    {
+                        $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
 
-                    /** Скрываем у ВСЕХ пользователей продукты после добавления в списке */
-                        identifier: (string) $CurrentProductIdentifierResult->getProductInvariable(),
-                        profile: $this->getCurrentProfileUid(),
+                        /** Скрываем у ВСЕХ пользователей продукты после добавления в списке */
+                            identifier: (string) $CurrentProductIdentifierResult->getProductInvariable(),
+                            profile: new UserProfileUid(),
 
-                        /** Передаем идентификаторы продукта для вставки шаблона */
-                        manufacturePartEvent: $handle->getEvent()->getId(),
-                        event: $CurrentProductIdentifierResult->getEvent(),
-                        offer: $CurrentProductIdentifierResult->getOffer(),
-                        variation: $CurrentProductIdentifierResult->getVariation(),
-                        modification: $CurrentProductIdentifierResult->getModification(),
+                            /** Передаем идентификаторы продукта для вставки шаблона */
+                            manufacturePartEvent: $handle->getEvent()->getId(),
+                            event: $CurrentProductIdentifierResult->getEvent(),
+                            offer: $CurrentProductIdentifierResult->getOffer(),
+                            variation: $CurrentProductIdentifierResult->getVariation(),
+                            modification: $CurrentProductIdentifierResult->getModification(),
 
-                        total: $ManufacturePartProductDTO->getTotal(),
-                        device: $device,
-                    );
-
-                    $messageDispatch
-                        ->dispatch(
-                            message: $ManufacturePartCentrifugoPublishMessage,
-                            transport: 'manufacture-part',
+                            total: $ManufacturePartProductDTO->getTotal(),
+                            device: $device,
                         );
+
+                        $messageDispatch
+                            ->dispatch(
+                                message: $ManufacturePartCentrifugoPublishMessage,
+                                transport: 'manufacture-part',
+                            );
+                    }
+                    else
+                    {
+                        /** Скрываем у других продукты для избежания двойного производства */
+                        $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
+                            identifier: (string) $ManufacturePartProductDTO->getIdentifier(),
+                            profile: new UserProfileUid(),
+                        );
+
+                        $messageDispatch
+                            ->dispatch(
+                                message: $ManufacturePartCentrifugoPublishMessage,
+                                transport: (string) $this->getProfileUid(),
+                            );
+                    }
 
 
                     /* Отправка сообщения по продукту произв. партии */
-                    // TODO Сделать по ManufacturePartCentrifugoPublishMessage
                     $ManufacturePartProductMessage = new ManufacturePartProductMessage(
                         event: $CurrentProductIdentifierResult->getEvent(),
                         offer: $CurrentProductIdentifierResult->getOffer(),
@@ -215,7 +233,6 @@ final class AddSelectedProductsController extends AbstractController
 
                     continue;
                 }
-
 
                 /** Ошибка при добавлении товара в производственную партию */
                 $this->addFlash(
