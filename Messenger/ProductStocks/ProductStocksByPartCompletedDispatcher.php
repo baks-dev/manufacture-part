@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -115,13 +115,23 @@ final readonly class ProductStocksByPartCompletedDispatcher
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
 
-        /** Создаем приход нас клад */
+        /** Создаем приход на склад */
 
         $ManufacturePartInvariableDTO = $ManufacturePartDTO->getInvariable();
 
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
+            if(empty($ManufacturePartProductsDTO->getTotal()))
+            {
+                $this->logger->warning(
+                    'Не добавляем приход с нулевым количеством продукции',
+                    [self::class.':'.__LINE__, var_export($ManufacturePartProductsDTO, true)],
+                );
+
+                continue;
+            }
+
             /** Поиск идентификаторов продукции по событию */
             $CurrentProductIdentifierResult = $this->CurrentProductIdentifier
                 ->forEvent($ManufacturePartProductsDTO->getProduct())
@@ -182,11 +192,11 @@ final readonly class ProductStocksByPartCompletedDispatcher
                 );
             }
 
+
             $this->logger->info(
                 sprintf('Добавляем приход продукции прозводственной партии %s', $ManufacturePartInvariableDTO->getNumber()),
                 [self::class.':'.__LINE__],
             );
-
 
             /**
              * Добавляем приход продукции на склад на указанный профиль (склад)
