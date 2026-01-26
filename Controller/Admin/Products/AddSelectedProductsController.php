@@ -196,10 +196,10 @@ final class AddSelectedProductsController extends AbstractController
 
                     /* Отправка сообщения по продукту произв. партии */
                     $ManufacturePartProductMessage = new ManufacturePartProductMessage(
-                        event: $CurrentProductIdentifierResult->getEvent(),
-                        offer: $CurrentProductIdentifierResult->getOffer(),
-                        variation: $CurrentProductIdentifierResult->getVariation(),
-                        modification: $CurrentProductIdentifierResult->getModification(),
+                        event: $ManufacturePartProductDTO->getProduct(),
+                        offer: $ManufacturePartProductDTO->getOffer(),
+                        variation: $ManufacturePartProductDTO->getVariation(),
+                        modification: $ManufacturePartProductDTO->getModification(),
                         total: $ManufacturePartProductDTO->getTotal(),
                     );
 
