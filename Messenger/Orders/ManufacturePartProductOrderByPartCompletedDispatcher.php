@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\ManufacturePartProduc
 use BaksDev\Manufacture\Part\UseCase\Admin\Orders\Products\Orders\ManufacturePartProductOrderDTO;
 use BaksDev\Orders\Order\Repository\RelevantNewOrderByProduct\RelevantNewOrderByProductInterface;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
+use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
@@ -102,6 +103,11 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb*/
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
+
+            /* FBS Ozon */
+            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
+
+
             default => false,
         };
 
