@@ -43,10 +43,10 @@ use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\ProductStockOrderDTO;
+use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\PackageProductStockOrderDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockHandler;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\ProductStockDTO;
+use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\CollectionPackageProductStockDTO;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -202,7 +202,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                     $OrderEvent->getDto($PackageProductStockDTO);
 
                     // Присваиваем заявке идентификатор заказа
-                    $ProductStockOrderDTO = new ProductStockOrderDTO();
+                    $ProductStockOrderDTO = new PackageProductStockOrderDTO();
                     $ProductStockOrderDTO->setOrd($OrderEvent->getMain());
 
                     $PackageProductStockDTO->setProduct(new ArrayCollection());
@@ -223,7 +223,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                     /** @var PackageOrderProductDTO $PackageOrderProductDTO */
                     foreach($PackageOrderDTO->getProduct() as $PackageOrderProductDTO)
                     {
-                        $ProductStockDTO = new ProductStockDTO();
+                        $ProductStockDTO = new PackageProductStockDTO();
 
                         /** Получаем идентификаторы продукции по событию заказа */
 
