@@ -56,6 +56,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * На добавленные в производственную партию заказы - создает складскую заявку, готовые к упаковке (total === access)
+ *
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
 #[AsMessageHandler(priority: 40)]
@@ -93,7 +94,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -189,7 +190,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
 
                     $this->logger->info(
                         sprintf('%s: Создаем складскую заявку на упаковку', $OrderEvent->getOrderNumber()),
-                        [self::class.':'.__LINE__]
+                        [self::class.':'.__LINE__],
                     );
 
                     $DeduplicatorOrder->save();
@@ -223,8 +224,6 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                     /** @var PackageOrderProductDTO $PackageOrderProductDTO */
                     foreach($PackageOrderDTO->getProduct() as $PackageOrderProductDTO)
                     {
-                        $ProductStockDTO = new PackageProductStockDTO();
-
                         /** Получаем идентификаторы продукции по событию заказа */
 
                         $CurrentProductIdentifier = $this->CurrentProductIdentifier
@@ -239,14 +238,16 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                             continue;
                         }
 
-                        $ProductStockDTO
+                        $CollectionPackageProductStockDTO = new CollectionPackageProductStockDTO()
                             ->setProduct($CurrentProductIdentifier->getProduct())
                             ->setOffer($CurrentProductIdentifier->getOfferConst())
                             ->setVariation($CurrentProductIdentifier->getVariationConst())
                             ->setModification($CurrentProductIdentifier->getModificationConst())
                             ->setTotal($PackageOrderProductDTO->getPrice()->getTotal());
 
-                        $PackageProductStockDTO->addProduct($ProductStockDTO);
+
+                        $PackageProductStockDTO->addProduct($CollectionPackageProductStockDTO);
+
                     }
 
                     $ProductStock = $this->PackageProductStockHandler->handle($PackageProductStockDTO);
@@ -255,7 +256,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                     {
                         $this->logger->critical(
                             sprintf('manufacture-part: Ошибка %s при обновлении отправке заказа %s на упаковку', $ProductStock, $OrderEvent->getOrderNumber()),
-                            [$message, self::class.':'.__LINE__]
+                            [$message, self::class.':'.__LINE__],
                         );
 
                         return false;
@@ -266,6 +267,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
 
         /**
          * Приступаем к обновлению заказов
+         *
          * @see PackageOrdersByPartCompletedDispatcher
          */
 
