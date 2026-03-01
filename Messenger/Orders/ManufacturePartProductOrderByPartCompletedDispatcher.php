@@ -43,6 +43,7 @@ use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -50,6 +51,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Обновляем производственную партию идентификаторами заказов со статусом «NEW», и готовых к упаковке (total === access)
  * @see AccessOrderProductByPartCompletedDispatcher
  */
+#[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 50)]
 final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 {

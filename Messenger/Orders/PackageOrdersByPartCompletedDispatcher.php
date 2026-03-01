@@ -48,6 +48,7 @@ use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -55,6 +56,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * На добавленные в производственную партию заказы - отправляет на упаковку заказы со статусом «NEW»
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
+#[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 30)]
 final readonly class PackageOrdersByPartCompletedDispatcher
 {

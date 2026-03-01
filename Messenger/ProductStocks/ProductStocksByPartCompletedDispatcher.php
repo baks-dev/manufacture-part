@@ -43,6 +43,7 @@ use BaksDev\Products\Stocks\Repository\ProductStocksTotalStorage\ProductStocksTo
 use BaksDev\Products\Stocks\Repository\UpdateProductStock\AddProductStockInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -50,6 +51,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Обновляет складские остатки продукции после завершающего этапа производства
  */
+#[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 70)]
 final readonly class ProductStocksByPartCompletedDispatcher
 {

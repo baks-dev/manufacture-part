@@ -51,6 +51,7 @@ use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -59,6 +60,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  *
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
+#[Autoconfigure(public: true)]
 #[AsMessageHandler(priority: 40)]
 final readonly class PackageProductStockByPartCompletedDispatcher
 {

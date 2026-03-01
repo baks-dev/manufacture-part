@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\Tests;
 
-use BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\ManufacturePartCentrifugoPublishHandler;
+use BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\ManufacturePartCentrifugoPublishDispatcher;
 use BaksDev\Manufacture\Part\Messenger\CentrifugoPublish\ManufacturePartCentrifugoPublishMessage;
 use BaksDev\Manufacture\Part\Type\Event\ManufacturePartEventUid;
 use BaksDev\Products\Product\Type\Event\ProductEventUid;
@@ -86,8 +86,8 @@ class ManufacturePartCentrifugoPublishDebugTest extends KernelTestCase
 
         $this->assertEquals($total, $ManufacturePartCentrifugoPublishMessage->getTotal());
 
-        /** @var ManufacturePartCentrifugoPublishHandler $ManufacturePartCentrifugoPublishHandler */
-        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishHandler::class);
+        /** @var ManufacturePartCentrifugoPublishDispatcher $ManufacturePartCentrifugoPublishHandler */
+        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishDispatcher::class);
         $ManufacturePartCentrifugoPublishHandler($ManufacturePartCentrifugoPublishMessage);
     }
 
@@ -112,8 +112,8 @@ class ManufacturePartCentrifugoPublishDebugTest extends KernelTestCase
         $this->assertFalse($ManufacturePartCentrifugoPublishMessage->getTotal());
 
 
-        /** @var ManufacturePartCentrifugoPublishHandler $ManufacturePartCentrifugoPublishHandler */
-        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishHandler::class);
+        /** @var ManufacturePartCentrifugoPublishDispatcher $ManufacturePartCentrifugoPublishHandler */
+        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishDispatcher::class);
         $ManufacturePartCentrifugoPublishHandler($ManufacturePartCentrifugoPublishMessage);
 
     }
@@ -155,8 +155,8 @@ class ManufacturePartCentrifugoPublishDebugTest extends KernelTestCase
         $this->assertFalse($ManufacturePartCentrifugoPublishMessage->getVariation());
         $this->assertFalse($ManufacturePartCentrifugoPublishMessage->getModification());
 
-        /** @var ManufacturePartCentrifugoPublishHandler $ManufacturePartCentrifugoPublishHandler */
-        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishHandler::class);
+        /** @var ManufacturePartCentrifugoPublishDispatcher $ManufacturePartCentrifugoPublishHandler */
+        $ManufacturePartCentrifugoPublishHandler = self::getContainer()->get(ManufacturePartCentrifugoPublishDispatcher::class);
         $ManufacturePartCentrifugoPublishHandler($ManufacturePartCentrifugoPublishMessage);
     }
 }
