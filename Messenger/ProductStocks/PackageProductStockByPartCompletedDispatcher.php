@@ -191,7 +191,10 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                 {
 
                     $this->logger->info(
-                        sprintf('%s: Создаем складскую заявку на упаковку', $OrderEvent->getOrderNumber()),
+                        sprintf(
+                            '%s: Создаем складскую заявку на упаковку',
+                            $OrderEvent->getPostingNumber(),
+                        ),
                         [self::class.':'.__LINE__],
                     );
 
@@ -216,7 +219,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
                     $PackageOrderInvariableDTO
                         ->setUsr($ManufacturePartDTO->getInvariable()->getUsr())
                         ->setProfile($ManufacturePartDTO->getInvariable()->getProfile())
-                        ->setNumber($OrderEvent->getOrderNumber());
+                        ->setNumber($OrderEvent->getPostingNumber());
 
 
                     /** Получаем PackageOrderDTO для коллекции продукции  */
