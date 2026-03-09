@@ -39,6 +39,7 @@ use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartPr
 use BaksDev\Manufacture\Part\UseCase\Admin\AddProduct\ManufactureSelectionPartProductsForm;
 use BaksDev\Products\Product\Entity\ProductInvariable;
 use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
+use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
 use BaksDev\Products\Product\Repository\ProductsDetailByUids\ProductsDetailByUidsInterface;
 use BaksDev\Products\Product\Type\Invariable\ProductInvariableUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -153,7 +154,10 @@ final class AddSelectedProductsController extends AbstractController
                      * Отправляем сокет для скрытия карточки товара
                      */
 
-                    if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
+                    if(
+                        $CurrentProductIdentifierResult instanceof CurrentProductIdentifierResult
+                        && $CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid
+                    )
                     {
                         $ManufacturePartCentrifugoPublishMessage = new ManufacturePartCentrifugoPublishMessage(
 
@@ -217,7 +221,10 @@ final class AddSelectedProductsController extends AbstractController
                      * Добавляем идентификатор партии на продукт
                      */
 
-                    if($CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid)
+                    if(
+                        $CurrentProductIdentifierResult instanceof CurrentProductIdentifierResult
+                        && $CurrentProductIdentifierResult->getProductInvariable() instanceof ProductInvariableUid
+                    )
                     {
                         $ManufactureProductMessage = new ManufactureProductMessage(
                             invariable: $CurrentProductIdentifierResult->getProductInvariable(),
