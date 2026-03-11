@@ -47,12 +47,14 @@ use BaksDev\Products\Product\Type\Offers\Variation\Modification\Id\ProductModifi
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Обновляет произведенную продукцию в заказах со статусом «NEW» как готовую к упаковке (+ access)
  */
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 60)]
 final readonly class AccessOrderProductByPartCompletedDispatcher
 {

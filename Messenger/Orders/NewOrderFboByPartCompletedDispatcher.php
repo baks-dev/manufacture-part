@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -60,12 +60,14 @@ use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\PaymentType\TypePaymentFboWildberries;
 use BaksDev\Wildberries\Orders\Type\ProfileType\TypeProfileFboWildberries;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Создает заказ со статусом NEW на производство FBO при завершающем этапе
  */
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 100)]
 final readonly class NewOrderFboByPartCompletedDispatcher
 {

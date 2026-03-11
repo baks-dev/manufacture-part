@@ -51,7 +51,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Обновляем производственную партию идентификаторами заказов со статусом «NEW», и готовых к упаковке (total === access)
  * @see AccessOrderProductByPartCompletedDispatcher
  */
-#[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 50)]
 final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 {

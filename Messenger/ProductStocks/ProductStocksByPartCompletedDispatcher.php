@@ -51,7 +51,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 /**
  * Обновляет складские остатки продукции после завершающего этапа производства
  */
-#[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 70)]
 final readonly class ProductStocksByPartCompletedDispatcher
 {

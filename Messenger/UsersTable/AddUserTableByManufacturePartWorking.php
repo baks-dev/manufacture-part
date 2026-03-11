@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ use BaksDev\Users\UsersTable\Entity\Table\UsersTable;
 use BaksDev\Users\UsersTable\UseCase\Admin\Table\NewEdit\UsersTableDTO;
 use BaksDev\Users\UsersTable\UseCase\Admin\Table\NewEdit\UsersTableHandler;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -44,6 +45,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Добавляем в табель сотрудника действие
  * @note Самый высокий приоритет, т.к. учет табеля ведется по событию
  */
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 1000)]
 final readonly class AddUserTableByManufacturePartWorking
 {

@@ -60,7 +60,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  *
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
-#[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 40)]
 final readonly class PackageProductStockByPartCompletedDispatcher
 {

@@ -56,7 +56,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * На добавленные в производственную партию заказы - отправляет на упаковку заказы со статусом «NEW»
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
-#[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 30)]
 final readonly class PackageOrdersByPartCompletedDispatcher
 {

@@ -28,7 +28,7 @@ use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use Generator;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-#[Autoconfigure(public: true)]
+// #[Autoconfigure(public: true)]
 interface ProductsByManufacturePartInterface
 {
     public function forPart(ManufacturePart|ManufacturePartUid|string $part): self;
