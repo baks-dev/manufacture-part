@@ -54,6 +54,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * На добавленные в производственную партию заказы - отправляет на упаковку заказы со статусом «NEW»
+ *
  * @see ManufacturePartProductOrderByPartCompletedDispatcher
  */
 #[Autoconfigure(shared: false)]
@@ -94,7 +95,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -203,7 +204,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                 {
                     $this->logger->info(
                         sprintf('%s: Отправляем заказ на упаковку', $OrderEvent->getOrderNumber()),
-                        [self::class.':'.__LINE__]
+                        [self::class.':'.__LINE__],
                     );
 
                     $OrderStatusDTO = new OrderStatusDTO(
@@ -222,7 +223,7 @@ final readonly class PackageOrdersByPartCompletedDispatcher
                     {
                         $this->logger->critical(
                             'manufacture-part: Ошибка при обновлении заказа со статусом «Упаковка»',
-                            [$OrderStatusHandler, self::class.':'.__LINE__]
+                            [$OrderStatusHandler, self::class.':'.__LINE__],
                         );
                     }
                 }

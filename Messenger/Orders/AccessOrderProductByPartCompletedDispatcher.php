@@ -158,6 +158,11 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
                 if(false === ($OrderEvent instanceof OrderEvent))
                 {
+                    $this->logger->critical(
+                        'Релевантных заказов для производственной партии не найдено',
+                        [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
+                    );
+
                     continue 2;
                 }
 
