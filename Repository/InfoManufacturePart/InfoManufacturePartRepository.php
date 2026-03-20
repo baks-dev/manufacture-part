@@ -74,7 +74,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
             ->setParameter(
                 key: 'part',
                 value: $part,
-                type: ManufacturePartUid::TYPE
+                type: ManufacturePartUid::TYPE,
             );
 
         $dbal
@@ -82,7 +82,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
             ->setParameter(
                 key: 'profile',
                 value: $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         /**
@@ -96,7 +96,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'invariable',
                 ManufacturePart::class,
                 'part',
-                'part.id = invariable.main'
+                'part.id = invariable.main',
             );
 
 
@@ -107,7 +107,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
             ->join(
                 'part', ManufacturePartEvent::class,
                 'part_event',
-                'part_event.id = part.event'
+                'part_event.id = part.event',
             );
 
 
@@ -150,7 +150,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'part_event',
                 UserProfile::class,
                 'users_profile',
-                'users_profile.id = part_event.fixed'
+                'users_profile.id = part_event.fixed',
             );
 
         $dbal
@@ -159,7 +159,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
         /**
@@ -171,7 +171,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'part_event',
                 UsersTableActionsTrans::class,
                 'action_trans',
-                'action_trans.event = part_event.action AND action_trans.local = :local'
+                'action_trans.event = part_event.action AND action_trans.local = :local',
             );
 
         /** Категория производства */
@@ -182,7 +182,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'part_event',
                 UsersTableActionsEvent::class,
                 'actions_event',
-                'actions_event.id = part_event.action'
+                'actions_event.id = part_event.action',
             );
 
         $dbal
@@ -191,7 +191,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'actions_event',
                 CategoryProduct::class,
                 'category',
-                'category.id = actions_event.category'
+                'category.id = actions_event.category',
             );
 
         $dbal
@@ -200,7 +200,7 @@ final readonly class InfoManufacturePartRepository implements InfoManufacturePar
                 'category',
                 CategoryProductTrans::class,
                 'trans',
-                'trans.event = category.event AND trans.local = :local'
+                'trans.event = category.event AND trans.local = :local',
             );
 
 

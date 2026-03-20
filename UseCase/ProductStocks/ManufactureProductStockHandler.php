@@ -51,7 +51,7 @@ final class ManufactureProductStockHandler extends AbstractHandler
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ProductStockMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-                transport: 'products-stocks'
+                transport: 'products-stocks',
             );
 
         return $this->main;

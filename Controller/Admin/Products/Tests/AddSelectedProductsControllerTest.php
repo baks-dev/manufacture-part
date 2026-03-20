@@ -36,10 +36,9 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[Group('manufacture-part')]
 class AddSelectedProductsControllerTest extends WebTestCase
 {
+    private const string ROLE = 'ROLE_MANUFACTURE_PART_ADD';
     private static ?string $url = null;
     private static ?array $post_data = null;
-
-    private const string ROLE = 'ROLE_MANUFACTURE_PART_ADD';
 
     public static function setUpBeforeClass(): void
     {
@@ -53,9 +52,9 @@ class AddSelectedProductsControllerTest extends WebTestCase
                         'offer' => ProductOfferUid::TEST,
                         'variation' => ProductVariationUid::TEST,
                         'modification' => ProductModificationUid::TEST,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
     }

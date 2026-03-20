@@ -157,5 +157,5 @@ final class ManufacturePartCentrifugoPublishMessage
     {
         return $this->device;
     }
-    
+
 }

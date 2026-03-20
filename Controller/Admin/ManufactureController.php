@@ -60,7 +60,7 @@ final class ManufactureController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.manufacture')]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.manufacture')],
             )
             ->handleRequest($request);
 
@@ -72,7 +72,7 @@ final class ManufactureController extends AbstractController
             ->createForm(
                 ManufactureFilterForm::class,
                 $filter,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.manufacture')]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.manufacture')],
             )
             ->handleRequest($request);
 
@@ -103,7 +103,7 @@ final class ManufactureController extends AbstractController
                 'query' => $ManufacturePart,
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
-            ]
+            ],
         );
     }
 }

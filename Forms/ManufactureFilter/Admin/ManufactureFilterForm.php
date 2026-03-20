@@ -95,21 +95,21 @@ final class ManufactureFilterForm extends AbstractType
 
                 $this->request->getSession()->set(ManufactureFilterDTO::date, $data->getDate());
                 $this->request->getSession()->set(ManufactureFilterDTO::status, $data->getStatus());
-            }
+            },
         );
 
 
         $builder->add(
             'back',
             SubmitType::class,
-            ['label' => 'Back', 'label_html' => true, 'attr' => ['class' => 'btn-light']]
+            ['label' => 'Back', 'label_html' => true, 'attr' => ['class' => 'btn-light']],
         );
 
 
         $builder->add(
             'next',
             SubmitType::class,
-            ['label' => 'next', 'label_html' => true, 'attr' => ['class' => 'btn-light']]
+            ['label' => 'next', 'label_html' => true, 'attr' => ['class' => 'btn-light']],
         );
     }
 
@@ -119,7 +119,7 @@ final class ManufactureFilterForm extends AbstractType
             [
                 'data_class' => ManufactureFilterDTO::class,
                 'method' => 'POST',
-            ]
+            ],
         );
     }
 }

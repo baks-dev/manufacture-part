@@ -43,7 +43,8 @@ interface ProductsByManufacturePartInterface
      * @twig:
      *
      * <code>
-     *     {# @var ProductsByManufacturePartResult \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}
+     *     {# @var ProductsByManufacturePartResult
+     *     \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}
      *     {{ ProductsByManufacturePartResult.getTotal }}
      * </code>
      */

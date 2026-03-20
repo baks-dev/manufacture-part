@@ -57,7 +57,7 @@ final class PartProductFilterForm extends AbstractType
                 $this->request->getSession()->set(PartProductFilterDTO::variation, $data->getVariation());
                 $this->request->getSession()->set(PartProductFilterDTO::modification, $data->getModification());
 
-            }
+            },
         );
 
 
@@ -93,7 +93,7 @@ final class PartProductFilterForm extends AbstractType
                                     'label' => $offerField->getOption(),
                                     'priority' => 200,
                                     'required' => false,
-                                ]
+                                ],
                             );
 
 
@@ -116,7 +116,7 @@ final class PartProductFilterForm extends AbstractType
                                             'label' => $variationField->getOption(),
                                             'priority' => 199,
                                             'required' => false,
-                                        ]
+                                        ],
                                     );
 
                                     /** Модификации множественных вариантов торгового предложения */
@@ -139,7 +139,7 @@ final class PartProductFilterForm extends AbstractType
                                                     'label' => $modificationField->getOption(),
                                                     'priority' => 198,
                                                     'required' => false,
-                                                ]
+                                                ],
                                             );
                                         }
                                     }
@@ -154,7 +154,7 @@ final class PartProductFilterForm extends AbstractType
                     $data->setVariation(null);
                     $data->setModification(null);
                 }
-            }
+            },
         );
 
     }
@@ -167,7 +167,7 @@ final class PartProductFilterForm extends AbstractType
                 'validation_groups' => false,
                 'method' => 'POST',
                 'attr' => ['class' => 'w-100'],
-            ]
+            ],
         );
     }
 

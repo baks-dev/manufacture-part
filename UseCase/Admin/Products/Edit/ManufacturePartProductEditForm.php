@@ -43,7 +43,7 @@ final class ManufacturePartProductEditForm extends AbstractType
         $builder->add(
             'manufacture_part_product_edit',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
         );
     }
 

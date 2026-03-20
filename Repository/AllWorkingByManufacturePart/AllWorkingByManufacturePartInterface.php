@@ -23,12 +23,15 @@
 
 namespace BaksDev\Manufacture\Part\Repository\AllWorkingByManufacturePart;
 
+use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 
 interface AllWorkingByManufacturePartInterface
 {
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self;
+
     /**
      * Возвращает этапы производства указанной производственной партии
      */
-    public function fetchAllWorkingByManufacturePartAssociative(ManufacturePartUid $part): array|bool;
+    public function findAll(): array|bool;
 }

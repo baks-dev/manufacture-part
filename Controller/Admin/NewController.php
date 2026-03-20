@@ -62,7 +62,7 @@ final class NewController extends AbstractController
             ->createForm(
                 type: ManufacturePartForm::class,
                 data: $ManufacturePartDTO,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.newedit.new')]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.newedit.new')],
             )
             ->handleRequest($request);
 
@@ -93,7 +93,7 @@ final class NewController extends AbstractController
                 'admin.page.new',
                 $handle instanceof ManufacturePart ? 'admin.success.new' : 'admin.danger.new',
                 'manufacture-part.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToReferer();

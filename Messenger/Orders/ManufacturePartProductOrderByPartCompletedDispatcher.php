@@ -49,6 +49,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Обновляем производственную партию идентификаторами заказов со статусом «NEW», и готовых к упаковке (total === access)
+ *
  * @see AccessOrderProductByPartCompletedDispatcher
  */
 #[Autoconfigure(shared: false)]
@@ -83,7 +84,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -184,7 +185,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
                 $this->logger->info(
                     'Добавляем заказ к производственной партии',
-                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
+                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
                 );
 
                 /** Присваиваем заказ продукции в производственной партии */
@@ -196,7 +197,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
 
             $this->logger->info(
                 'Сохраняем производственную партию с указанными заказами к продукции',
-                [self::class.':'.__LINE__]
+                [self::class.':'.__LINE__],
             );
 
         }
@@ -207,12 +208,13 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         {
             $this->logger->critical(
                 sprintf('manufacture-part: Ошибка %s при обновлении производственной партии', $ManufacturePart),
-                [$message, self::class.':'.__LINE__]
+                [$message, self::class.':'.__LINE__],
             );
         }
 
         /**
          * Приступаем к упаковке заказов
+         *
          * @see PackageOrdersByPartCompletedDispatcher
          */
 

@@ -36,13 +36,13 @@ final class ManufacturePartActionForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('working', Working\ManufacturePartWorkingForm::class, ['label' => false]);
+        //$builder->add('working', Working\ManufacturePartWorkingForm::class, ['label' => false]);
 
         /* Сохранить ******************************************************/
         $builder->add(
             'manufacture_part_action',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-warning']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-warning']],
         );
     }
 

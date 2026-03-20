@@ -64,7 +64,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]),]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()]),],
             )
             ->handleRequest($request);
 
@@ -73,7 +73,7 @@ final class IndexController extends AbstractController
         $info = $infoManufacturePart->fetchInfoManufacturePartAssociative(
             $ManufacturePart->getId(),
             $this->getCurrentProfileUid(),
-            $this->isGranted('ROLE_MANUFACTURE_PART_OTHER') ? $this->getProfileUid() : null
+            $this->isGranted('ROLE_MANUFACTURE_PART_OTHER') ? $this->getProfileUid() : null,
         );
 
 
@@ -86,7 +86,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: PartProductFilterForm::class,
                 data: $filter,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()])]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.products.index', ['id' => $ManufacturePart->getId()])],
             )
             ->handleRequest($request);
 
@@ -104,7 +104,7 @@ final class IndexController extends AbstractController
                 'search' => $searchForm->createView(),
                 'filter' => $filterForm->createView(),
                 'info' => $info,
-            ]
+            ],
         );
     }
 }

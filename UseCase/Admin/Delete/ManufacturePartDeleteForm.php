@@ -40,7 +40,7 @@ final class ManufacturePartDeleteForm extends AbstractType
         $builder->add(
             'manufacture_part_delete',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-danger']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-danger']],
         );
     }
 

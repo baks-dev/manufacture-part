@@ -44,6 +44,7 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
     {
         /**
          * Продукция, которой допущен дефект
+         *
          * @var ManufacturePartProduct $ManufacturePartProduct
          */
         $ManufacturePartProduct = $this
@@ -61,6 +62,7 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
 
         /**
          * Получаем активное событие партии
+         *
          * @var ManufacturePartEvent $ManufacturePartEvent
          */
         $ManufacturePartEvent = $this
@@ -165,7 +167,7 @@ final class ManufacturePartProductDefectHandler extends AbstractHandler
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), total: $command->getTotal()),
-                transport: 'manufacture-part'
+                transport: 'manufacture-part',
             );
 
         return $this->main;

@@ -55,7 +55,7 @@ class PackageOrdersByPartCompletedTest extends KernelTestCase
 
         $ManufacturePartMessage = new ManufacturePartMessage(
             new ManufacturePartUid('01951617-5dcb-7634-bcc0-f574233f73e4'),
-            new ManufacturePartEventUid('01951618-7d4c-70ef-8dcd-8551151816c5')
+            new ManufacturePartEventUid('01951618-7d4c-70ef-8dcd-8551151816c5'),
         );
 
         $dispatch = $PackageOrdersByPartCompleted($ManufacturePartMessage);

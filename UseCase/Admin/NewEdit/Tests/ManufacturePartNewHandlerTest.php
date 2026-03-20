@@ -49,6 +49,7 @@ class ManufacturePartNewHandlerTest extends KernelTestCase
     {
         /**
          * Инициируем статус для итератора тегов
+         *
          * @var ManufacturePartStatusCollection $ManufacturePartStatus
          */
         $ManufacturePartStatus = self::getContainer()->get(ManufacturePartStatusCollection::class);

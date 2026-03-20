@@ -32,68 +32,105 @@ use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Users\UsersTable\Entity\Actions\Event\UsersTableActionsEvent;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\Trans\UsersTableActionsWorkingTrans;
 use BaksDev\Users\UsersTable\Entity\Actions\Working\UsersTableActionsWorking;
+use InvalidArgumentException;
 
-final readonly class AllWorkingByManufacturePartRepository implements AllWorkingByManufacturePartInterface
+final  class AllWorkingByManufacturePartRepository implements AllWorkingByManufacturePartInterface
 {
-    public function __construct(private DBALQueryBuilder $DBALQueryBuilder) {}
+    private ManufacturePartUid|false $part = false;
+
+    public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
+
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self
+    {
+        if(empty($part))
+        {
+            $this->part = false;
+            return $this;
+        }
+
+        if(is_string($part))
+        {
+            $part = new ManufacturePartUid($part);
+        }
+
+        if($part instanceof ManufacturePart)
+        {
+            $part = $part->getId();
+        }
+
+        $this->part = $part;
+
+        return $this;
+    }
+
 
     /**
      * Возвращает этапы производства указанной производственной партии
      */
-    public function fetchAllWorkingByManufacturePartAssociative(ManufacturePartUid $part): array|bool
+    public function findAll(): array|bool
     {
+        if(false === ($this->part instanceof ManufacturePartUid))
+        {
+            throw new InvalidArgumentException('Invalid Argument ManufacturePart');
+        }
 
-        $qb = $this->DBALQueryBuilder
+        $dbal = $this->DBALQueryBuilder
             ->createQueryBuilder(self::class)
             ->bindLocal();
 
-        $qb->from(ManufacturePart::class, 'part');
-        $qb->where('part.id = :part');
-        $qb->setParameter('part', $part, ManufacturePartUid::TYPE);
+        $dbal
+            ->from(ManufacturePart::class, 'part')
+            ->where('part.id = :part')
+            ->setParameter(
+                'part',
+                $this->part,
+                ManufacturePartUid::TYPE,
+            );
 
 
-        $qb->select('part_event.comment AS part_comment');
-        $qb->join(
-            'part',
-            ManufacturePartEvent::class,
-            'part_event',
-            'part_event.id = part.event'
-        );
+        $dbal
+            ->select('part_event.comment AS part_comment')
+            ->join(
+                'part',
+                ManufacturePartEvent::class,
+                'part_event',
+                'part_event.id = part.event',
+            );
 
 
         /** Этапы производства */
 
 
-        $qb->join(
+        $dbal->join(
             'part_event',
             UsersTableActionsEvent::class,
             'action_event',
-            'action_event.id = part_event.action'
+            'action_event.id = part_event.action',
         );
 
-        $qb->addSelect('action_working.id AS working_id');
+        $dbal
+            ->addSelect('action_working.id AS working_id')
+            ->leftJoin(
+                'action_event',
+                UsersTableActionsWorking::class,
+                'action_working',
+                'action_working.event = action_event.id',
+            );
 
-        $qb->leftJoin(
-            'action_event',
-            UsersTableActionsWorking::class,
-            'action_working',
-            'action_working.event = action_event.id'
-        );
 
+        $dbal
+            ->addSelect('action_working_trans.name AS working_name')
+            ->leftJoin(
+                'action_event',
+                UsersTableActionsWorkingTrans::class,
+                'action_working_trans',
+                'action_working_trans.working = action_working.id AND action_working_trans.local = :local',
+            );
 
-        $qb->addSelect('action_working_trans.name AS working_name');
-
-        $qb->leftJoin(
-            'action_event',
-            UsersTableActionsWorkingTrans::class,
-            'action_working_trans',
-            'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
-        );
-
-        $qb->orderBy('action_working.sort');
+        $dbal->orderBy('action_working.sort');
 
         /* Кешируем результат DBAL */
-        return $qb
+        return $dbal
             ->enableCache('manufacture-part', 86400)
             ->fetchAllAssociative();
 

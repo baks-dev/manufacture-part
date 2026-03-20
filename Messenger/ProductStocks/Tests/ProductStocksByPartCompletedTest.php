@@ -55,7 +55,7 @@ class ProductStocksByPartCompletedTest extends KernelTestCase
 
         $ManufacturePartMessage = new ManufacturePartMessage(
             new ManufacturePartUid('cfb542c9-d823-73ef-ae46-0a56beab5584'),
-            new ManufacturePartEventUid('c28ecd04-67a1-7d5b-8c64-2b37d27cf28b')
+            new ManufacturePartEventUid('c28ecd04-67a1-7d5b-8c64-2b37d27cf28b'),
         );
 
         $dispatch = $ProductStocksByPartCompleted($ManufacturePartMessage);

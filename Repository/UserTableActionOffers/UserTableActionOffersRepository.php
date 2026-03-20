@@ -64,14 +64,14 @@ class UserTableActionOffersRepository implements UserTableActionOffersInterface
                 'actions_event',
                 UsersTableActionsOffer::class,
                 'actions_offer',
-                'actions_offer.event = actions_event.id'
+                'actions_offer.event = actions_event.id',
             );
 
         $dbal->where('actions.id = :main')
             ->setParameter(
                 key: 'main',
                 value: $main,
-                type: UsersTableActionsUid::TYPE
+                type: UsersTableActionsUid::TYPE,
             );
 
         $dbal->orderBy('actions_event.id', 'DESC');

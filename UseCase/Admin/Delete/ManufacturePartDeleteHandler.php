@@ -53,7 +53,7 @@ final class ManufacturePartDeleteHandler extends AbstractHandler
         /* Отправляем сообщение в шину */
         $this->messageDispatch->dispatch(
             message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-            transport: 'manufacture-part'
+            transport: 'manufacture-part',
         );
 
         return $this->main;

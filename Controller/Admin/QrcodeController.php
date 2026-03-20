@@ -82,8 +82,8 @@ final class QrcodeController extends AbstractController
         return $this->render(
             [
                 'qrcode' => $render,
-                'item' => $ManufacturePartEvent
-            ]
+                'item' => $ManufacturePartEvent,
+            ],
         );
     }
 }

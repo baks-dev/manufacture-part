@@ -43,6 +43,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * Добавляем в табель сотрудника действие
+ *
  * @note Самый высокий приоритет, т.к. учет табеля ведется по событию
  */
 #[Autoconfigure(shared: false)]
@@ -81,7 +82,7 @@ final readonly class AddUserTableByManufacturePartWorking
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -132,7 +133,7 @@ final readonly class AddUserTableByManufacturePartWorking
         {
             $this->logger->critical(
                 sprintf('manufacture-part: Ошибка %s при добавлении действия табеля сотрудника', $UsersTableHandler),
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -142,7 +143,7 @@ final readonly class AddUserTableByManufacturePartWorking
             'Добавили табель сотрудника', [
             'profile' => (string) $ManufacturePartWorkingDTO->getProfile(),
             'working' => (string) $ManufacturePartWorkingDTO->getWorking(),
-            'quantity' => $ManufacturePartInvariable->getQuantity()
+            'quantity' => $ManufacturePartInvariable->getQuantity(),
         ]);
 
         $DeduplicatorExecuted->save();

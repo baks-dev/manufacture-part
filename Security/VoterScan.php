@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2026.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,31 +21,26 @@
  *  THE SOFTWARE.
  */
 
-namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+declare(strict_types=1);
 
-use BaksDev\Manufacture\Part\BaksDevManufacturePartBundle;
+namespace BaksDev\Manufacture\Part\Security;
 
-return static function(ContainerConfigurator $configurator) {
+use BaksDev\Users\Profile\Group\Security\RoleInterface;
+use BaksDev\Users\Profile\Group\Security\VoterInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure(); //->public();
+#[AutoconfigureTag('baks.security.voter')]
+final class VoterScan implements VoterInterface
+{
+    public const string VOTER = 'SCAN';
 
-    $NAMESPACE = BaksDevManufacturePartBundle::NAMESPACE;
-    $PATH = BaksDevManufacturePartBundle::PATH;
+    public static function getVoter(): string
+    {
+        return Role::ROLE.'_'.self::VOTER;
+    }
 
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Result.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
-
-    $services->load(
-        $NAMESPACE.'Type\Status\ManufacturePartStatus\\',
-        $PATH.implode(DIRECTORY_SEPARATOR, ['Type', 'Status', 'ManufacturePartStatus']),
-    );
-};
+    public function equals(RoleInterface $role): bool
+    {
+        return $role->getRole() === Role::ROLE;
+    }
+}

@@ -80,7 +80,7 @@ final class ManufacturePartInvariableRepository implements ManufacturePartInvari
             ->setParameter(
                 key: 'main',
                 value: $this->part,
-                type: ManufacturePartUid::TYPE
+                type: ManufacturePartUid::TYPE,
             );
 
         return $orm->getQuery()->getOneOrNullResult() ?: false;

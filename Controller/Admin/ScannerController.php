@@ -35,7 +35,6 @@ use BaksDev\Core\Type\UidType\ParamConverter;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Repository\ActiveWorkingManufacturePart\ActiveWorkingManufacturePartInterface;
-use BaksDev\Manufacture\Part\Repository\AllWorkingByManufacturePart\AllWorkingByManufacturePartInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
@@ -44,33 +43,30 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionHandler;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use chillerlan\QRCode\QRCode;
 use InvalidArgumentException;
-use RuntimeException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-#[RoleSecurity('ROLE_MANUFACTURE_PART_ACTION')]
-final class ActionController extends AbstractController
+//#[RoleSecurity('ROLE_MANUFACTURE_PART_SCAN')]
+final class ScannerController extends AbstractController
 {
     private BarcodeWrite $BarcodeWrite;
 
     /**
      * Меняет производственное состояние и присваивает исполнителя
      */
-    #[Route('/admin/manufacture/part/action/{id}', name: 'admin.action', methods: ['GET', 'POST'])]
+    #[Route('/admin/manufacture/part/scan/{id}', name: 'admin.scan', methods: ['GET', 'POST'])]
     public function action(
         Request $request,
         #[ParamConverter(ManufacturePartUid::class)] $id,
         ManufacturePartActionHandler $ManufacturePartActionHandler,
         ActiveWorkingManufacturePartInterface $activeWorkingManufacturePart,
-        AllWorkingByManufacturePartInterface $allWorkingByManufacturePart,
         ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        BarcodeWrite $BarcodeWrite,
     ): Response
     {
-
         $ManufacturePartEvent = $ManufacturePartCurrentEvent
             ->fromPart($id)
             ->find();
@@ -81,36 +77,23 @@ final class ActionController extends AbstractController
         }
 
 
-        $this->BarcodeWrite = $BarcodeWrite;
-
-        /**
-         * Получаем все этапы данной категории производства
-         */
-        $all = $allWorkingByManufacturePart
-            ->forPart($ManufacturePartEvent->getMain())
-            ->findAll();
-
         /**
          * Получаем этап производства партии, который необходимо выполнить
          */
         $working = $activeWorkingManufacturePart->findNextWorkingByManufacturePart($ManufacturePartEvent->getMain());
-
-
-        $data = sprintf('%s', $ManufacturePartEvent->getMain());
 
         /**
          * Если все этапы выполнены - получаем все выполненные этапы
          */
         if(false === ($working instanceof UsersTableActionsWorkingUid))
         {
-            $all = $activeWorkingManufacturePart->fetchCompleteWorkingByManufacturePartAssociative($ManufacturePartEvent->getMain());
+            $this->addFlash(
+                'admin.page.action',
+                'Производственной партии требующей выполнения не найдено',
+                'manufacture-part.admin',
+            );
 
-            return $this->render([
-                'part' => $ManufacturePartEvent,
-                'current' => $working,
-                'all' => $all,
-                'qrcode' => $this->renderQRCode($data),
-            ], file: 'completed.html.twig');
+            return $this->redirectToReferer();
         }
 
         $ManufacturePartActionDTO = new ManufacturePartActionDTO();
@@ -145,7 +128,7 @@ final class ActionController extends AbstractController
                     'manufacture-part.admin',
                 );
 
-                return $this->redirectToRoute('manufacture-part:admin.manufacture');
+                return $this->redirectToReferer();
             }
 
             $this->addFlash(
@@ -158,39 +141,12 @@ final class ActionController extends AbstractController
         }
 
 
-        return $this->render([
-            'form' => $form->createView(),
-            'part' => $ManufacturePartEvent,
-            'current' => $working,
-            'all' => $all,
-            'qrcode' => $this->renderQRCode($data),
-        ]);
-    }
+        $this->addFlash(
+            'admin.page.action',
+            'Необходимо выполнить сканирование QR-кода',
+            'manufacture-part.admin',
+        );
 
-
-    private function renderQRCode(string $data): string
-    {
-        $barcode = $this->BarcodeWrite
-            ->text($data)
-            ->type(BarcodeType::QRCode)
-            ->format(BarcodeFormat::SVG)
-            ->generate(implode(DIRECTORY_SEPARATOR, ['barcode', 'test']));
-
-        if($barcode === false)
-        {
-            /**
-             * Проверить права на исполнение
-             * chmod +x /home/bundles.baks.dev/vendor/baks-dev/barcode/Writer/Generate
-             * chmod +x /home/bundles.baks.dev/vendor/baks-dev/barcode/Reader/Decode
-             * */
-            throw new RuntimeException('Barcode write error');
-        }
-
-        $render = $this->BarcodeWrite->render();
-        $render = strip_tags($render, ['path']);
-        $render = trim($render);
-        $this->BarcodeWrite->remove();
-
-        return $render;
+        return $this->redirectToReferer();
     }
 }

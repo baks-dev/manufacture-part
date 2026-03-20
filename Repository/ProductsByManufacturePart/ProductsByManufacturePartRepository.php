@@ -121,7 +121,8 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
     /**
      * Метод возвращает список продукции в производственной партии
      *
-     * {# @var ProductsByManufacturePartResult \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}</pre>
+     * {# @var ProductsByManufacturePartResult
+     * \BaksDev\Manufacture\Part\Repository\ProductsByManufacturePart\ProductsByManufacturePartResult #}</pre>
      * {{ ProductsByManufacturePartResult.getTotal }}
      */
     public function findAll(): Generator|false
@@ -161,7 +162,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
             'part',
             ManufacturePartEvent::class,
             'part_event',
-            'part_event.id = part.event'
+            'part_event.id = part.event',
         );
 
         $dbal
@@ -171,7 +172,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'part',
                 ManufacturePartProduct::class,
                 'part_product',
-                'part_product.event = part.event'
+                'part_product.event = part.event',
             );
 
 
@@ -182,14 +183,14 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'part_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = part_product.product'
+                'product_event.id = part_product.product',
             );
 
         $dbal->leftJoin(
             'product_event',
             ProductInfo::class,
             'product_info',
-            'product_info.product = product_event.main'
+            'product_info.product = product_event.main',
         );
 
         $dbal
@@ -198,7 +199,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /**
@@ -214,7 +215,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_event',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = part_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = part_product.offer OR product_offer.id IS NULL',
             );
 
         /* Тип торгового предложения */
@@ -224,7 +225,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
 
@@ -241,7 +242,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_offer',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = part_product.variation OR product_variation.id IS NULL'
+                'product_variation.id = part_product.variation OR product_variation.id IS NULL',
             );
 
         /* Тип множественного варианта торгового предложения */
@@ -251,7 +252,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_variation',
                 CategoryProductVariation::class,
                 'category_variation',
-                'category_variation.id = product_variation.category_variation'
+                'category_variation.id = product_variation.category_variation',
             );
 
 
@@ -268,7 +269,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'part_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = part_product.modification OR product_modification.id IS NULL'
+                'product_modification.id = part_product.modification OR product_modification.id IS NULL',
             );
 
         /** Получаем тип модификации множественного варианта */
@@ -278,7 +279,7 @@ final class ProductsByManufacturePartRepository implements ProductsByManufacture
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
 

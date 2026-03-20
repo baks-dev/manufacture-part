@@ -34,7 +34,7 @@ final class ManufacturePartProductMessage
 {
     /**
      * Идентификаторы товара
-    */
+     */
     private ?string $event;
     private ?string $offer;
     private ?string $variation;
@@ -51,7 +51,8 @@ final class ManufacturePartProductMessage
         ProductVariationUid|null|false $variation = null,
         ProductModificationUid|null|false $modification = null,
         int|null $total = null,
-    ) {
+    )
+    {
         $this->event = $event ? (string) $event : null;
         $this->offer = $offer ? (string) $offer : null;
         $this->variation = $variation ? (string) $variation : null;

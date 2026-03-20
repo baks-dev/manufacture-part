@@ -159,6 +159,7 @@ final readonly class OpenManufacturePartResult
 
     /**
      * getActionsId
+     *
      * @see UsersTableActionsEvent
      */
     public function getActionsId(): UsersTableActionsEventUid
@@ -181,11 +182,12 @@ final readonly class OpenManufacturePartResult
 
     /**
      * CategoryId
+     *
      * @see UsersTableActionsEvent
      */
     public function getCategoryId(): ?CategoryProductUid
     {
-//        return new CategoryProductUid($this->category_id);
+        //        return new CategoryProductUid($this->category_id);
         return $this->category_id ? new CategoryProductUid($this->category_id) : null;
     }
 

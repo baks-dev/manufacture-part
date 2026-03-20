@@ -56,7 +56,7 @@ final readonly class ActionTableByExistManufacturePartRepository implements Acti
             ->setParameter(
                 key: 'products',
                 value: $product,
-                type: ManufacturePartProductUid::TYPE
+                type: ManufacturePartProductUid::TYPE,
             );
 
 
@@ -64,7 +64,7 @@ final readonly class ActionTableByExistManufacturePartRepository implements Acti
             'products',
             ManufacturePartEvent::class,
             'event',
-            'event.id = products.event'
+            'event.id = products.event',
         );
 
         $dbal
@@ -73,12 +73,12 @@ final readonly class ActionTableByExistManufacturePartRepository implements Acti
                 'event',
                 ManufacturePartEvent::class,
                 'working_event',
-                'working_event.main = event.main AND working_event.status = :status'
+                'working_event.main = event.main AND working_event.status = :status',
             )
             ->setParameter(
                 key: 'status',
                 value: new ManufacturePartStatus(ManufacturePartStatusPackage::class),
-                type: ManufacturePartStatus::TYPE
+                type: ManufacturePartStatus::TYPE,
             );
 
 
@@ -87,7 +87,7 @@ final readonly class ActionTableByExistManufacturePartRepository implements Acti
                 'working_event',
                 ManufacturePartWorking::class,
                 'working',
-                'working.event = working_event.id AND working.profile IS NOT NULL'
+                'working.event = working_event.id AND working.profile IS NOT NULL',
             );
 
         $dbal
@@ -96,7 +96,7 @@ final readonly class ActionTableByExistManufacturePartRepository implements Acti
                 'working',
                 UsersTableActionsWorkingTrans::class,
                 'working_trans',
-                'working_trans.working = working.working AND working_trans.local = :local'
+                'working_trans.working = working.working AND working_trans.local = :local',
             );
 
         $dbal

@@ -81,7 +81,7 @@ final readonly class ManufacturePartProductEditHandler
             $errorsString = sprintf(
                 'Not found %s by id: %s',
                 ManufacturePartProduct::class,
-                $command->getId()
+                $command->getId(),
             );
             $this->logger->error($uniqid.': '.$errorsString);
 
@@ -107,7 +107,7 @@ final readonly class ManufacturePartProductEditHandler
                 $errorsString = sprintf(
                     'Профилю пользователя %s не принадлежит продукт %s',
                     $profile,
-                    $command->getId()
+                    $command->getId(),
                 );
                 $this->logger->error($uniqid.': '.$errorsString);
 
@@ -120,7 +120,7 @@ final readonly class ManufacturePartProductEditHandler
                 $uniqid = uniqid('', false);
                 $errorsString = sprintf(
                     'Невозможно обновить продукт из партии, которая уже в производстве %s',
-                    $Product->getEvent()->getStatus()
+                    $Product->getEvent()->getStatus(),
                 );
                 $this->logger->error($uniqid.': '.$errorsString);
 
@@ -153,7 +153,7 @@ final readonly class ManufacturePartProductEditHandler
 
         $this->messageDispatch->dispatch(
             message: new ManufacturePartMessage($ManufacturePartEvent->getMain(), $ManufacturePartEvent->getId()),
-            transport: 'manufacture-part'
+            transport: 'manufacture-part',
         );
 
 

@@ -165,19 +165,6 @@ class ManufacturePartEvent extends EntityEvent
     }
 
     /**
-     * Идентификатор ManufacturePart
-     */
-    public function setMain(ManufacturePartUid|ManufacturePart $main): void
-    {
-        $this->main = $main instanceof ManufacturePart ? $main->getId() : $main;
-    }
-
-    public function getId(): ManufacturePartEventUid
-    {
-        return $this->id;
-    }
-
-    /**
      * Product
      *
      * @return Collection{ int, ManufacturePartProduct }
@@ -210,7 +197,6 @@ class ManufacturePartEvent extends EntityEvent
         return $this->status->equals($status);
     }
 
-
     public function equalsManufacturePartComplete(mixed $complete): bool
     {
         if(is_string($complete) && class_exists($complete))
@@ -230,7 +216,6 @@ class ManufacturePartEvent extends EntityEvent
         return $this->complete;
     }
 
-
     /**
      * Action
      */
@@ -238,7 +223,6 @@ class ManufacturePartEvent extends EntityEvent
     {
         return $this->action;
     }
-
 
     public function getComment(): ?string
     {
@@ -251,12 +235,30 @@ class ManufacturePartEvent extends EntityEvent
     }
 
     /**
+     * Идентификатор ManufacturePart
+     */
+    public function setMain(ManufacturePartUid|ManufacturePart $main): void
+    {
+        $this->main = $main instanceof ManufacturePart ? $main->getId() : $main;
+    }
+
+    public function getId(): ManufacturePartEventUid
+    {
+        return $this->id;
+    }
+
+    /**
      * ManufacturePartInvariable
      */
 
     public function isInvariable(): bool
     {
         return $this->invariable instanceof ManufacturePartInvariable;
+    }
+
+    public function getInvariable(): ManufacturePartInvariable
+    {
+        return $this->invariable;
     }
 
     public function setInvariable(mixed $ManufacturePartInvariable): self
@@ -268,12 +270,6 @@ class ManufacturePartEvent extends EntityEvent
 
         return $this;
     }
-
-    public function getInvariable(): ManufacturePartInvariable
-    {
-        return $this->invariable;
-    }
-
 
     public function getDto($dto): mixed
     {

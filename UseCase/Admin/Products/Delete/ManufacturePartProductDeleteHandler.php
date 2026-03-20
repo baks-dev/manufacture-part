@@ -81,7 +81,7 @@ final readonly class ManufacturePartProductDeleteHandler
             $errorsString = sprintf(
                 'Not found %s by id: %s',
                 ManufacturePartProduct::class,
-                $command->getId()
+                $command->getId(),
             );
             $this->logger->error($uniqid.': '.$errorsString);
 
@@ -106,7 +106,7 @@ final readonly class ManufacturePartProductDeleteHandler
                 $errorsString = sprintf(
                     'Профилю пользователя %s не принадлежит продукт %s',
                     $profile,
-                    $command->getId()
+                    $command->getId(),
                 );
                 $this->logger->error($uniqid.': '.$errorsString);
 
@@ -120,7 +120,7 @@ final readonly class ManufacturePartProductDeleteHandler
                 $uniqid = uniqid('', false);
                 $errorsString = sprintf(
                     'Невозможно удалить продукт из партии, которая уже в производстве %s',
-                    $Product->getEvent()->getStatus()
+                    $Product->getEvent()->getStatus(),
                 );
                 $this->logger->error($uniqid.': '.$errorsString);
 
@@ -138,7 +138,7 @@ final readonly class ManufacturePartProductDeleteHandler
 
         $this->messageDispatch->dispatch(
             message: new ManufacturePartMessage($ManufacturePartEvent->getMain(), $ManufacturePartEvent->getId()),
-            transport: 'manufacture-part'
+            transport: 'manufacture-part',
         );
 
         return $Product;

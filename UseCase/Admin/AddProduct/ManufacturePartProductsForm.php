@@ -70,8 +70,8 @@ final class ManufacturePartProductsForm extends AbstractType
                 },
                 function($product) {
                     return $product ? new ProductEventUid($product) : null;
-                }
-            )
+                },
+            ),
         );
 
 
@@ -84,8 +84,8 @@ final class ManufacturePartProductsForm extends AbstractType
                 },
                 function($offer) {
                     return $offer ? new ProductOfferUid($offer) : null;
-                }
-            )
+                },
+            ),
         );
 
 
@@ -98,8 +98,8 @@ final class ManufacturePartProductsForm extends AbstractType
                 },
                 function($variation) {
                     return $variation ? new ProductVariationUid($variation) : null;
-                }
-            )
+                },
+            ),
         );
 
 
@@ -112,8 +112,8 @@ final class ManufacturePartProductsForm extends AbstractType
                 },
                 function($modification) {
                     return $modification ? new ProductModificationUid($modification) : null;
-                }
-            )
+                },
+            ),
         );
 
 
@@ -141,12 +141,12 @@ final class ManufacturePartProductsForm extends AbstractType
         $show_submit = $builder->getOption('show_submit');
 
         /** Если в ManufactureSelectionPartProductsForm в entry_options задана эта опция со значением true, то скроем этот элемент */
-        if ($show_submit)
+        if($show_submit)
         {
             $builder->add(
                 'manufacture_part_products',
                 SubmitType::class,
-                ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary text-nowrap']]
+                ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary text-nowrap']],
             );
         }
     }

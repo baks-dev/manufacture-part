@@ -40,7 +40,7 @@ final class ManufacturePartPackageForm extends AbstractType
         $builder->add(
             'manufacture_part_package',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
         );
     }
 

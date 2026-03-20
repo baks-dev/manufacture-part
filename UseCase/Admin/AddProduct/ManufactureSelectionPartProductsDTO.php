@@ -57,7 +57,7 @@ final class ManufactureSelectionPartProductsDTO /*implements ManufacturePartProd
         $product->setProfile($this->profile);
 
         $this->product_form_data->add($product);
-        
+
         return $this;
     }
 

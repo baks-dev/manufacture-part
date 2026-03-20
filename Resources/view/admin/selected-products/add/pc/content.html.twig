@@ -27,11 +27,11 @@
 
                     {# <div class='d-flex gap-2 align-items-center'>
                     #}{# Свойства, учавствующие в превью карточки #}{#
-                        {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
-                            {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
-                        {% endfor %}
+                {% for name_property in  arr_property | filter(props => props.field_card is defined and props.field_card == true) %}
+                    {{ name_property.field_value|call_twig_func(name_property.field_type~'_render') }}
+                {% endfor %}
 
-                    </div> #}
+            </div> #}
 
                     <div class="d-flex justify-content-between gap-3 align-items-center w-100 mb-2  {{ loop.last ?: 'border-bottom border-light' }}">
 
@@ -68,24 +68,24 @@
 
                             <div class="d-flex gap-3">
 
-                            <div>
-                                {% if card.productOfferName %}
-                                    <small class="opacity-50">{{ card.productOfferName }}:</small>&nbsp;
-                                    <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% if card.productVariationName %}
-                                    <small class="opacity-50">{{ card.productVariationName }}:</small>&nbsp;
-                                    <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% if card.productModificationName %}
-                                    <small class="opacity-50">{{ card.productModificationName }}:</small>&nbsp;
-                                    <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>
-                                {% endif %}
-                            </div>
+                                <div>
+                                    {% if card.productOfferName %}
+                                        <small class="opacity-50">{{ card.productOfferName }}:</small>&nbsp;
+                                        <strong>{{ card.productOfferValue|call_twig_func(card.productOfferReference) }} {{ card.productOfferPostfix }}</strong>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if card.productVariationName %}
+                                        <small class="opacity-50">{{ card.productVariationName }}:</small>&nbsp;
+                                        <strong>{{ card.productVariationValue|call_twig_func(card.productVariationReference) }} {{ card.productVariationPostfix }}</strong>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if card.productModificationName %}
+                                        <small class="opacity-50">{{ card.productModificationName }}:</small>&nbsp;
+                                        <strong>{{ card.productModificationValue|call_twig_func(card.productModificationReference) }} {{ card.productModificationPostfix }}</strong>
+                                    {% endif %}
+                                </div>
 
                             </div>
 

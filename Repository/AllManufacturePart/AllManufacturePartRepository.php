@@ -93,7 +93,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             ->setParameter(
                 key: 'profile',
                 value: $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         /**
@@ -107,7 +107,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'invariable',
                 ManufacturePart::class,
                 'part',
-                'part.id = invariable.main'
+                'part.id = invariable.main',
             );
 
         $dbal
@@ -118,12 +118,12 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 ManufacturePartEvent::class,
                 'event',
                 'event.id = part.event'.
-                (!$this->search?->getQuery() && $this->filter?->getStatus() ? ' AND event.status = :status' : '')
+                (!$this->search?->getQuery() && $this->filter?->getStatus() ? ' AND event.status = :status' : ''),
             )
             ->setParameter(
                 'status',
                 $this->filter?->getStatus(),
-                ManufacturePartStatus::TYPE
+                ManufacturePartStatus::TYPE,
             );
 
         /** Ответственное лицо (Профиль пользователя) */
@@ -132,7 +132,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             'event',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = invariable.profile'
+            'users_profile.id = invariable.profile',
         );
 
         $dbal
@@ -141,7 +141,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -151,7 +151,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'part',
                 ManufacturePartModify::class,
                 'part_modify',
-                'part_modify.event = part.event'
+                'part_modify.event = part.event',
             );
 
 
@@ -173,7 +173,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'part',
                 ManufacturePartWorking::class,
                 'part_working',
-                'part_working.event = part.event'
+                'part_working.event = part.event',
             );
 
 
@@ -184,7 +184,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             'part_working',
             UsersTableActionsWorking::class,
             'action_working',
-            'action_working.id = part_working.working'
+            'action_working.id = part_working.working',
         );
 
         $dbal
@@ -193,7 +193,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'action_working',
                 UsersTableActionsWorkingTrans::class,
                 'action_working_trans',
-                'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
+                'action_working_trans.working = action_working.id AND action_working_trans.local = :local',
             );
 
         /**
@@ -205,7 +205,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'event',
                 UsersTableActionsTrans::class,
                 'action_trans',
-                'action_trans.event = event.action AND action_trans.local = :local'
+                'action_trans.event = event.action AND action_trans.local = :local',
             );
 
 
@@ -217,7 +217,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'event',
                 UsersTableActionsEvent::class,
                 'actions_event',
-                'actions_event.id = event.action'
+                'actions_event.id = event.action',
             );
 
         $dbal
@@ -226,7 +226,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'actions_event',
                 CategoryProduct::class,
                 'category',
-                'category.id = actions_event.category'
+                'category.id = actions_event.category',
             );
 
         $dbal
@@ -235,7 +235,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
                 'category',
                 CategoryProductTrans::class,
                 'trans',
-                'trans.event = category.event AND trans.local = :local'
+                'trans.event = category.event AND trans.local = :local',
             )
             ->bindLocal();
 

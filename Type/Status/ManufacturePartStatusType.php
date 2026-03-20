@@ -52,7 +52,7 @@ final class ManufacturePartStatusType extends Type
             get_declared_classes(),
             static function($className) {
                 return in_array(ManufacturePartStatusInterface::class, class_implements($className), true);
-            }
+            },
         );
     }
 

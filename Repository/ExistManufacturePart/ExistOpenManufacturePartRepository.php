@@ -87,17 +87,17 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
                 part_event.id = part.event AND 
                 part_event.fixed = :fixed AND
                 part_event.status = :status
-            '
+            ',
         )
             ->setParameter(
                 key: 'status',
                 value: ManufacturePartStatusOpen::class,
-                type: ManufacturePartStatus::TYPE
+                type: ManufacturePartStatus::TYPE,
             )
             ->setParameter(
                 key: 'fixed',
                 value: $this->profile,
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         return $qb->fetchExist();

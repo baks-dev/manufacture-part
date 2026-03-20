@@ -3,7 +3,7 @@
 {{ include(_self|replace({ "content.html.twig": baks_settings.device~"/content.html.twig" })) }}
 
 {# <script nonce='{{ csp_nonce() }}' async data-src="/assets/{{ version }}/manufacture-part/product.js?v={{ version }}" #}
-{#        class="lazy"></script>#}
+{#        class="lazy"></script> #}
 
 <script nonce='{{ csp_nonce() }}' async data-src="/assets/{{ version }}/manufacture-part/products.js?v={{ version }}"
         class="lazy"></script>

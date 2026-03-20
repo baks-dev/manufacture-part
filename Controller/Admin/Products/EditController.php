@@ -65,14 +65,14 @@ final class EditController extends AbstractController
 
             $handle = $ManufacturePartProductEditHandler->handle(
                 $ManufacturePartProductDTO,
-                $this->isGranted('ROLE_ADMIN') ? null : $this->getCurrentProfileUid()
+                $this->isGranted('ROLE_ADMIN') ? null : $this->getCurrentProfileUid(),
             );
 
             $this->addFlash(
                 'admin.page.product_edit',
                 $handle instanceof ManufacturePartProduct ? 'admin.success.product_edit' : 'admin.danger.product_edit',
                 'manufacture-part.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToReferer();

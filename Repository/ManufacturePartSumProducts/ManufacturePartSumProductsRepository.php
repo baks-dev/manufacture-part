@@ -44,7 +44,7 @@ final readonly class ManufacturePartSumProductsRepository implements Manufacture
             ->setParameter(
                 key: 'event',
                 value: $event,
-                type: ManufacturePartEventUid::TYPE
+                type: ManufacturePartEventUid::TYPE,
             );
 
         return $qb->fetchOne() ?: 0;

@@ -45,6 +45,8 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 
 final class ManufacturePartProductsHandler extends AbstractHandler
 {
+    private ?DeliveryUid $complete = null;
+
     public function __construct(
         #[Target('manufacturePartLogger')] private readonly LoggerInterface $logger,
         private readonly OpenManufacturePartByActionInterface $openManufacturePartByAction,
@@ -58,9 +60,6 @@ final class ManufacturePartProductsHandler extends AbstractHandler
     {
         parent::__construct($entityManager, $messageDispatch, $validatorCollection, $imageUpload, $fileUpload);
     }
-
-    private ?DeliveryUid $complete = null;
-
 
     /** @see ManufacturePart */
     public function handle(ManufacturePartProductsDTO $command): string|ManufacturePart|ManufacturePartProduct

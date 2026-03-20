@@ -30,7 +30,7 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/** @see TelegramManufacturePartWorking */
+/** @see ScannerManufacturePartWorking */
 final class ManufacturePartWorkingDTO implements ManufacturePartWorkingInterface
 {
 

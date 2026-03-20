@@ -58,7 +58,7 @@ final class ManufacturePartHandler extends AbstractHandler
             ->addClearCacheOther('wildberries-package')
             ->dispatch(
                 message: new ManufacturePartMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-                transport: 'manufacture-part'
+                transport: 'manufacture-part',
             );
 
         return $this->main;

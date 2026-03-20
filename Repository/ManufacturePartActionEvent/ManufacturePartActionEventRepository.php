@@ -53,7 +53,7 @@ final class ManufacturePartActionEventRepository implements ManufacturePartActio
             'part',
             ManufacturePartEvent::class,
             'part_event',
-            'part_event.main = part.id'
+            'part_event.main = part.id',
         );
 
         $action = $qb->fetchOne();

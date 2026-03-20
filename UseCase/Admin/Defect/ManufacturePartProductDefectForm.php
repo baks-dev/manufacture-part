@@ -82,7 +82,7 @@ final class ManufacturePartProductDefectForm extends AbstractType
         $builder->add(
             'manufacture_part_product_defect',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
         );
     }
 

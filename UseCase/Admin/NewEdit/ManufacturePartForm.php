@@ -80,8 +80,8 @@ final class ManufacturePartForm extends AbstractType
                 },
                 function($category) {
                     return $category instanceof CategoryProductUid ? $category : new CategoryProductUid($category);
-                }
-            )
+                },
+            ),
         );
 
         $formModifier = function(FormInterface $form, ?CategoryProductUid $category = null): void {
@@ -130,7 +130,7 @@ final class ManufacturePartForm extends AbstractType
             function(FormEvent $event) use ($formModifier): void {
                 $data = $event->getData();
                 $formModifier($event->getForm()->getParent(), $data ? new CategoryProductUid($data) : null);
-            }
+            },
         );
 
         $builder->add('complete', DeliveryForm::class, ['required' => false]);
@@ -141,7 +141,7 @@ final class ManufacturePartForm extends AbstractType
         $builder->add(
             'manufacture_part',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary']],
         );
     }
 

@@ -33,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Отправить партию на производство
+ *
  * @see ManufacturePartEvent
  */
 final readonly class ManufacturePartPackageDTO implements ManufacturePartEventInterface

@@ -87,7 +87,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -168,7 +168,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
                 $this->logger->info(
                     'Добавляем произведенную продукцию к заказу',
-                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
+                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
                 );
 
                 $AccessOrderDTO = new AccessOrderDTO();
@@ -269,7 +269,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                     {
                         $this->logger->critical(
                             'Ошибка при обновлении готовой продукции в заказе',
-                            [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__]
+                            [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
                         );
 
                         continue;
@@ -282,6 +282,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
         /**
          * Приступаем к обновлению продукцию в производственной партии идентификаторами заказов, готовых к сборке
+         *
          * @see ManufacturePartProductOrderByPartCompletedDispatch
          */
 

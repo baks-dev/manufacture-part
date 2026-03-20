@@ -73,8 +73,6 @@ final class DefectProductsController extends AbstractController
             /** Делаем проверку, что партия не закрыта */
 
 
-
-
             $handle = $ManufacturePartProductDefectHandler->handle($ManufacturePartDTO);
 
             if($handle instanceof ManufacturePart)

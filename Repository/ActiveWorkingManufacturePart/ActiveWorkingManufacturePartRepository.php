@@ -73,7 +73,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part',
             ManufacturePartEvent::class,
             'part_event',
-            'part_event.main = part.id'
+            'part_event.main = part.id',
         );
 
 
@@ -82,7 +82,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part_event',
             ManufacturePartWorking::class,
             'part_working',
-            'part_working.event = part_event.id'
+            'part_working.event = part_event.id',
         );
 
         $qb->andWhere('part_working.working IS NOT NULL');
@@ -109,7 +109,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'action_event',
             UsersTableActionsWorking::class,
             'action_working',
-            'action_working.event = action_event.id'
+            'action_working.event = action_event.id',
         );
 
         $qb->addSelect('working_trans.name');
@@ -117,7 +117,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'action_working',
             UsersTableActionsWorkingTrans::class,
             'working_trans',
-            'working_trans.working = action_working.id AND working_trans.local = :local'
+            'working_trans.working = action_working.id AND working_trans.local = :local',
         );
 
         if($workings)
@@ -154,7 +154,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part_event',
             ManufacturePartWorking::class,
             'part_working',
-            'part_working.event = part_event.id'
+            'part_working.event = part_event.id',
         );
 
         //$qb->addSelect('part.number AS part_number');
@@ -163,7 +163,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part_event',
             ManufacturePart::class,
             'part',
-            'part.id = part_event.main'
+            'part.id = part_event.main',
         );
 
         $qb
@@ -173,7 +173,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
                 'part',
                 ManufacturePartInvariable::class,
                 'invariable',
-                'invariable.main = part.id'
+                'invariable.main = part.id',
             );
 
 
@@ -183,7 +183,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part_working',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = part_working.profile'
+            'users_profile.id = part_working.profile',
         );
 
         $qb->addSelect('users_profile_personal.username AS users_profile_username');
@@ -192,7 +192,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'users_profile',
             UserProfilePersonal::class,
             'users_profile_personal',
-            'users_profile_personal.event = users_profile.event'
+            'users_profile_personal.event = users_profile.event',
         );
 
 
@@ -212,7 +212,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'part_event',
             UsersTableActionsWorking::class,
             'action_working',
-            'action_working.id =  part_working.working'
+            'action_working.id =  part_working.working',
         );
 
         $qb->addSelect('action_working_trans.name AS working_name');
@@ -221,7 +221,7 @@ final readonly class ActiveWorkingManufacturePartRepository implements ActiveWor
             'action_working',
             UsersTableActionsWorkingTrans::class,
             'action_working_trans',
-            'action_working_trans.working = action_working.id AND action_working_trans.local = :local'
+            'action_working_trans.working = action_working.id AND action_working_trans.local = :local',
         );
 
         $qb->orderBy('action_working.sort');

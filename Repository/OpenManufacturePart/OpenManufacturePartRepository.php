@@ -117,7 +117,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             ->setParameter(
                 key: 'profile',
                 value: $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         $dbal
@@ -127,7 +127,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'invariable',
                 ManufacturePart::class,
                 'part',
-                'part.id = invariable.main'
+                'part.id = invariable.main',
             );
 
 
@@ -137,18 +137,18 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part',
                 ManufacturePartEvent::class,
                 'part_event',
-                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status'
+                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status',
             )
             ->setParameter(
                 'status',
                 ManufacturePartStatusOpen::class,
-                ManufacturePartStatus::TYPE
+                ManufacturePartStatus::TYPE,
 
             )
             ->setParameter(
                 'fixed',
                 $this->profile ?: $this->UserProfileTokenStorage->getProfileCurrent(),
-                UserProfileUid::TYPE
+                UserProfileUid::TYPE,
             );
 
         /** Способ доставки  */
@@ -158,7 +158,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 Delivery::class,
                 'delivery',
-                'delivery.id = part_event.complete'
+                'delivery.id = part_event.complete',
             );
 
         $dbal
@@ -167,7 +167,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 DeliveryTrans::class,
                 'delivery_trans',
-                'delivery_trans.event = delivery.event AND delivery_trans.local = :local'
+                'delivery_trans.event = delivery.event AND delivery_trans.local = :local',
             );
 
         /** Ответственное лицо (Профиль пользователя) */
@@ -178,7 +178,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UserProfile::class,
                 'users_profile',
-                'users_profile.id = part_event.fixed'
+                'users_profile.id = part_event.fixed',
             );
 
         $dbal
@@ -187,7 +187,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -201,7 +201,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 ManufacturePartProduct::class,
                 'part_product',
-                'part_product.event = part_event.id'
+                'part_product.event = part_event.id',
             );
 
 
@@ -212,7 +212,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = part_product.product'
+                'product_event.id = part_product.product',
             );
 
         $dbal
@@ -221,7 +221,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /* Торговое предложение */
@@ -235,7 +235,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = part_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = part_product.offer OR product_offer.id IS NULL',
             );
 
         /* Получаем тип торгового предложения */
@@ -245,7 +245,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         /* Получаем название торгового предложения */
@@ -256,7 +256,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -271,7 +271,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = part_product.variation OR product_variation.id IS NULL '
+                'product_variation.id = part_product.variation OR product_variation.id IS NULL ',
             );
 
 
@@ -282,7 +282,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_variation',
                 CategoryProductVariation::class,
                 'category_variation',
-                'category_variation.id = product_variation.category_variation'
+                'category_variation.id = product_variation.category_variation',
             );
 
         /* Получаем название множественного варианта */
@@ -293,7 +293,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_variation',
                 CategoryProductVariationTrans::class,
                 'category_variation_trans',
-                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local'
+                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local',
             );
 
 
@@ -308,7 +308,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = part_product.modification OR product_modification.id IS NULL '
+                'product_modification.id = part_product.modification OR product_modification.id IS NULL ',
             );
 
 
@@ -319,7 +319,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
         /* Получаем название типа модификации */
@@ -330,7 +330,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_modification',
                 CategoryProductModificationTrans::class,
                 'category_modification_trans',
-                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
+                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local',
             );
 
 
@@ -340,21 +340,21 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             'product_event',
             ProductPhoto::class,
             'product_photo',
-            'product_photo.event = product_event.id AND product_photo.root = true'
+            'product_photo.event = product_event.id AND product_photo.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductModificationImage::class,
             'product_modification_image',
-            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
+            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductVariationImage::class,
             'product_variation_image',
-            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
+            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true',
         );
 
 
@@ -362,7 +362,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             'product_offer',
             ProductOfferImage::class,
             'product_offer_images',
-            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
+            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true',
         );
 
         $dbal->addSelect(
@@ -378,7 +378,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
 					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
-		"
+		",
         );
 
         /* Флаг загрузки файла CDN */
@@ -428,7 +428,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UsersTableActionsEvent::class,
                 'actions_event',
-                'actions_event.id = part_event.action'
+                'actions_event.id = part_event.action',
             );
 
         $dbal
@@ -437,7 +437,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UsersTableActionsTrans::class,
                 'actions_trans',
-                'actions_trans.event = actions_event.id AND actions_trans.local = :local'
+                'actions_trans.event = actions_event.id AND actions_trans.local = :local',
             );
 
         $dbal
@@ -449,7 +449,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 UsersTableActionsOffer::class,
                 'actions_offer',
                 //                'actions_offer.event = actions_event.id AND actions_trans.local = :local'
-                'actions_offer.event = actions_event.id'
+                'actions_offer.event = actions_event.id',
             );
 
         $dbal
@@ -458,7 +458,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'actions_event',
                 CategoryProduct::class,
                 'category',
-                'category.id = actions_event.category'
+                'category.id = actions_event.category',
             );
 
         $dbal
@@ -467,7 +467,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category',
                 CategoryProductTrans::class,
                 'trans',
-                'trans.event = category.event AND trans.local = :local'
+                'trans.event = category.event AND trans.local = :local',
             );
 
         return $dbal->fetchHydrate(OpenManufacturePartResult::class);
@@ -497,7 +497,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             ->setParameter(
                 key: 'profile',
                 value: $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         $dbal
@@ -507,7 +507,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'invariable',
                 ManufacturePart::class,
                 'part',
-                'part.id = invariable.main'
+                'part.id = invariable.main',
             );
 
 
@@ -518,18 +518,18 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part',
                 ManufacturePartEvent::class,
                 'part_event',
-                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status'
+                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status',
             )
             ->setParameter(
                 'status',
                 ManufacturePartStatusOpen::class,
-                ManufacturePartStatus::TYPE
+                ManufacturePartStatus::TYPE,
 
             )
             ->setParameter(
                 'fixed',
                 $this->profile,
-                UserProfileUid::TYPE
+                UserProfileUid::TYPE,
             );
 
         /** Способ доставки  */
@@ -539,7 +539,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 Delivery::class,
                 'delivery',
-                'delivery.id = part_event.complete'
+                'delivery.id = part_event.complete',
             );
 
         $dbal
@@ -548,7 +548,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 DeliveryTrans::class,
                 'delivery_trans',
-                'delivery_trans.event = delivery.event AND delivery_trans.local = :local'
+                'delivery_trans.event = delivery.event AND delivery_trans.local = :local',
             );
 
 
@@ -560,7 +560,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UserProfile::class,
                 'users_profile',
-                'users_profile.id = part_event.fixed'
+                'users_profile.id = part_event.fixed',
             );
 
         $dbal
@@ -569,7 +569,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -583,7 +583,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 ManufacturePartProduct::class,
                 'part_product',
-                'part_product.event = part_event.id'
+                'part_product.event = part_event.id',
             );
 
 
@@ -593,7 +593,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = part_product.product'
+                'product_event.id = part_product.product',
             );
 
         $dbal
@@ -602,7 +602,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /* Торговое предложение */
@@ -615,7 +615,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = part_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = part_product.offer OR product_offer.id IS NULL',
             );
 
         /* Получаем тип торгового предложения */
@@ -625,7 +625,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
         /* Получаем название торгового предложения */
@@ -636,7 +636,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_offer',
                 CategoryProductOffersTrans::class,
                 'category_offer_trans',
-                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local'
+                'category_offer_trans.offer = category_offer.id AND category_offer_trans.local = :local',
             );
 
 
@@ -650,7 +650,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = part_product.variation OR product_variation.id IS NULL '
+                'product_variation.id = part_product.variation OR product_variation.id IS NULL ',
             );
 
 
@@ -661,7 +661,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_variation',
                 CategoryProductVariation::class,
                 'category_variation',
-                'category_variation.id = product_variation.category_variation'
+                'category_variation.id = product_variation.category_variation',
             );
 
         /* Получаем название множественного варианта */
@@ -672,7 +672,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_variation',
                 CategoryProductVariationTrans::class,
                 'category_variation_trans',
-                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local'
+                'category_variation_trans.variation = category_variation.id AND category_variation_trans.local = :local',
             );
 
 
@@ -686,7 +686,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = part_product.modification OR product_modification.id IS NULL '
+                'product_modification.id = part_product.modification OR product_modification.id IS NULL ',
             );
 
 
@@ -697,7 +697,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
         /* Получаем название типа модификации */
@@ -708,7 +708,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category_modification',
                 CategoryProductModificationTrans::class,
                 'category_modification_trans',
-                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local'
+                'category_modification_trans.modification = category_modification.id AND category_modification_trans.local = :local',
             );
 
 
@@ -718,21 +718,21 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             'product_event',
             ProductPhoto::class,
             'product_photo',
-            'product_photo.event = product_event.id AND product_photo.root = true'
+            'product_photo.event = product_event.id AND product_photo.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductModificationImage::class,
             'product_modification_image',
-            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
+            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductVariationImage::class,
             'product_variation_image',
-            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
+            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true',
         );
 
 
@@ -740,7 +740,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
             'product_offer',
             ProductOfferImage::class,
             'product_offer_images',
-            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
+            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true',
         );
 
         $dbal->addSelect(
@@ -756,7 +756,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
 					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
-		"
+		",
         );
 
         /* Флаг загрузки файла CDN */
@@ -805,7 +805,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UsersTableActionsEvent::class,
                 'actions_event',
-                'actions_event.id = part_event.action'
+                'actions_event.id = part_event.action',
             );
 
         $dbal
@@ -814,7 +814,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part_event',
                 UsersTableActionsTrans::class,
                 'actions_trans',
-                'actions_trans.event = actions_event.id AND actions_trans.local = :local'
+                'actions_trans.event = actions_event.id AND actions_trans.local = :local',
             );
 
         $dbal
@@ -823,7 +823,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'actions_event',
                 CategoryProduct::class,
                 'category',
-                'category.id = actions_event.category'
+                'category.id = actions_event.category',
             );
 
         $dbal
@@ -832,7 +832,7 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'category',
                 CategoryProductTrans::class,
                 'trans',
-                'trans.event = category.event AND trans.local = :local'
+                'trans.event = category.event AND trans.local = :local',
             );
 
         return $dbal

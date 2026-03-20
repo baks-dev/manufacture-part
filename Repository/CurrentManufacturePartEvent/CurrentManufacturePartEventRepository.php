@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *  
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
+ *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *  
+ *
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *  
+ *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent;
+namespace BaksDev\Manufacture\Part\Repository\CurrentManufacturePartEvent;
 
 use BaksDev\Core\Doctrine\ORMQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
@@ -31,14 +31,22 @@ use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Id\ManufacturePartUid;
 use InvalidArgumentException;
 
-final class ManufacturePartCurrentEventRepository implements ManufacturePartCurrentEventInterface
+
+final class CurrentManufacturePartEventRepository implements CurrentManufacturePartEventInterface
 {
+
     private ManufacturePartUid|false $part = false;
 
     public function __construct(private readonly ORMQueryBuilder $ORMQueryBuilder) {}
 
-    public function fromPart(ManufacturePart|ManufacturePartUid|string $part): self
+    public function forPart(ManufacturePart|ManufacturePartUid|string $part): self
     {
+        if(empty($part))
+        {
+            $this->part = false;
+            return $this;
+        }
+
         if(is_string($part))
         {
             $part = new ManufacturePartUid($part);
@@ -50,39 +58,40 @@ final class ManufacturePartCurrentEventRepository implements ManufacturePartCurr
         }
 
         $this->part = $part;
+
         return $this;
     }
 
-    /**
-     * Возвращает активное событие по идентификатору ManufacturePart
-     */
+    /** Метод возвращает активное событие производственной партии */
     public function find(): ManufacturePartEvent|false
     {
+
         if(false === ($this->part instanceof ManufacturePartUid))
         {
-            throw new InvalidArgumentException('Invalid Argument Part');
+            throw new InvalidArgumentException('Invalid Argument ManufacturePar');
         }
 
         $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
 
         $orm
-            ->from(ManufacturePart::class, 'main')
-            ->where('main.id = :main')
+            ->from(ManufacturePart::class, 'part')
+            ->where('part.id = :id')
             ->setParameter(
-                key: 'main',
+                key: 'id',
                 value: $this->part,
                 type: ManufacturePartUid::TYPE,
             );
 
+
         $orm
             ->select('event')
-            ->join(
+            ->leftJoin(
                 ManufacturePartEvent::class,
                 'event',
                 'WITH',
-                'event.id = main.event',
+                'event.id = part.event',
             );
 
-        return $orm->getOneOrNullResult() ?: false;
+        return $orm->getQuery()->getOneOrNullResult() ?: false;
     }
 }

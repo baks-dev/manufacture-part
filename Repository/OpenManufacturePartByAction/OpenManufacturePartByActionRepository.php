@@ -83,7 +83,7 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
             ->setParameter(
                 key: 'profile',
                 value: $this->profile ?: $this->UserProfileTokenStorage->getProfileCurrent(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         $qb
@@ -91,14 +91,14 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
             ->setParameter(
                 key: 'status',
                 value: ManufacturePartStatusOpen::class,
-                type: ManufacturePartStatus::TYPE
+                type: ManufacturePartStatus::TYPE,
             );
 
         $qb->join(
             ManufacturePart::class,
             'part',
             'WITH',
-            'part.event = event.id'
+            'part.event = event.id',
         );
 
         return $qb->getOneOrNullResult() ?: false;

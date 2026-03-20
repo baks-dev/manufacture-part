@@ -131,7 +131,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             ->setParameter(
                 key: 'part',
                 value: $this->part,
-                type: ManufacturePartUid::TYPE
+                type: ManufacturePartUid::TYPE,
             );
 
         $dbal
@@ -139,7 +139,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             ->setParameter(
                 key: 'profile',
                 value: $this->UserProfileTokenStorage->getProfile(),
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
 
@@ -150,7 +150,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'invariable',
                 ManufacturePart::class,
                 'part',
-                'part.id = invariable.main'
+                'part.id = invariable.main',
             );
 
 
@@ -161,7 +161,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'part',
                 ManufacturePartProduct::class,
                 'part_product',
-                'part_product.event = part.event'
+                'part_product.event = part.event',
             );
 
 
@@ -169,7 +169,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             'part_product',
             ProductEvent::class,
             'product_event',
-            'product_event.id = part_product.product'
+            'product_event.id = part_product.product',
         );
 
         $dbal
@@ -178,7 +178,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_event',
                 ProductInfo::class,
                 'product_info',
-                'product_info.product = product_event.main'
+                'product_info.product = product_event.main',
             );
 
 
@@ -187,7 +187,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             'product_info',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = product_info.profile'
+            'users_profile.id = product_info.profile',
         );
 
         $dbal
@@ -196,7 +196,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'users_profile',
                 UserProfilePersonal::class,
                 'users_profile_personal',
-                'users_profile_personal.event = users_profile.event'
+                'users_profile_personal.event = users_profile.event',
             );
 
 
@@ -206,7 +206,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /**
@@ -221,7 +221,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_event',
                 ProductOffer::class,
                 'product_offer',
-                'product_offer.id = part_product.offer OR product_offer.id IS NULL'
+                'product_offer.id = part_product.offer OR product_offer.id IS NULL',
             );
 
         if($this->filter->getOffer())
@@ -238,7 +238,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_offer',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = product_offer.category_offer'
+                'category_offer.id = product_offer.category_offer',
             );
 
 
@@ -254,7 +254,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_offer',
                 ProductVariation::class,
                 'product_variation',
-                'product_variation.id = part_product.variation OR product_variation.id IS NULL'
+                'product_variation.id = part_product.variation OR product_variation.id IS NULL',
             );
 
         if($this->filter->getVariation())
@@ -270,7 +270,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_variation',
                 CategoryProductVariation::class,
                 'category_variation',
-                'category_variation.id = product_variation.category_variation'
+                'category_variation.id = product_variation.category_variation',
             );
 
 
@@ -286,7 +286,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'part_product',
                 ProductModification::class,
                 'product_modification',
-                'product_modification.id = part_product.modification OR product_modification.id IS NULL'
+                'product_modification.id = part_product.modification OR product_modification.id IS NULL',
             );
 
         if($this->filter?->getModification())
@@ -303,7 +303,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'product_modification',
                 CategoryProductModification::class,
                 'category_modification',
-                'category_modification.id = product_modification.category_modification'
+                'category_modification.id = product_modification.category_modification',
             );
 
 
@@ -325,28 +325,28 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             'product_event',
             ProductPhoto::class,
             'product_photo',
-            'product_photo.event = product_event.id AND product_photo.root = true'
+            'product_photo.event = product_event.id AND product_photo.root = true',
         );
 
         $dbal->leftJoin(
             'product_modification',
             ProductModificationImage::class,
             'product_modification_image',
-            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true'
+            'product_modification_image.modification = product_modification.id AND product_modification_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_variation',
             ProductVariationImage::class,
             'product_variation_image',
-            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true'
+            'product_variation_image.variation = product_variation.id AND product_variation_image.root = true',
         );
 
         $dbal->leftJoin(
             'product_offer',
             ProductOfferImage::class,
             'product_offer_images',
-            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true'
+            'product_offer_images.offer = product_offer.id AND product_offer_images.root = true',
         );
 
         $dbal->addSelect(
@@ -362,7 +362,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
 					CONCAT ( '/upload/".$dbal->table(ProductPhoto::class)."' , '/', product_photo.name)
 			   ELSE NULL
 			END AS product_image
-		"
+		",
         );
 
         /** Флаг загрузки файла CDN */
@@ -401,7 +401,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             'product_event',
             ProductCategory::class,
             'product_event_category',
-            'product_event_category.event = product_event.id AND product_event_category.root = true'
+            'product_event_category.event = product_event.id AND product_event_category.root = true',
         );
 
 
@@ -409,7 +409,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
             'product_event_category',
             CategoryProduct::class,
             'category',
-            'category.id = product_event_category.category'
+            'category.id = product_event_category.category',
         );
 
         $dbal
@@ -418,7 +418,7 @@ final  class AllProductsByManufacturePartRepository implements AllProductsByManu
                 'category',
                 CategoryProductTrans::class,
                 'category_trans',
-                'category_trans.event = category.event AND category_trans.local = :local'
+                'category_trans.event = category.event AND category_trans.local = :local',
             );
 
 

@@ -103,7 +103,7 @@ final class UpdateManufactureProductOrderRepository implements UpdateManufacture
             ->setParameter(
                 key: 'ord',
                 value: $this->order,
-                type: OrderUid::TYPE
+                type: OrderUid::TYPE,
             );
 
         $dbal
@@ -111,7 +111,7 @@ final class UpdateManufactureProductOrderRepository implements UpdateManufacture
             ->setParameter(
                 key: 'product',
                 value: $this->id,
-                type: ManufacturePartProductUid::TYPE
+                type: ManufacturePartProductUid::TYPE,
             );
 
         return (int) $dbal->executeStatement();

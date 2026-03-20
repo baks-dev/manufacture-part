@@ -42,7 +42,7 @@ final class ManufactureSelectionPartProductsForm extends AbstractType
             'entry_type' => ManufacturePartProductsForm::class,
             'entry_options' => [
                 'attr' => ['class' => 'products-data-box'],
-                'show_submit' => false
+                'show_submit' => false,
             ],
             'allow_add' => true,
         ]);
@@ -51,7 +51,7 @@ final class ManufactureSelectionPartProductsForm extends AbstractType
         $builder->add(
             'manufacture_part_products',
             SubmitType::class,
-            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary text-nowrap']]
+            ['label' => 'Save', 'label_html' => true, 'attr' => ['class' => 'btn-primary text-nowrap']],
         );
     }
 

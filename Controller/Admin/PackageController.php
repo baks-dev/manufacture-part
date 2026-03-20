@@ -79,7 +79,7 @@ final class PackageController extends AbstractController
             ->createForm(
                 type: ManufacturePartPackageForm::class,
                 data: $ManufacturePartPackageDTO,
-                options: ['action' => $this->generateUrl('manufacture-part:admin.package', ['id' => $ManufacturePart->getId()])]
+                options: ['action' => $this->generateUrl('manufacture-part:admin.package', ['id' => $ManufacturePart->getId()])],
             )
             ->handleRequest($request);
 
@@ -104,7 +104,7 @@ final class PackageController extends AbstractController
                 'admin.page.package',
                 'admin.danger.package',
                 'manufacture-part.admin',
-                $handle
+                $handle,
             );
 
             return $this->redirectToRoute('manufacture-part:admin.index', status: 400);
@@ -112,7 +112,7 @@ final class PackageController extends AbstractController
 
         return $this->render([
             'form' => $form->createView(),
-            'number' => $ManufacturePartEvent->getInvariable()->getNumber()
+            'number' => $ManufacturePartEvent->getInvariable()->getNumber(),
         ]);
     }
 }

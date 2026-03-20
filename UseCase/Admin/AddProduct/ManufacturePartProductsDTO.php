@@ -186,6 +186,14 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
         return $this;
     }
 
+    /**
+     * Profile
+     */
+    public function getProfile(): UserProfileUid
+    {
+        return $this->profile;
+    }
+
     public function setProfile(UserProfileUid $profile)
     {
         if(false === (new ReflectionProperty(self::class, 'profile')->isInitialized($this)))
@@ -194,14 +202,6 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
         }
 
         return $this;
-    }
-
-    /**
-     * Profile
-     */
-    public function getProfile(): UserProfileUid
-    {
-        return $this->profile;
     }
 
     /**

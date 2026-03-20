@@ -80,7 +80,7 @@ final readonly class SubUserTableByManufacturePartDefect
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
-                [var_export($message, true), self::class.':'.__LINE__]
+                [var_export($message, true), self::class.':'.__LINE__],
             );
 
             return false;
@@ -114,7 +114,7 @@ final readonly class SubUserTableByManufacturePartDefect
 
         $this->logger->info(
             'Добавляем штраф сотруднику',
-            [$message, self::class.':'.__LINE__]
+            [$message, self::class.':'.__LINE__],
         );
 
         /** Приводим к отрицательному числу */
@@ -132,7 +132,7 @@ final readonly class SubUserTableByManufacturePartDefect
         {
             $this->logger->critical(
                 sprintf('manufacture-part: Ошибка %s при сохранении табеля сотрудника', $UsersTableHandler),
-                [$message, self::class.':'.__LINE__]
+                [$message, self::class.':'.__LINE__],
             );
 
             return false;
@@ -140,7 +140,7 @@ final readonly class SubUserTableByManufacturePartDefect
 
         $this->logger->info(
             sprintf('Добавили штраф профилю %s', $ManufacturePartWorkingDTO->getProfile()),
-            [$message, self::class.':'.__LINE__]
+            [$message, self::class.':'.__LINE__],
         );
 
         $DeduplicatorExecuted->save();

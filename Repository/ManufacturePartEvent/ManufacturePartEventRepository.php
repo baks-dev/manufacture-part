@@ -84,7 +84,7 @@ final class ManufacturePartEventRepository implements ManufacturePartEventInterf
             ->setParameter(
                 key: 'event',
                 value: $this->event,
-                type: ManufacturePartEventUid::TYPE
+                type: ManufacturePartEventUid::TYPE,
             );
 
         /** @var ManufacturePartEvent $ManufacturePartEvent */
