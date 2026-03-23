@@ -213,6 +213,9 @@ final class ManufacturePartProductsDTO implements ManufacturePartProductInterfac
         $this->ord->add($order);
     }
 
+    /**
+     * @return ArrayCollection<ManufacturePartProductOrderDTO>
+     */
     public function getOrd(): ArrayCollection
     {
         return $this->ord;
