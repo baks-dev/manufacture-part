@@ -268,7 +268,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                     if($counter === 0)
                     {
                         $this->logger->critical(
-                            'Ошибка при обновлении готовой продукции в заказе',
+                            'manufacture-part: Ошибка при обновлении заказа готовой продукцией',
                             [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
                         );
 

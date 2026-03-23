@@ -23,10 +23,11 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\Messenger\Orders;
+namespace BaksDev\Manufacture\Part\Messenger\Orders\PackageOrdersByPartCompleted;
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
@@ -59,15 +60,14 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  */
 #[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 30)]
-final readonly class PackageOrdersByPartCompletedDispatcher
+final readonly class PackageOrdersByPartCompletedHandler
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private OrderStatusHandler $OrderStatusHandler,
-        private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
-        private ManufacturePartInvariableInterface $ManufacturePartInvariableRepository
+        private ManufacturePartInvariableInterface $ManufacturePartInvariableRepository,
+        private MessageDispatchInterface $messageDispatch,
     ) {}
 
     /**
@@ -141,11 +141,6 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             return false;
         }
 
-
-        //        $ManufacturePartEvent = $this->ManufacturePartEventRepository
-        //            ->forEvent($message->getEvent())
-        //            ->find();
-
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
@@ -160,73 +155,20 @@ final readonly class PackageOrdersByPartCompletedDispatcher
             /** @var ManufacturePartProductOrderDTO $ManufacturePartProductOrderDTO */
             foreach($ManufacturePartProductsDTO->getOrd() as $ManufacturePartProductOrderDTO)
             {
-                $OrderUid = $ManufacturePartProductOrderDTO->getOrd();
-                $OrderEvent = $this->CurrentOrderEvent
-                    ->forOrder($OrderUid)
-                    ->find();
-
-                if(false === $OrderEvent)
-                {
-                    continue;
-                }
-
-                /** Только заказы в статусе NEW «Новый» */
-                if(false === $OrderEvent->isStatusEquals(OrderStatusNew::class))
-                {
-                    continue;
-                }
-
-                /**
-                 * Проверяем что вся продукция в заказе готова к сборке
-                 */
-
-                $AccessOrderDTO = new AccessOrderDTO();
-                $OrderEvent->getDto($AccessOrderDTO);
-
-                $isPackage = true;
-
-                foreach($AccessOrderDTO->getProduct() as $AccessOrderProductDTO)
-                {
-                    $AccessOrderPriceDTO = $AccessOrderProductDTO->getPrice();
-
-                    if(false === $AccessOrderPriceDTO->isAccess())
-                    {
-                        $isPackage = false;
-                        break;
-                    }
-                }
-
                 /**
                  * Обновляем статус заказа и присваиваем профиль склада упаковки.
                  */
 
-                if(true === $isPackage)
-                {
-                    $this->logger->info(
-                        sprintf('%s: Отправляем заказ на упаковку', $OrderEvent->getOrderNumber()),
-                        [self::class.':'.__LINE__],
-                    );
+                $PackageOrdersByPartCompletedMessage = new PackageOrdersByPartCompletedMessage(
+                    $ManufacturePartProductOrderDTO->getOrd(),
+                    $ManufacturePartEvent->getInvariable()->getProfile(),
+                    $ManufacturePartEvent->getInvariable()->getNumber(),
+                );
 
-                    $OrderStatusDTO = new OrderStatusDTO(
-                        OrderStatusPackage::class,
-                        $OrderEvent->getId(),
-                    );
-
-                    // Добавляем в комментарий идентификатор производственной партии
-                    $OrderStatusDTO->addComment($ManufacturePartEvent->getInvariable()->getNumber());
-                    $OrderStatusDTO->setProfile($ManufacturePartEvent->getInvariable()->getProfile());
-
-                    /** @var OrderStatusHandler $statusHandler */
-                    $OrderStatusHandler = $this->OrderStatusHandler->handle($OrderStatusDTO);
-
-                    if(false === ($OrderStatusHandler instanceof Order))
-                    {
-                        $this->logger->critical(
-                            'manufacture-part: Ошибка при обновлении заказа со статусом «Упаковка»',
-                            [$OrderStatusHandler, self::class.':'.__LINE__],
-                        );
-                    }
-                }
+                $this->messageDispatch->dispatch(
+                    message: $PackageOrdersByPartCompletedMessage,
+                    transport: 'orders-order',
+                );
             }
         }
 

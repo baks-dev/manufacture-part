@@ -273,7 +273,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
         /**
          * Приступаем к обновлению заказов
          *
-         * @see PackageOrdersByPartCompletedDispatcher
+         * @see PackageOrdersByPartCompletedHandler
          */
 
         $DeduplicatorExecuted->save();

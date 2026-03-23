@@ -215,7 +215,7 @@ final readonly class ManufacturePartProductOrderByPartCompletedDispatcher
         /**
          * Приступаем к упаковке заказов
          *
-         * @see PackageOrdersByPartCompletedDispatcher
+         * @see PackageOrdersByPartCompletedHandler
          */
 
         $DeduplicatorExecuted->save();
