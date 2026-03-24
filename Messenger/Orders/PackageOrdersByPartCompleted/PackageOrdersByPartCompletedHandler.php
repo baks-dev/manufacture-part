@@ -31,7 +31,7 @@ use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
-use BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPartCompletedDispatcher;
+use BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPartCompletedHandler;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartInvariable\ManufacturePartInvariableInterface;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusCompleted;
@@ -73,7 +73,7 @@ final readonly class PackageOrdersByPartCompletedHandler
     /**
      *
      * @note В первую очередь создается складская заявка
-     * @see PackageProductStockByPartCompletedDispatcher
+     * @see PackageProductStockByPartCompletedHandler
      */
     public function __invoke(ManufacturePartMessage $message): bool
     {

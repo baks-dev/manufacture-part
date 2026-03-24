@@ -196,7 +196,7 @@ final readonly class ProductStocksByPartCompletedDispatcher
 
 
             $this->logger->info(
-                sprintf('Добавляем приход продукции прозводственной партии %s', $ManufacturePartInvariableDTO->getNumber()),
+                sprintf('Добавляем приход продукции производственной партии %s', $ManufacturePartInvariableDTO->getNumber()),
                 [self::class.':'.__LINE__],
             );
 

@@ -64,6 +64,4 @@ class PackageProductStockByPartCompletedTest extends KernelTestCase
         self::assertFalse($dispatch);
 
     }
-
-
 }

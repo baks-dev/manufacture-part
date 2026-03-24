@@ -23,10 +23,11 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Manufacture\Part\Messenger\ProductStocks;
+namespace BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockByPackageOrder;
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
 use BaksDev\Manufacture\Part\Messenger\ManufacturePartMessage;
 use BaksDev\Manufacture\Part\Repository\ManufacturePartCurrentEvent\ManufacturePartCurrentEventInterface;
@@ -36,6 +37,7 @@ use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProdu
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePartProductOrderDTO;
 use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusNew;
+use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusPackage;
 use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\PackageOrderDTO;
 use BaksDev\Orders\Order\UseCase\Admin\Package\Products\PackageOrderProductDTO;
@@ -62,7 +64,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  */
 #[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 40)]
-final readonly class PackageProductStockByPartCompletedDispatcher
+final readonly class PackageProductStockByPartCompletedHandler
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
@@ -71,6 +73,7 @@ final readonly class PackageProductStockByPartCompletedDispatcher
         private PackageProductStockHandler $PackageProductStockHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
+        private MessageDispatchInterface $messageDispatch,
     ) {}
 
     /**
@@ -137,136 +140,17 @@ final readonly class PackageProductStockByPartCompletedDispatcher
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
-
             /** @var ManufacturePartProductOrderDTO $ManufacturePartProductOrderDTO */
             foreach($ManufacturePartProductsDTO->getOrd() as $ManufacturePartProductOrderDTO)
             {
-                $OrderUid = $ManufacturePartProductOrderDTO->getOrd();
-                $OrderEvent = $this->CurrentOrderEvent->forOrder($OrderUid)->find();
+                $PackageProductStockByPackageOrderMessage = new PackageProductStockByPackageOrderMessage(
+                    $ManufacturePartProductOrderDTO->getOrd(),
+                );
 
-                if(false === $OrderEvent)
-                {
-                    continue;
-                }
-
-                /** Только заказы в статусе НОВЫЙ */
-                if(false === $OrderEvent->isStatusEquals(OrderStatusNew::class))
-                {
-                    continue;
-                }
-
-                $DeduplicatorOrder = $this->deduplicator
-                    ->deduplication([$OrderUid, self::class]);
-
-                if($DeduplicatorOrder->isExecuted())
-                {
-                    continue;
-                }
-
-                /**
-                 * Проверяем что вся продукция в заказе готова к сборке
-                 */
-
-                $AccessOrderDTO = new AccessOrderDTO();
-                $OrderEvent->getDto($AccessOrderDTO);
-
-                $isPackage = true;
-
-                foreach($AccessOrderDTO->getProduct() as $AccessOrderProductDTO)
-                {
-                    $AccessOrderPriceDTO = $AccessOrderProductDTO->getPrice();
-
-                    if(false === $AccessOrderPriceDTO->isAccess())
-                    {
-                        $isPackage = false;
-                        break;
-                    }
-                }
-
-                /**
-                 * Обновляем статус заказа и присваиваем профиль склада упаковки.
-                 */
-
-                if(true === $isPackage)
-                {
-
-                    $this->logger->info(
-                        sprintf(
-                            '%s: Создаем складскую заявку на упаковку',
-                            $OrderEvent->getPostingNumber(),
-                        ),
-                        [self::class.':'.__LINE__],
-                    );
-
-                    $DeduplicatorOrder->save();
-
-                    /**
-                     * Создаем складскую заявку на упаковку для резерва продукции
-                     */
-
-                    $PackageProductStockDTO = new PackageProductStockDTO();
-                    $OrderEvent->getDto($PackageProductStockDTO);
-
-                    // Присваиваем заявке идентификатор заказа
-                    $ProductStockOrderDTO = new PackageProductStockOrderDTO();
-                    $ProductStockOrderDTO->setOrd($OrderEvent->getMain());
-
-                    $PackageProductStockDTO->setProduct(new ArrayCollection());
-                    $PackageProductStockDTO->setOrd($ProductStockOrderDTO);
-
-
-                    $PackageOrderInvariableDTO = $PackageProductStockDTO->getInvariable();
-                    $PackageOrderInvariableDTO
-                        ->setUsr($ManufacturePartDTO->getInvariable()->getUsr())
-                        ->setProfile($ManufacturePartDTO->getInvariable()->getProfile())
-                        ->setNumber($OrderEvent->getPostingNumber());
-
-
-                    /** Получаем PackageOrderDTO для коллекции продукции  */
-                    $PackageOrderDTO = new PackageOrderDTO();
-                    $OrderEvent->getDto($PackageOrderDTO);
-
-                    /** @var PackageOrderProductDTO $PackageOrderProductDTO */
-                    foreach($PackageOrderDTO->getProduct() as $PackageOrderProductDTO)
-                    {
-                        /** Получаем идентификаторы продукции по событию заказа */
-
-                        $CurrentProductIdentifier = $this->CurrentProductIdentifier
-                            ->forEvent($PackageOrderProductDTO->getProduct())
-                            ->forOffer($PackageOrderProductDTO->getOffer())
-                            ->forVariation($PackageOrderProductDTO->getVariation())
-                            ->forModification($PackageOrderProductDTO->getModification())
-                            ->find();
-
-                        if(false === ($CurrentProductIdentifier instanceof CurrentProductIdentifierResult))
-                        {
-                            continue;
-                        }
-
-                        $CollectionPackageProductStockDTO = new CollectionPackageProductStockDTO()
-                            ->setProduct($CurrentProductIdentifier->getProduct())
-                            ->setOffer($CurrentProductIdentifier->getOfferConst())
-                            ->setVariation($CurrentProductIdentifier->getVariationConst())
-                            ->setModification($CurrentProductIdentifier->getModificationConst())
-                            ->setTotal($PackageOrderProductDTO->getPrice()->getTotal());
-
-
-                        $PackageProductStockDTO->addProduct($CollectionPackageProductStockDTO);
-
-                    }
-
-                    $ProductStock = $this->PackageProductStockHandler->handle($PackageProductStockDTO);
-
-                    if(false === ($ProductStock instanceof ProductStock))
-                    {
-                        $this->logger->critical(
-                            sprintf('manufacture-part: Ошибка %s при обновлении отправке заказа %s на упаковку', $ProductStock, $OrderEvent->getOrderNumber()),
-                            [$message, self::class.':'.__LINE__],
-                        );
-
-                        return false;
-                    }
-                }
+                $this->messageDispatch->dispatch(
+                    message: $PackageProductStockByPackageOrderMessage,
+                    transport: 'orders-order',
+                );
             }
         }
 

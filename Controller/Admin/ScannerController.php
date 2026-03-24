@@ -115,13 +115,13 @@ final class ScannerController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid() && $form->has('manufacture_part_action'))
         {
-            $this->refreshTokenForm($form);
-
             $handle = $ManufacturePartActionHandler
                 ->handle($ManufacturePartActionDTO);
 
             if($handle instanceof ManufacturePart)
             {
+                $this->refreshTokenForm($form);
+
                 $this->addFlash(
                     'admin.page.action',
                     'admin.success.action',
