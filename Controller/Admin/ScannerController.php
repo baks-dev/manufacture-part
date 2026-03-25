@@ -26,9 +26,6 @@ declare(strict_types=1);
 namespace BaksDev\Manufacture\Part\Controller\Admin;
 
 
-use BaksDev\Barcode\Writer\BarcodeFormat;
-use BaksDev\Barcode\Writer\BarcodeType;
-use BaksDev\Barcode\Writer\BarcodeWrite;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
 use BaksDev\Core\Type\UidType\ParamConverter;
@@ -41,20 +38,16 @@ use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionForm;
 use BaksDev\Manufacture\Part\UseCase\Admin\Action\ManufacturePartActionHandler;
 use BaksDev\Users\UsersTable\Type\Actions\Working\UsersTableActionsWorkingUid;
-use chillerlan\QRCode\QRCode;
 use InvalidArgumentException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-//#[RoleSecurity('ROLE_MANUFACTURE_PART_SCAN')]
+#[RoleSecurity('ROLE_MANUFACTURE_PART_SCAN')]
 final class ScannerController extends AbstractController
 {
-    private BarcodeWrite $BarcodeWrite;
-
     /**
      * Меняет производственное состояние и присваивает исполнителя
      */

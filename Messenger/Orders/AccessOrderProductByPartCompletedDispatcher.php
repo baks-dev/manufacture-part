@@ -160,7 +160,13 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                 {
                     $this->logger->critical(
                         'Релевантных заказов для производственной партии не найдено',
-                        [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
+                        [
+                            self::class.':'.__LINE__,
+                            'product' => $ManufacturePartProductsDTO->getProduct(),
+                            'offer' => $ManufacturePartProductsDTO->getOffer(),
+                            'variation' => $ManufacturePartProductsDTO->getVariation(),
+                            'modification' => $ManufacturePartProductsDTO->getModification(),
+                        ],
                     );
 
                     continue 2;
