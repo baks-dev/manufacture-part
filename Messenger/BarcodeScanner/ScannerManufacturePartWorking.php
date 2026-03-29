@@ -92,7 +92,7 @@ final class ScannerManufacturePartWorking
 
         if(false === ($CurrentManufacturePartEvent instanceof ManufacturePartEvent))
         {
-            $this->logger->critical(
+            $this->logger->warning(
                 'manufacture-part: Событие производственной партии на найдено',
                 [self::class.':'.__LINE__, 'ManufacturePartUid' => (string) $ManufacturePartUid],
             );
