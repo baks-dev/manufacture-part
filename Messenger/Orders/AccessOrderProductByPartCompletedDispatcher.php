@@ -173,8 +173,8 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                 }
 
                 $this->logger->info(
-                    'Добавляем произведенную продукцию к заказу',
-                    [$OrderEvent->getOrderNumber(), self::class.':'.__LINE__],
+                    sprintf('%s: Добавляем произведенную продукцию к заказу', $OrderEvent->getOrderNumber()),
+                    ['ManufacturePartUid' => (string) $ManufacturePartEvent->getMain(), self::class.':'.__LINE__],
                 );
 
                 $AccessOrderDTO = new AccessOrderDTO();

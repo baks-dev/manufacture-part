@@ -27,7 +27,10 @@ namespace BaksDev\Manufacture\Part\Messenger\ProductStocks\PackageProductStockBy
 
 
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
+use BaksDev\Core\Messenger\MessageDelay;
+use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Orders\Order\Entity\Event\OrderEvent;
+use BaksDev\Orders\Order\Messenger\MultiplyOrdersPackage\MultiplyOrdersPackageMessage;
 use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusNew;
 use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusPackage;
@@ -41,6 +44,7 @@ use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\PackageProductStockOrde
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockHandler;
 use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\CollectionPackageProductStockDTO;
+use BaksDev\Users\User\Type\Id\UserUid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -57,6 +61,7 @@ final readonly class PackageProductStockByPackageOrderDispatcher
         private PackageProductStockHandler $PackageProductStockHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
+        private MessageDispatchInterface $messageDispatch,
     ) {}
 
     public function __invoke(PackageProductStockByPackageOrderMessage $message): void
@@ -86,11 +91,8 @@ final readonly class PackageProductStockByPackageOrderDispatcher
             return;
         }
 
-        /** Только заказы в статусе New «Новый» либо Package «Упаковка заказов» */
-        if(
-            false === $OrderEvent->isStatusEquals(OrderStatusNew::class)
-            && false === $OrderEvent->isStatusEquals(OrderStatusPackage::class)
-        )
+        /** Только заказы в статусе New «Новый» */
+        if(false === $OrderEvent->isStatusEquals(OrderStatusNew::class))
         {
             $this->logger->critical(
                 sprintf(
@@ -127,6 +129,29 @@ final readonly class PackageProductStockByPackageOrderDispatcher
         {
             return;
         }
+
+
+        $this->logger->info(
+            sprintf(
+                '%s: Отправляем заказ на упаковку',
+                $OrderEvent->getPostingNumber(),
+            ),
+            [self::class.':'.__LINE__],
+        );
+
+        $MultiplyOrdersPackageMessage = new MultiplyOrdersPackageMessage(
+            $OrderEvent->getMain(),
+            $OrderEvent->getOrderProfile(),
+            true === ($OrderEvent->getModifyUser() instanceof UserUid) ? $OrderEvent->getModifyUser() : $OrderEvent->getOrderUser(),
+        );
+
+        $this->messageDispatch->dispatch(
+            message: $MultiplyOrdersPackageMessage,
+            transport: 'orders-order',
+        );
+
+        return;
+
 
         /**
          * Обновляем статус заказа и присваиваем профиль склада упаковки.

@@ -118,10 +118,19 @@ final readonly class PackageProductStockByPartCompletedHandler
 
         $orderType = match (true)
         {
+            /**
+             * Wildberries
+             */
+
             /* FBS Wb */
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb*/
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
+
+
+            /**
+             * Ozon
+             */
 
             /* FBS Ozon */
             $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
@@ -137,21 +146,35 @@ final readonly class PackageProductStockByPartCompletedHandler
         $ManufacturePartDTO = new ManufacturePartDTO();
         $ManufacturePartEvent->getDto($ManufacturePartDTO);
 
+        /**
+         * Получаем все идентификаторы заказов для упаковки
+         */
+
+        $orders = null;
+
         /** @var ManufacturePartProductsDTO $ManufacturePartProductsDTO */
         foreach($ManufacturePartDTO->getProduct() as $ManufacturePartProductsDTO)
         {
             /** @var ManufacturePartProductOrderDTO $ManufacturePartProductOrderDTO */
             foreach($ManufacturePartProductsDTO->getOrd() as $ManufacturePartProductOrderDTO)
             {
-                $PackageProductStockByPackageOrderMessage = new PackageProductStockByPackageOrderMessage(
-                    $ManufacturePartProductOrderDTO->getOrd(),
-                );
-
-                $this->messageDispatch->dispatch(
-                    message: $PackageProductStockByPackageOrderMessage,
-                    transport: 'orders-order',
-                );
+                $OrderUid = $ManufacturePartProductOrderDTO->getOrd();
+                $orders[(string) $OrderUid] = $OrderUid;
             }
+        }
+
+        /**
+         * Отправляем все заказы в упаковку с проверкой, что вся продукция в заказе готова к сборке
+         */
+
+        foreach($orders as $OrderUid)
+        {
+            $PackageProductStockByPackageOrderMessage = new PackageProductStockByPackageOrderMessage($OrderUid);
+
+            $this->messageDispatch->dispatch(
+                message: $PackageProductStockByPackageOrderMessage,
+                transport: 'orders-order',
+            );
         }
 
         /**

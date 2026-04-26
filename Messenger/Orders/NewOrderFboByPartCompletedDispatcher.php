@@ -189,12 +189,17 @@ final readonly class NewOrderFboByPartCompletedDispatcher
 
         $OrderDTO = new NewOrderDTO();
 
-        $NewOrderInvariableDTO = $OrderDTO->getInvariable();
-
-        $NewOrderInvariableDTO
+        $OrderDTO
+            ->getInvariable()
             ->setUsr($ManufacturePartInvariableDTO->getUsr())
             ->setProfile($ManufacturePartInvariableDTO->getProfile())
             ->setNumber($ManufacturePartInvariableDTO->getNumber());
+
+        $OrderDTO
+            ->getPosting()
+            ->setValue($ManufacturePartInvariableDTO->getNumber());
+
+
 
         /**
          * OrderUserDTO
