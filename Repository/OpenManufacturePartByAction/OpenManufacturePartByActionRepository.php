@@ -27,45 +27,19 @@ namespace BaksDev\Manufacture\Part\Repository\OpenManufacturePartByAction;
 
 use BaksDev\Core\Doctrine\ORMQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
-use BaksDev\Manufacture\Part\Type\Marketplace\ManufacturePartMarketplace;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
-use InvalidArgumentException;
 
-final class OpenManufacturePartByActionRepository implements OpenManufacturePartByActionInterface
+final readonly class OpenManufacturePartByActionRepository implements OpenManufacturePartByActionInterface
 {
-    private UserProfileUid|false $profile = false;
-
     public function __construct(
-        private readonly ORMQueryBuilder $ORMQueryBuilder,
-        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
+        private ORMQueryBuilder $ORMQueryBuilder,
+        private UserProfileTokenStorageInterface $UserProfileTokenStorage
     ) {}
-
-    public function forProfile(UserProfile|UserProfileUid|string $profile): self
-    {
-        if(empty($profile))
-        {
-            throw new InvalidArgumentException('Invalid Argument UserProfile');
-        }
-
-        if(is_string($profile))
-        {
-            $profile = new UserProfileUid($profile);
-        }
-
-        if($profile instanceof UserProfile)
-        {
-            $profile = $profile->getId();
-        }
-
-        $this->profile = $profile;
-
-        return $this;
-    }
 
     /**
      * Возвращает событие (ManufacturePartEvent) открытой активной производственной партии ответственного лица
@@ -78,11 +52,12 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
             ->select('event')
             ->from(ManufacturePartEvent::class, 'event');
 
+        /** Текущего current профиля пользователя */
         $qb
-            ->andWhere('event.fixed = :profile')
+            ->andWhere('event.fixed = :current')
             ->setParameter(
-                key: 'profile',
-                value: $this->profile ?: $this->UserProfileTokenStorage->getProfileCurrent(),
+                key: 'current',
+                value: $this->UserProfileTokenStorage->getProfileCurrent(),
                 type: UserProfileUid::TYPE,
             );
 
@@ -93,6 +68,23 @@ final class OpenManufacturePartByActionRepository implements OpenManufacturePart
                 value: ManufacturePartStatusOpen::class,
                 type: ManufacturePartStatus::TYPE,
             );
+
+        /** Только текущего профиля магазина */
+        $qb->join(
+            ManufacturePartInvariable::class,
+            'manufacture_part_invariable',
+            'WITH',
+            '
+                manufacture_part_invariable.main = event.main 
+                AND manufacture_part_invariable.profile = :profile
+            ',
+        )
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE,
+            );
+
 
         $qb->join(
             ManufacturePart::class,

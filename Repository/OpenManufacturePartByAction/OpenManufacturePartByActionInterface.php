@@ -31,8 +31,6 @@ use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
 interface OpenManufacturePartByActionInterface
 {
-    public function forProfile(UserProfile|UserProfileUid|string $profile): self;
-
     /**
      * Возвращает событие открытой активной производственной партии ответственного лица
      * применяет фильтр по CurrentProfile пользователя

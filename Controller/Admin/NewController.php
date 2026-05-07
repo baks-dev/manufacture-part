@@ -54,7 +54,7 @@ final class NewController extends AbstractController
 
         $ManufacturePartDTO
             ->getInvariable()
-            ->setUsr($this->getUsr()?->getId())
+            ->setUsr($this->getUsr()->getId())
             ->setProfile($this->getProfileUid());
 
         // Форма
