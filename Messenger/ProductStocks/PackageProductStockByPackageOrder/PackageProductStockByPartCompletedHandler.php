@@ -35,23 +35,9 @@ use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartSt
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\ManufacturePartDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\ManufacturePartProductsDTO;
 use BaksDev\Manufacture\Part\UseCase\Admin\NewEdit\Products\Orders\ManufacturePartProductOrderDTO;
-use BaksDev\Orders\Order\Repository\CurrentOrderEvent\CurrentOrderEventInterface;
-use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusNew;
-use BaksDev\Orders\Order\Type\Status\OrderStatus\Collection\OrderStatusPackage;
-use BaksDev\Orders\Order\UseCase\Admin\Access\AccessOrderDTO;
-use BaksDev\Orders\Order\UseCase\Admin\Package\PackageOrderDTO;
-use BaksDev\Orders\Order\UseCase\Admin\Package\Products\PackageOrderProductDTO;
 use BaksDev\Ozon\Orders\Type\DeliveryType\TypeDeliveryFbsOzon;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierByEventInterface;
-use BaksDev\Products\Product\Repository\CurrentProductIdentifier\CurrentProductIdentifierResult;
-use BaksDev\Products\Stocks\Entity\Stock\ProductStock;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Orders\PackageProductStockOrderDTO;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockDTO;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\PackageProductStockHandler;
-use BaksDev\Products\Stocks\UseCase\Admin\Package\Products\CollectionPackageProductStockDTO;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFboWildberries;
 use BaksDev\Wildberries\Orders\Type\DeliveryType\TypeDeliveryFbsWildberries;
-use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -69,9 +55,6 @@ final readonly class PackageProductStockByPartCompletedHandler
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
         private ManufacturePartCurrentEventInterface $ManufacturePartCurrentEvent,
-        private CurrentProductIdentifierByEventInterface $CurrentProductIdentifier,
-        private PackageProductStockHandler $PackageProductStockHandler,
-        private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
         private MessageDispatchInterface $messageDispatch,
     ) {}
@@ -165,6 +148,8 @@ final readonly class PackageProductStockByPartCompletedHandler
 
         /**
          * Отправляем все заказы в упаковку с проверкой, что вся продукция в заказе готова к сборке
+         *
+         * @see PackageProductStockByPackageOrderDispatcher
          */
 
         foreach($orders as $OrderUid)
@@ -176,12 +161,6 @@ final readonly class PackageProductStockByPartCompletedHandler
                 transport: 'orders-order',
             );
         }
-
-        /**
-         * Приступаем к обновлению заказов
-         *
-         * @see PackageOrdersByPartCompletedHandler
-         */
 
         $DeduplicatorExecuted->save();
 

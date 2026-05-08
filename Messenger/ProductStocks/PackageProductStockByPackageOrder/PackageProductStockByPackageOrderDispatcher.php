@@ -51,14 +51,15 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * На добавленные в производственную партию заказы - создает складскую заявку, готовые к упаковке (total === access)
+ */
 #[Autoconfigure(shared: false)]
 #[AsMessageHandler(priority: 0)]
 final readonly class PackageProductStockByPackageOrderDispatcher
 {
     public function __construct(
         #[Target('manufacturePartLogger')] private LoggerInterface $logger,
-        private CurrentProductIdentifierByEventInterface $CurrentProductIdentifier,
-        private PackageProductStockHandler $PackageProductStockHandler,
         private CurrentOrderEventInterface $CurrentOrderEvent,
         private DeduplicatorInterface $deduplicator,
         private MessageDispatchInterface $messageDispatch,
@@ -130,7 +131,6 @@ final readonly class PackageProductStockByPackageOrderDispatcher
             return;
         }
 
-
         $this->logger->info(
             sprintf(
                 '%s: Отправляем заказ на упаковку',
@@ -149,89 +149,5 @@ final readonly class PackageProductStockByPackageOrderDispatcher
             message: $MultiplyOrdersPackageMessage,
             transport: 'orders-order',
         );
-
-        return;
-
-
-        /**
-         * Обновляем статус заказа и присваиваем профиль склада упаковки.
-         */
-
-        $this->logger->info(
-            sprintf(
-                '%s: Создаем складскую заявку на упаковку',
-                $OrderEvent->getPostingNumber(),
-            ),
-            [self::class.':'.__LINE__],
-        );
-
-        $DeduplicatorOrder->save();
-
-        /**
-         * Создаем складскую заявку на упаковку для резерва продукции
-         */
-
-        $PackageProductStockDTO = new PackageProductStockDTO();
-        $OrderEvent->getDto($PackageProductStockDTO);
-
-        // Присваиваем заявке идентификатор заказа
-        $ProductStockOrderDTO = new PackageProductStockOrderDTO();
-        $ProductStockOrderDTO->setOrd($OrderEvent->getMain());
-
-        $PackageProductStockDTO->setProduct(new ArrayCollection());
-        $PackageProductStockDTO->setOrd($ProductStockOrderDTO);
-
-
-        $PackageOrderInvariableDTO = $PackageProductStockDTO->getInvariable();
-        $PackageOrderInvariableDTO
-            ->setUsr($OrderEvent->getOrderUser())
-            ->setProfile($OrderEvent->getOrderProfile())
-            ->setNumber($OrderEvent->getPostingNumber());
-
-
-        /** Получаем PackageOrderDTO для коллекции продукции  */
-        $PackageOrderDTO = new PackageOrderDTO();
-        $OrderEvent->getDto($PackageOrderDTO);
-
-        /** @var PackageOrderProductDTO $PackageOrderProductDTO */
-        foreach($PackageOrderDTO->getProduct() as $PackageOrderProductDTO)
-        {
-            /** Получаем идентификаторы продукции по событию заказа */
-
-            $CurrentProductIdentifier = $this->CurrentProductIdentifier
-                ->forEvent($PackageOrderProductDTO->getProduct())
-                ->forOffer($PackageOrderProductDTO->getOffer())
-                ->forVariation($PackageOrderProductDTO->getVariation())
-                ->forModification($PackageOrderProductDTO->getModification())
-                ->find();
-
-            if(false === ($CurrentProductIdentifier instanceof CurrentProductIdentifierResult))
-            {
-                continue;
-            }
-
-            $CollectionPackageProductStockDTO = new CollectionPackageProductStockDTO()
-                ->setProduct($CurrentProductIdentifier->getProduct())
-                ->setOffer($CurrentProductIdentifier->getOfferConst())
-                ->setVariation($CurrentProductIdentifier->getVariationConst())
-                ->setModification($CurrentProductIdentifier->getModificationConst())
-                ->setTotal($PackageOrderProductDTO->getPrice()->getTotal());
-
-            $PackageProductStockDTO->addProduct($CollectionPackageProductStockDTO);
-
-        }
-
-        $ProductStock = $this->PackageProductStockHandler->handle($PackageProductStockDTO);
-
-        if(false === ($ProductStock instanceof ProductStock))
-        {
-            $this->logger->critical(
-                sprintf('manufacture-part: Ошибка %s при создании заявки на упаковку заказа %s при производстве',
-                    $ProductStock,
-                    $OrderEvent->getPostingNumber(),
-                ),
-                [$message, self::class.':'.__LINE__],
-            );
-        }
     }
 }

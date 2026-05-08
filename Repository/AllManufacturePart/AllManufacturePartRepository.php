@@ -132,7 +132,7 @@ final class AllManufacturePartRepository implements AllManufacturePartInterface
             'event',
             UserProfile::class,
             'users_profile',
-            'users_profile.id = invariable.profile',
+            'users_profile.id = event.fixed',
         );
 
         $dbal

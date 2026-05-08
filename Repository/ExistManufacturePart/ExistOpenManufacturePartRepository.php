@@ -27,10 +27,12 @@ namespace BaksDev\Manufacture\Part\Repository\ExistManufacturePart;
 
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Manufacture\Part\Entity\Event\ManufacturePartEvent;
+use BaksDev\Manufacture\Part\Entity\Invariable\ManufacturePartInvariable;
 use BaksDev\Manufacture\Part\Entity\ManufacturePart;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus;
 use BaksDev\Manufacture\Part\Type\Status\ManufacturePartStatus\ManufacturePartStatusOpen;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+use BaksDev\Users\Profile\UserProfile\Repository\UserProfileTokenStorage\UserProfileTokenStorageInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use InvalidArgumentException;
 
@@ -39,7 +41,10 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
 {
     private UserProfileUid|false $profile = false;
 
-    public function __construct(private readonly DBALQueryBuilder $DBALQueryBuilder) {}
+    public function __construct(
+        private readonly DBALQueryBuilder $DBALQueryBuilder,
+        private readonly UserProfileTokenStorageInterface $UserProfileTokenStorage
+    ) {}
 
     public function forProfile(UserProfile|UserProfileUid|string $profile): self
     {
@@ -70,25 +75,36 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
      */
     public function isExistByProfile(): bool
     {
-        if(false === ($this->profile instanceof UserProfileUid))
-        {
-            throw new InvalidArgumentException('Invalid Argument UserProfile');
-        }
-
         $qb = $this->DBALQueryBuilder->createQueryBuilder(self::class);
 
-        $qb->from(ManufacturePart::class, 'part');
+        $qb->from(ManufacturePart::class, 'manufacture_part');
 
-        $qb->join(
-            'part',
-            ManufacturePartEvent::class,
-            'part_event',
-            '
-                part_event.id = part.event AND 
-                part_event.fixed = :fixed AND
-                part_event.status = :status
-            ',
-        )
+        /** Только текущего профиля магазина */
+        $qb
+            ->join(
+                'manufacture_part',
+                ManufacturePartInvariable::class,
+                'manufacture_part_invariable',
+                '
+                manufacture_part_invariable.main = manufacture_part.id 
+                AND manufacture_part_invariable.profile = :profile
+            ')
+            ->setParameter(
+                key: 'profile',
+                value: $this->UserProfileTokenStorage->getProfile(),
+                type: UserProfileUid::TYPE,
+            );
+
+        $qb
+            ->join(
+                'manufacture_part',
+                ManufacturePartEvent::class,
+                'manufacture_part_event',
+                '
+                manufacture_part_event.id = manufacture_part.event 
+                AND manufacture_part_event.fixed = :fixed 
+                AND manufacture_part_event.status = :status
+            ')
             ->setParameter(
                 key: 'status',
                 value: ManufacturePartStatusOpen::class,
@@ -96,7 +112,7 @@ final class ExistOpenManufacturePartRepository implements ExistOpenManufacturePa
             )
             ->setParameter(
                 key: 'fixed',
-                value: $this->profile,
+                value: $this->profile ?: $this->UserProfileTokenStorage->getProfileCurrent(),
                 type: UserProfileUid::TYPE,
             );
 

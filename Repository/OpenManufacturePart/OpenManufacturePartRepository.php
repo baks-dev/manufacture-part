@@ -137,7 +137,11 @@ final class OpenManufacturePartRepository implements OpenManufacturePartInterfac
                 'part',
                 ManufacturePartEvent::class,
                 'part_event',
-                'part_event.id = part.event AND part_event.fixed = :fixed AND part_event.status = :status',
+                '
+                    part_event.id = part.event 
+                    AND part_event.fixed = :fixed 
+                    AND part_event.status = :status
+                ',
             )
             ->setParameter(
                 'status',

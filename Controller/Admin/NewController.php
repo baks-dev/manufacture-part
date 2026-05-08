@@ -72,9 +72,9 @@ final class NewController extends AbstractController
             $this->refreshTokenForm($form);
 
             /**
-             * Проверяем, имеется ли открытая партия
+             * Проверяем, имеется ли у пользователя в текущем магазине открытая партия
              */
-            if($existManufacturePartByAction->forProfile($this->getCurrentProfileUid())->isExistByProfile())
+            if($existManufacturePartByAction->isExistByProfile())
             {
                 $this->addFlash
                 (
