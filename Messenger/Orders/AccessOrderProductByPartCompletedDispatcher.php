@@ -79,11 +79,11 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
             return true;
         }
 
-        $ManufacturePartEvent = $this->ManufacturePartCurrentEvent
+        $CurrentManufacturePartEvent = $this->ManufacturePartCurrentEvent
             ->fromPart($message->getId())
             ->find();
 
-        if(false === ($ManufacturePartEvent instanceof ManufacturePartEvent))
+        if(false === ($CurrentManufacturePartEvent instanceof ManufacturePartEvent))
         {
             $this->logger->error(
                 'manufacture-part: ManufacturePartEvent не определено',
@@ -93,7 +93,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
             return false;
         }
 
-        if(false === $ManufacturePartEvent->equalsManufacturePartStatus(ManufacturePartStatusCompleted::class))
+        if(false === $CurrentManufacturePartEvent->equalsManufacturePartStatus(ManufacturePartStatusCompleted::class))
         {
             return true;
         }
@@ -106,12 +106,12 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
         $orderType = match (true)
         {
             /* FBS Wb */
-            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
+            $CurrentManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsWildberries::class) => TypeDeliveryFbsWildberries::TYPE,
             /* FBO Wb */
-            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
+            $CurrentManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFboWildberries::class) => TypeDeliveryFboWildberries::TYPE,
 
             /* FBS Ozon */
-            $ManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
+            $CurrentManufacturePartEvent->equalsManufacturePartComplete(TypeDeliveryFbsOzon::class) => TypeDeliveryFbsOzon::TYPE,
 
             default => false,
         };
@@ -124,7 +124,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
 
         $ManufacturePartDTO = new ManufacturePartDTO();
-        $ManufacturePartEvent->getDto($ManufacturePartDTO);
+        $CurrentManufacturePartEvent->getDto($ManufacturePartDTO);
 
         $DeliveryUid = new DeliveryUid($orderType);
 
@@ -140,6 +140,8 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
             for($i = 1; $i <= $total; $i++)
             {
+
+
                 /** Получаем заказ со статусом НОВЫЙ на данную продукцию требующие производства */
 
                 $OrderEvent = $this->RelevantNewOrderByProduct
@@ -150,6 +152,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
                     ->forModification($ManufacturePartProductsDTO->getModification())
                     ->onlyNewStatus() // только в статусе НОВЫЕ
                     ->filterProductAccess() // только требующие производства (access != total)
+                    ->forProfile($CurrentManufacturePartEvent->getInvariable()->getProfile()) // только профиля, чья партия
                     ->find();
 
                 /**
@@ -174,7 +177,7 @@ final readonly class AccessOrderProductByPartCompletedDispatcher
 
                 $this->logger->info(
                     sprintf('%s: Добавляем произведенную продукцию к заказу', $OrderEvent->getOrderNumber()),
-                    ['ManufacturePartUid' => (string) $ManufacturePartEvent->getMain(), self::class.':'.__LINE__],
+                    ['ManufacturePartUid' => (string) $CurrentManufacturePartEvent->getMain(), self::class.':'.__LINE__],
                 );
 
                 $AccessOrderDTO = new AccessOrderDTO();
